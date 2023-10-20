@@ -42,13 +42,41 @@
     const cube = new THREE.Mesh( geometry, material );
     scene.add(cube);
 
-    // Palito de Sorvete
-    const stickGeometry = new THREE.CylinderGeometry(0.15, 0.15, 5, 32); // Cilindro representa o palito
-    const stickMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Cor marrom
-    const popsicleStick = new THREE.Mesh(stickGeometry, stickMaterial);
-    popsicleStick.position.set(0, 0, 0); // Posiciona o palito no centro da cena
-    popsicleStick.rotation.x = Math.PI / 2; // Rotaciona o palito para deitá-lo
-    scene.add(popsicleStick);
+
+// Palito de Sorvete
+        const stickMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Cor marrom
+
+        // Criação do palito
+        const stickGeometry = new THREE.Geometry();
+
+        // Cria as duas extremidades achatadas (cilindros)
+        const topEndGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.01, 8); // Extremidade superior
+        const bottomEndGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.01, 8); // Extremidade inferior
+
+        const topEnd = new THREE.Mesh(topEndGeometry, stickMaterial);
+        const bottomEnd = new THREE.Mesh(bottomEndGeometry, stickMaterial);
+
+        // Ajuste das posições das extremidades
+        topEnd.position.set(0, -0.045, 0); // Ajuste para a posição da parte superior
+        bottomEnd.position.set(0, 0.045, 0); // Ajuste para a posição da parte inferior
+
+        // Cria o corpo (paralelepípedo)
+        const bodyGeometry = new THREE.BoxGeometry(0.02, 0.1, 0.1); // Corpo retangular
+        const body = new THREE.Mesh(bodyGeometry, stickMaterial);
+
+        // Posiciona o corpo
+        body.position.set(0, 0, 0);
+
+        // Adiciona as partes à geometria do palito
+        stickGeometry.merge(topEnd.geometry, topEnd.matrix);
+        stickGeometry.merge(bottomEnd.geometry, bottomEnd.matrix);
+        stickGeometry.merge(body.geometry, body.matrix);
+
+        // Cria o mesh final do palito
+        const popsicleStick = new THREE.Mesh(stickGeometry, stickMaterial);
+
+        // Adiciona o palito de sorvete à cena
+        scene.add(popsicleStick);
 
     // Render
     function render() {

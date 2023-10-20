@@ -6,16 +6,25 @@
   
   <style>
     body { margin: 0; }
+    #button-container {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
   </style>  
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/OrbitControls.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/DragControls.js"></script>
 </head>
 <body>
+  <div id="button-container">
+    <!-- Adicionar os botões dentro desta div -->
+  </div>
 
   <script>
-
     // Renderer
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -29,27 +38,70 @@
     camera.position.set( 0, 10, 20 );
     camera.lookAt(0, 0, 0);
 
-    // Controles
+    // Controles de órbita
     const controls = new THREE.OrbitControls( camera, renderer.domElement );
 
     // Grid
     const grid = new THREE.GridHelper(20, 20);
     scene.add(grid);
 
-    // Cubo 
-    //const geometry = new THREE.BoxGeometry( 4.5, 0.4, 0.1 );
-    const geometry = new THREE.BoxGeometry( 0.4, 0.1, 4.5 );
+    // Geometria do palito de sorvete
+    const geometry = new THREE.BoxGeometry( 0.384, 0.096, 4.32 );
     const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-    const cube = new THREE.Mesh( geometry, material );
-    scene.add(cube);
 
-    // Palito de Sorvete
-    const stickGeometry = new THREE.CylinderGeometry(0.15, 0.15, 5, 32); // Cilindro representa o palito
-    const stickMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Cor marrom
-    const popsicleStick = new THREE.Mesh(stickGeometry, stickMaterial);
-    popsicleStick.position.set(0, 0.05, 0); // Posiciona o palito no centro da cena
-    popsicleStick.rotation.x = Math.PI / 2; // Rotaciona o palito para deitá-lo
-    scene.add(popsicleStick);
+    // Array para armazenar os objetos que podem ser arrastados
+    const objetosArrastaveis = [];
+
+    // DragControls para habilitar a interação de arrastar
+    const dragControls = new THREE.DragControls(objetosArrastaveis, camera, renderer.domElement);
+    dragControls.addEventListener('dragstart', function (event) {
+      controls.enabled = false;
+    });
+    dragControls.addEventListener('dragend', function (event) {
+      controls.enabled = true;
+    });
+
+    // Variável para armazenar o palito selecionado
+    let palitoSelecionado = null;
+
+    // Função para selecionar um palito
+    function selecionarPalito(palito) {
+      if (palitoSelecionado) {
+        palitoSelecionado.material.color.set(0x00ff00); // Define a cor de volta para a original
+      }
+      palitoSelecionado = palito;
+      palito.material.color.set(0xff0000); // Define a cor do palito selecionado
+    }
+
+    // Função para girar o palito selecionado
+    function girarPalitoSelecionado() {
+      if (palitoSelecionado) {
+        palitoSelecionado.rotation.y += 0.01; // Gira o palito selecionado
+      }
+    }
+
+    // Função para adicionar um palito à cena
+    function adicionarPalito() {
+      const novoCubo = new THREE.Mesh(geometry, material.clone());
+      novoCubo.position.set(0, 0.05, 0); // Centraliza o novo palito no meio
+      scene.add(novoCubo);
+      objetosArrastaveis.push(novoCubo); // Adicione o palito à lista de objetos arrastáveis
+    }
+
+    // Botão para adicionar palito
+    const botaoAdicionar = document.createElement("button");
+    botaoAdicionar.textContent = "Adicionar Palito";
+    botaoAdicionar.addEventListener("click", adicionarPalito);
+
+    // Botão para selecionar e girar o palito
+    const botaoSelecionarGirar = document.createElement("button");
+    botaoSelecionarGirar.textContent = "Selecionar e Girar Palito";
+    botaoSelecionarGirar.addEventListener("click", function() {
+      selecionarPalito(objetosArrastaveis[0]); // Seleciona o primeiro palito
+    });
+
+    document.getElementById("button-container").appendChild(botaoAdicionar);
+    document.getElementById("button-container").appendChild(botaoSelecionarGirar);
 
     // Render
     function render() {
@@ -60,13 +112,12 @@
     function animate() {
       requestAnimationFrame(animate);
 
-      controls.update(); // Controles
+      controls.update(); // Controles de órbita
       render(); // Renderiza
+      girarPalitoSelecionado(); // Gira o palito selecionado
     }
 
     animate();
-
   </script>
-
 </body>
 </html>

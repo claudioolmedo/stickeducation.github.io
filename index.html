@@ -37,7 +37,8 @@
     scene.add(grid);
 
     // Cubo 
-    const geometry = new THREE.BoxGeometry( 4.5, 0.4, 0.1 );
+    //const geometry = new THREE.BoxGeometry( 4.5, 0.4, 0.1 );
+    const geometry = new THREE.BoxGeometry( 0.4, 0.1, 4.5 );
     const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
     const cube = new THREE.Mesh( geometry, material );
     scene.add(cube);

@@ -2,11 +2,11 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Sticks Editor</title>
+  <title>Stick Education</title>
   
   <style>
     body { margin: 0; }
-  </style>
+  </style>  
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/OrbitControls.js"></script>
@@ -14,52 +14,43 @@
 </head>
 <body>
 
-  <script>
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);  
-
-    // Cena
-    const scene = new THREE.Scene();
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-    camera.position.set(0, 10, 20);
-    camera.lookAt(0, 0, 0);
-
-    // Controles
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-    // Geometria do palito
-    const stickGeom = new THREE.BoxGeometry(0.114, 0.0127, 0.00254);
-
-    // Material vermelho
-    const stickMat = new THREE.MeshBasicMaterial({color: 0xff0000});
-
-    // Mesh
-    const stick = new THREE.Mesh(stickGeom, stickMat);
-
-    // Adiciona na cena
-    scene.add(stick);
+    <script>
+        const scene = new THREE.Scene();
     
-    // Render
-    function render() {
-      renderer.render(scene, camera);
-    }
-
-    // Animação
-    function animate() {
-      requestAnimationFrame(animate);
-
-      controls.update();
-      render();
-    }
-
-    animate();
-
-  </script>
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    
+        // Geometria do palito
+        const stickGeom = new THREE.BoxGeometry(0.114, 0.0127, 0.00254);
+    
+        // Material vermelho
+        const stickMat = new THREE.MeshBasicMaterial({color: 0xff0000});
+    
+        // Mesh combinando geometria e material
+        const stick = new THREE.Mesh(stickGeom, stickMat); 
+    
+        // Adiciona na cena
+        scene.add(stick);
+    
+        // Renderiza
+        function render() {
+          renderer.render(scene, camera);
+        }
+    
+        function animate() {
+          requestAnimationFrame(animate);
+    
+          controls.update();
+          render();
+        }
+    
+        animate();
+      </script>
 
 </body>
 </html>

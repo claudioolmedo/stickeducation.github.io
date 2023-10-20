@@ -10,12 +10,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/OrbitControls.js"></script>
-
 </head>
 <body>
 
-  <script>
-
+<script>
     // Renderer
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -36,28 +34,32 @@
     const grid = new THREE.GridHelper(20, 20);
     scene.add(grid);
 
-    // Cubo 
-    const geometry = new THREE.BoxGeometry( 2, 2, 2 );
-    const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-    const cube = new THREE.Mesh( geometry, material );
-    scene.add(cube);
+    // Função para criar um palito de sorvete
+    function createPopsicleStick() {
+        const stickGeometry = new THREE.CylinderGeometry(0.15, 0.15, 5, 32); // Cilindro representa o palito
+        const stickMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Cor marrom
+        const popsicleStick = new THREE.Mesh(stickGeometry, stickMaterial);
+        return popsicleStick;
+    }
+
+    // Adicionando um palito de sorvete à cena
+    const popsicleStick = createPopsicleStick();
+    scene.add(popsicleStick);
 
     // Render
     function render() {
-      renderer.render(scene, camera); 
+        renderer.render(scene, camera);
     }
 
     // Animação
     function animate() {
-      requestAnimationFrame(animate);
+        requestAnimationFrame(animate);
 
-      controls.update(); // Controles
-      render(); // Renderiza
+        controls.update(); // Controles
+        render(); // Renderiza
     }
 
     animate();
-
-  </script>
-
+</script>
 </body>
 </html>

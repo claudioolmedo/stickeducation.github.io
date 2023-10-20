@@ -13,6 +13,9 @@
       transform: translateX(-50%);
       text-align: center;
     }
+    .button {
+      margin: 5px;
+    }
   </style>  
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
@@ -21,7 +24,11 @@
 </head>
 <body>
   <div id="button-container">
-    <!-- Adicionar os botões dentro desta div -->
+    <button class="button" id="adicionar">Adicionar Palito</button>
+    <button class="button" id="girar-esquerda">Girar à Esquerda</button>
+    <button class="button" id="girar-direita">Girar à Direita</button>
+    <button class="button" id="girar-frente">Girar para Frente</button>
+    <button class="button" id="girar-atras">Girar para Trás</button>
   </div>
 
   <script>
@@ -61,8 +68,15 @@
       controls.enabled = true;
     });
 
+    // Raycaster para detectar cliques no palito
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
     // Variável para armazenar o palito selecionado
     let palitoSelecionado = null;
+
+    // Variável para controlar a direção da rotação
+    let direcaoGiro = 1;
 
     // Função para selecionar um palito
     function selecionarPalito(palito) {
@@ -74,34 +88,63 @@
     }
 
     // Função para girar o palito selecionado
-    function girarPalitoSelecionado() {
+    function girarPalitoSelecionado(direcao) {
       if (palitoSelecionado) {
-        palitoSelecionado.rotation.y += 0.01; // Gira o palito selecionado
+        palitoSelecionado.rotation.y += THREE.MathUtils.degToRad(5 * direcao); // Gira o palito selecionado em 5 graus na direção atual
       }
     }
+
+    // Função para girar o palito selecionado verticalmente para frente
+    function girarPalitoFrente() {
+      if (palitoSelecionado) {
+        palitoSelecionado.rotation.x += THREE.MathUtils.degToRad(5); // Gira o palito selecionado verticalmente para frente em 5 graus
+      }
+    }
+
+    // Função para girar o palito selecionado verticalmente para trás
+    function girarPalitoAtras() {
+      if (palitoSelecionado) {
+        palitoSelecionado.rotation.x -= THREE.MathUtils.degToRad(5); // Gira o palito selecionado verticalmente para trás em 5 graus
+      }
+    }
+
+    // Adiciona funcionalidade aos novos botões
+    document.getElementById("adicionar").addEventListener("click", adicionarPalito);
+    document.getElementById("girar-esquerda").addEventListener("click", () => girarPalitoSelecionado(-1));
+    document.getElementById("girar-direita").addEventListener("click", () => girarPalitoSelecionado(1));
+    document.getElementById("girar-frente").addEventListener("click", girarPalitoFrente);
+    document.getElementById("girar-atras").addEventListener("click", girarPalitoAtras);
+
+    // Função para lidar com cliques no palito
+    function cliqueNoPalito(event) {
+      // Calcula a posição do clique no canvas
+      const rect = renderer.domElement.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      
+      // Atualiza a posição do mouse
+      mouse.set(x, y);
+
+      // Faz o raycasting para verificar a interseção com o palito
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(objetosArrastaveis);
+
+      if (intersects.length > 0) {
+        const palitoClicado = intersects[0].object;
+        selecionarPalito(palitoClicado);
+      }
+    }
+
+    // Adiciona um ouvinte de evento de clique no canvas
+    renderer.domElement.addEventListener("click", cliqueNoPalito, false);
 
     // Função para adicionar um palito à cena
     function adicionarPalito() {
       const novoCubo = new THREE.Mesh(geometry, material.clone());
       novoCubo.position.set(0, 0.05, 0); // Centraliza o novo palito no meio
+      objetosArrastaveis.push(novoCubo); // Adiciona à lista de objetos arrastáveis
       scene.add(novoCubo);
-      objetosArrastaveis.push(novoCubo); // Adicione o palito à lista de objetos arrastáveis
     }
-
-    // Botão para adicionar palito
-    const botaoAdicionar = document.createElement("button");
-    botaoAdicionar.textContent = "Adicionar Palito";
-    botaoAdicionar.addEventListener("click", adicionarPalito);
-
-    // Botão para selecionar e girar o palito
-    const botaoSelecionarGirar = document.createElement("button");
-    botaoSelecionarGirar.textContent = "Selecionar e Girar Palito";
-    botaoSelecionarGirar.addEventListener("click", function() {
-      selecionarPalito(objetosArrastaveis[0]); // Seleciona o primeiro palito
-    });
-
-    document.getElementById("button-container").appendChild(botaoAdicionar);
-    document.getElementById("button-container").appendChild(botaoSelecionarGirar);
 
     // Render
     function render() {
@@ -114,7 +157,6 @@
 
       controls.update(); // Controles de órbita
       render(); // Renderiza
-      girarPalitoSelecionado(); // Gira o palito selecionado
     }
 
     animate();

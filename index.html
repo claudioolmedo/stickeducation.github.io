@@ -1,58 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Stick Education Editor</title>
+  <title>Ice Cream Stick</title>
   
   <style>
     body { margin: 0; }
-  </style>  
-
+  </style>
+  
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/OrbitControls.js"></script>
 
 </head>
+
 <body>
 
   <script>
 
     // Renderer
     const renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-    // Cena
+    // Scene
     const scene = new THREE.Scene();
 
     // Camera
-    const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
-    camera.position.set( 0, 10, 20 );
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+    camera.position.set(0, 0, 10);
     camera.lookAt(0, 0, 0);
 
-    // Controles
-    const controls = new THREE.OrbitControls( camera, renderer.domElement );
+    // Controls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-    // Grid
-    const grid = new THREE.GridHelper(20, 20);
-    scene.add(grid);
+    // Stick
+    const stickGeom = new THREE.CylinderGeometry(0.02, 0.02, 4.5, 32);
+    const stickMat = new THREE.MeshPhongMaterial({color: 'red'}); 
+    const stick = new THREE.Mesh(stickGeom, stickMat);
+    stick.position.set(0, 2, 0);
+    scene.add(stick);
 
-    // Cubo 
-    const geometry = new THREE.BoxGeometry( 2, 2, 2 );
-    const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-    const cube = new THREE.Mesh( geometry, material );
-    scene.add(cube);
+    // Light
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(2, 2, 5);
+    scene.add(light);
 
     // Render
     function render() {
-      renderer.render(scene, camera); 
-    }
+      renderer.render(scene, camera);
+    }  
 
-    // Animação
+    // Animation
     function animate() {
       requestAnimationFrame(animate);
-
-      controls.update(); // Controles
-      render(); // Renderiza
+      
+      controls.update();
+      render();
     }
 
     animate();

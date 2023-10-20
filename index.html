@@ -42,11 +42,11 @@
     const cube = new THREE.Mesh( geometry, material );
     scene.add(cube);
 
-    // Palito de Sorvete
-    const stickGeometry = new THREE.CylinderGeometry(0.15, 0.15, 5, 32); // Cilindro representa o palito
+    // Palito de Sorvete (Achatado)
+    const stickGeometry = new THREE.CylinderGeometry(0.01016, 0.01016, 0.1143, 8); // Cilindro representa o palito achatado
     const stickMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Cor marrom
     const popsicleStick = new THREE.Mesh(stickGeometry, stickMaterial);
-    popsicleStick.position.set(0, 0, 0); // Posiciona o palito no centro da cena
+    popsicleStick.position.set(0, -0.05715, 0); // Posiciona o palito no centro da cena (metade da altura)
     popsicleStick.rotation.x = Math.PI / 2; // Rotaciona o palito para deitá-lo
     scene.add(popsicleStick);
 

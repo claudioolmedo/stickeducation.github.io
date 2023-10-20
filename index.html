@@ -24,7 +24,7 @@
 
     // Camera
     const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
-    camera.position.set( 0, 10, 20 );
+    camera.position.set( 0, 2.5, 0 ); // Ajuste a posição da câmera para enquadrar o palito de sorvete
     camera.lookAt(0, 0, 0);
 
     // Controles
@@ -39,6 +39,7 @@
         const stickGeometry = new THREE.CylinderGeometry(0.15, 0.15, 5, 32); // Cilindro representa o palito
         const stickMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Cor marrom
         const popsicleStick = new THREE.Mesh(stickGeometry, stickMaterial);
+        popsicleStick.rotation.x = Math.PI / 2; // Rotaciona o palito para deitá-lo
         return popsicleStick;
     }
 

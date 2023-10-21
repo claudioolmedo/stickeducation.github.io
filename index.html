@@ -133,6 +133,9 @@
       if (intersects.length > 0) {
         const palitoClicado = intersects[0].object;
         selecionarPalito(palitoClicado);
+        // Mude a cor do palito para uma cor aleatória
+        const newColor = new THREE.Color(Math.random() * 0xffffff);
+        palitoClicado.material.color.copy(newColor);
       }
     }
 

@@ -1,43 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Stick Education Editor</title>
-        <link rel="icon" type="image/png" href="image/favicon-32x32.png" sizes="32x32">
-        <meta name="description" content="Stick Education Editor - Create, Share, and Explore Projects with Popsicle Sticks">
-        <!-- These are comments within the HEAD section -->
-        <style>
-          body { margin: 0; }
-          #button-container {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-          }
-          .button {
-            margin: 5px;
-          }
-        </style>  
-      
-        <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/OrbitControls.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/DragControls.js"></script>
-      </head>
-      
-      <body>
-            <!-- Button + -->
-            <!-- This is a comment for the + button SVG -->
-<div id="menu" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 999; pointer-events: none;">
-  <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-    <rect x="20" y="0" width="40" height="80" fill="white" />
-    <rect x="0" y="20" width="80" height="40" fill="white" />
-    <text x="40" y="46" text-anchor="middle" fill="black" font-size="18" font-family="Arial, sans-serif">Add Stick</text>
-    <!-- This is a comment for the "Add Stick" text in the SVG -->
-  </svg>
-</div>
-        
-	<script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Stick Education Editor</title>
+  <link rel="icon" type="image/png" href="image/favicon-32x32.png" sizes="32x32">
+  <meta name="description" content="Stick Education Editor - Crie, Compartilhe e Explore Projetos em Palitos de Sorvete">
+  <style>
+    body { margin: 0; }
+    #button-container {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    .button {
+      margin: 5px;
+    }
+  </style>  
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.124/examples/js/controls/DragControls.js"></script>
+</head>
+
+<body>
+
+  <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
 	<script>
         // Get the query string from the URL
         const queryString = window.location.search;
@@ -58,46 +47,209 @@
 
 		firebase.initializeApp(firebaseConfig);
     </script>
-     <script>
-        // Renderer
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        document.body.appendChild( renderer.domElement );
-    
-        // Scene
-        const scene = new THREE.Scene();
-    
-        // Camera
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-        camera.position.set(0, 10, 20);
-        camera.lookAt(0, 0, 0);
-    
-        // Controls
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    
-        // Grid
-        const grid = new THREE.GridHelper(20, 20);
-        scene.add(grid);
-     
-        // Render
-        function render() {
-        renderer.render(scene, camera); 
-        }
 
-        // Animation
-        function animate() {
-        requestAnimationFrame(animate);
+	<div id="button-container">
+		<button class="button" id="adicionar">Adicionar Palito</button>
+		<button class="button" id="girar-esquerda">Girar à Esquerda</button>
+		<button class="button" id="girar-direita">Girar à Direita</button>
+		<button class="button" id="girar-frente">Girar para Frente</button>
+		<button class="button" id="girar-atras">Girar para Trás</button>
+	  </div>
 
-        controls.update(); // Controls for orbit
-        render(); // Rendered
-        }
-        animate();
-    </script>   
+  <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
+  <script>
+    // Configuration Firebase
+	var firebaseConfig = {
+              apiKey: "AIzaSyCt0IhN37bwI1Gp4xPBmhq8FY9bgrfrydM",
+              authDomain: "stickeducation-27116.firebaseapp.com",
+              databaseURL: "https://stickeducation-27116-default-rtdb.firebaseio.com",
+              projectId: "stickeducation-27116",
+              storageBucket: "stickeducation-27116.appspot.com",
+              messagingSenderId: "566576954504",
+              appId: "1:566576954504:web:fa4f51202373ba6c30733d"
+      };
+	  firebase.initializeApp(firebaseConfig);
+    const dbRef = firebase.database().ref('palitos'); 
+  </script>
+
+  <script>
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+
+    // Scene
+    const scene = new THREE.Scene();
+
+    // Camera
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+    camera.position.set(0, 10, 20);
+    camera.lookAt(0, 0, 0);
+
+    // Controls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    // Grid
+    const grid = new THREE.GridHelper(20, 20);
+    scene.add(grid);
+
+    // Stick (Sample)
+    const geometry = new THREE.BoxGeometry(0.384, 0.096, 4.32);
+    const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+    
+    // Draggable sticks.
+    const objetosArrastaveis = [];
+
+    // Drag controls
+    const dragControls = new THREE.DragControls(objetosArrastaveis, camera, renderer.domElement);
+    dragControls.addEventListener('dragstart', function(event) {
+      controls.enabled = false; 
+    });
+    dragControls.addEventListener('dragend', function(event) {
+      controls.enabled = true;
+    });
+
+    // Raycaster
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    // Retrieve sticks from Firebase.
+    dbRef.once('value', function(snap) {
+      snap.forEach(function(palito) {
+        
+        const cubo = new THREE.Mesh(geometry, material);
+        cubo.position.set(palito.val().posicao.x, palito.val().posicao.y, palito.val().posicao.z);
+        cubo.rotation.set(palito.val().rotacao.x, palito.val().rotacao.y, palito.val().rotacao.z);
+
+        objetosArrastaveis.push(cubo);
+        scene.add(cubo);
+
+      });
+    });
+
+   // Add stick function
+    function adicionarPalito() {
+
+      const cubo = new THREE.Mesh(geometry, material.clone());
+      cubo.position.set(0, 0.05, 0);
+      objetosArrastaveis.push(cubo);
+      scene.add(cubo);
+
+      dbRef.push({
+        posicao: {
+          x: cubo.position.x,
+          y: cubo.position.y,
+          z: cubo.position.z
+        },
+        rotacao: {
+          x: cubo.rotation.x,
+          y: cubo.rotation.y,
+          z: cubo.rotation.z
+        }  
+      });
+
+    }
+
+
+    // Variable to store the selected stick
+    let palitoSelecionado = null;
+
+    // Variável para controlar a direção da rotação
+    let direcaoGiro = 1;
+
+    // Variable to control the rotation direction
+    function selecionarPalito(palito) {
+      if (palitoSelecionado) {
+        palitoSelecionado.material.color.set(0x00ff00); // Set the color back to the original
+      }
+      palitoSelecionado = palito;
+      palito.material.color.set(0xff0000); // Set the color of the selected stick
+    }
+
+    // Function to rotate the selected stick
+    function girarPalitoSelecionado(direcao) {
+      if (palitoSelecionado) {
+        palitoSelecionado.rotation.y += THREE.MathUtils.degToRad(5 * direcao); // Gira o palito selecionado em 5 graus na direção atual
+      }
+    }
+
+    // Function to rotate the selected stick vertically forward
+    function girarPalitoFrente() {
+      if (palitoSelecionado) {
+        palitoSelecionado.rotation.x += THREE.MathUtils.degToRad(5); // Rotate the selected stick vertically forward by 5 degrees
+      }
+    }
+
+    // Function to rotate the selected stick vertically backward
+    function girarPalitoAtras() {
+      if (palitoSelecionado) {
+        palitoSelecionado.rotation.x -= THREE.MathUtils.degToRad(5); // Rotate the selected stick vertically backward by 5 degrees
+      }
+    }
+
+    // Add functionality to the new buttons
+    document.getElementById("adicionar").addEventListener("click", adicionarPalito);
+    document.getElementById("girar-esquerda").addEventListener("click", () => girarPalitoSelecionado(-1));
+    document.getElementById("girar-direita").addEventListener("click", () => girarPalitoSelecionado(1));
+    document.getElementById("girar-frente").addEventListener("click", girarPalitoFrente);
+    document.getElementById("girar-atras").addEventListener("click", girarPalitoAtras);
+
+    // Function to handle clicks on the stick
+    function cliqueNoPalito(event) {
+      // Calculate the click position on the canvas
+      const rect = renderer.domElement.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      
+      // Atualiza a posição do mouse
+      mouse.set(x, y);
+
+      // Perform raycasting to check for intersection with the stick
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(objetosArrastaveis);
+
+      if (intersects.length > 0) {
+        const palitoClicado = intersects[0].object;
+        selecionarPalito(palitoClicado);
+        // Change the color of the stick to a random color
+        const newColor = new THREE.Color(Math.random() * 0xffffff);
+        palitoClicado.material.color.copy(newColor);
+      }
+    }
+
+    // Add a click event listener to the canvas
+    renderer.domElement.addEventListener("click", cliqueNoPalito, false);
+
+    // Function to add a stick to the scene
+    function adicionarPalito() {
+      const novoCubo = new THREE.Mesh(geometry, material.clone());
+      novoCubo.position.set(0, 0.05, 0); // Center the new stick in the middle
+      objetosArrastaveis.push(novoCubo); // Add to the list of draggable objects
+      scene.add(novoCubo);
+    }
+
+    // Render
+    function render() {
+      renderer.render(scene, camera); 
+    }
+
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+
+      controls.update(); // Orbit controls
+      render(); // Render
+    }
+
+    // Start animation
+    animate();
+
+  </script>
     <script>
 		// Reference to the location where you want to save the data
 		var dataRef = firebase.database().ref(code);
-		var someData = "a"; // Anonymous
-		//dataRef.set(someData);// Save the data to Firebase
+		var someData = "z"; // Anonymous
 		dataRef.set(someData);// Save the data to Firebase
         console.log("Data sent successfully!");
 	</script>

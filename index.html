@@ -26,9 +26,10 @@
 
     <div class="jumbotron">
       <div class="container">
-        <h1 class="display-4">Welcome to stick.education!</h1>
-        <p class="lead">Try our platform for building educational projects with Posicle sticks 3D to inspire children around the world to make projects in real wood sticks. </p>
-        <a class="btn btn-primary btn-lg" href="3d/" role="button">Start Building</a>
+        <h1 class="display-4">
+         <br>Welcome to stick.education!</h1>
+        <p class="lead">Try our platform for building educational projects with Popsicle stick 3D models to inspire children around the world to make projects with real wooden sticks.</p>
+        <a class="btn btn-primary btn-lg" href="#" role="button">Start Building</a>
       </div>
     </div>
     </div>
@@ -38,7 +39,14 @@
         <p class="text-muted text-center">&copy; LCE.toys 2023</p>
       </div>
     </footer>
+    <script>
+      const characters = '1234567890';
+      const code = Array.from({ length: 20 }, () => characters[Math.floor(Math.random() * characters.length)]).join('');
+      const NewProjectCode = new Date().toISOString().slice(0, 10).replace(/-/g, '') + code;
 
+      const startBuildingLink = document.querySelector('.btn-primary');
+      startBuildingLink.href = `3d?p=${NewProjectCode}`;
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>

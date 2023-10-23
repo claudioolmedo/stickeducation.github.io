@@ -25,6 +25,13 @@
       </head>
       
       <body>
+        <div id="menu" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+            <!-- Aqui você pode adicionar elementos SVG como retângulos, círculos, texto, etc. -->
+            <rect x="10" y="10" width="80" height="80" fill="red" />
+          </svg>
+        </div>
+        
 	<script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
 	<script>
         // Obtém a query string da URL
@@ -82,7 +89,15 @@
         render(); // Renderised
         }
 
-        // Start animation
+          // Defina a posição do objeto (menu)
+          const geom = new THREE.BoxGeometry(0.5, 0.1, 5);
+          const mat = new THREE.MeshBasicMaterial({ color: "red" });
+          const palito = new THREE.Mesh(geom, mat);
+          palito.position.set(0, 0, -100); // Ajuste a posição Z para ficar na frente de outros objetos
+
+          // Adicione o objeto à cena
+          scene.add(palito);
+
         animate();
 
   </script>   

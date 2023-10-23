@@ -25,10 +25,11 @@
       </head>
       
       <body>
-        <div id="menu" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999;">
+        <div id="menu" style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 999; pointer-events: none;">
           <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
-            <!-- Aqui você pode adicionar elementos SVG como retângulos, círculos, texto, etc. -->
-            <rect x="10" y="10" width="80" height="80" fill="red" />
+                       <!-- Aqui você pode adicionar elementos SVG como retângulos, círculos, texto, etc. -->
+            <rect x="35" y="20" width="30" height="80" fill="white" />
+            <rect x="12" y="40" width="80" height="30" fill="white" />
           </svg>
         </div>
         
@@ -89,14 +90,7 @@
         render(); // Renderised
         }
 
-          // Defina a posição do objeto (menu)
-          const geom = new THREE.BoxGeometry(0.5, 0.1, 5);
-          const mat = new THREE.MeshBasicMaterial({ color: "red" });
-          const palito = new THREE.Mesh(geom, mat);
-          palito.position.set(0, 0, -100); // Ajuste a posição Z para ficar na frente de outros objetos
 
-          // Adicione o objeto à cena
-          scene.add(palito);
 
         animate();
 

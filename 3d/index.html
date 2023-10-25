@@ -34,19 +34,6 @@
         const code = urlParams.get("p"); // Get the value of the "p" parameter
         console.log(code); // This will display "code" in the console
     </script>
-	<script>
-		var firebaseConfig = {
-            apiKey: "Your-API-Key",
-            authDomain: "stickeducation-27116.firebaseapp.com",
-            databaseURL: "https://stickeducation-27116-default-rtdb.firebaseio.com",
-            projectId: "stickeducation-27116",
-            storageBucket: "stickeducation-27116.appspot.com",
-            messagingSenderId: "Your-Messaging-Sender-ID",
-            appId: "Your-App-ID"
-		};
-
-		firebase.initializeApp(firebaseConfig);
-    </script>
 
 	<div id="button-container">
 		<button class="button" id="adicionar">Adicionar Palito</button>
@@ -69,7 +56,7 @@
               appId: "1:566576954504:web:fa4f51202373ba6c30733d"
       };
 	  firebase.initializeApp(firebaseConfig);
-    const dbRef = firebase.database().ref('palitos'); 
+    const dbRef = firebase.database().ref(code); 
   </script>
 
   <script>
@@ -101,55 +88,81 @@
     // Draggable sticks.
     const objetosArrastaveis = [];
 
-    // Drag controls
-    const dragControls = new THREE.DragControls(objetosArrastaveis, camera, renderer.domElement);
-    dragControls.addEventListener('dragstart', function(event) {
-      controls.enabled = false; 
+// Drag controls
+const dragControls = new THREE.DragControls(objetosArrastaveis, camera, renderer.domElement);
+dragControls.addEventListener('dragstart', function(event) {
+  controls.enabled = false;
+});
+
+// Movendo um palito
+dragControls.addEventListener('dragend', function(event) {
+  controls.enabled = true;
+  const objetoArrastado = event.object;
+  const novaPosicao = objetoArrastado.position;
+  const objetoId = objetoArrastado.userData.id; // Obtenha o ID do userData
+  if (objetoId) {
+    const firebaseRef = firebase.database().ref(code + '/' + objetoId);
+    firebaseRef.update({
+      posicao: {
+        x: novaPosicao.x,
+        y: novaPosicao.y,
+        z: novaPosicao.z
+      }
     });
-    dragControls.addEventListener('dragend', function(event) {
-      controls.enabled = true;
-    });
+  }
+});
+
 
     // Raycaster
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    // Retrieve sticks from Firebase.
-    dbRef.once('value', function(snap) {
-      snap.forEach(function(palito) {
-        
-        const cubo = new THREE.Mesh(geometry, material);
-        cubo.position.set(palito.val().posicao.x, palito.val().posicao.y, palito.val().posicao.z);
-        cubo.rotation.set(palito.val().rotacao.x, palito.val().rotacao.y, palito.val().rotacao.z);
+    
+// Atualize os palitos da cena sempre que houver uma alteração no banco de dados
+dbRef.on('value', function(snapshot) {
+  // Limpe a cena antes de adicionar novamente os palitos
+  objetosArrastaveis.forEach(objeto => {
+    scene.remove(objeto);
+  });
+  objetosArrastaveis.length = 0;
 
-        objetosArrastaveis.push(cubo);
-        scene.add(cubo);
+  snapshot.forEach(function(palito) {
+    const cubo = new THREE.Mesh(geometry, material);
+    cubo.position.set(palito.val().posicao.x, palito.val().posicao.y, palito.val().posicao.z);
+    cubo.rotation.set(palito.val().rotacao.x, palito.val().rotacao.y, palito.val().rotacao.z);
+    cubo.userData.id = palito.key; // Defina o ID no userData
+    objetosArrastaveis.push(cubo);
+    scene.add(cubo);
+    console.log("Add Stick from FB!");
+  });
+});
 
-      });
-    });
+// Adicionando um novo palito
+function adicionarPalito() {
+  const cubo = new THREE.Mesh(geometry, material.clone());
+  cubo.position.set(0, 0.05, 0);
+  const novoPalitoRef = dbRef.push();
+  const novoPalitoId = novoPalitoRef.key;
+  cubo.userData.id = novoPalitoId; // Defina o ID no userData
+  objetosArrastaveis.push(cubo);
+  scene.add(cubo);
 
-   // Add stick function
-    function adicionarPalito() {
+  novoPalitoRef.set({
+    posicao: {
+      x: cubo.position.x,
+      y: cubo.position.y,
+      z: cubo.position.z
+    },
+    rotacao: {
+      x: cubo.rotation.x,
+      y: cubo.rotation.y,
+      z: cubo.rotation.z
+    },
+    id: novoPalitoId
+  });
+  console.log("Add Stick!");
+}
 
-      const cubo = new THREE.Mesh(geometry, material.clone());
-      cubo.position.set(0, 0.05, 0);
-      objetosArrastaveis.push(cubo);
-      scene.add(cubo);
-
-      dbRef.push({
-        posicao: {
-          x: cubo.position.x,
-          y: cubo.position.y,
-          z: cubo.position.z
-        },
-        rotacao: {
-          x: cubo.rotation.x,
-          y: cubo.rotation.y,
-          z: cubo.rotation.z
-        }  
-      });
-
-    }
 
 
     // Variable to store the selected stick
@@ -220,15 +233,16 @@
 
     // Add a click event listener to the canvas
     renderer.domElement.addEventListener("click", cliqueNoPalito, false);
-
+/* Testing other Add Palito
     // Function to add a stick to the scene
     function adicionarPalito() {
       const novoCubo = new THREE.Mesh(geometry, material.clone());
       novoCubo.position.set(0, 0.05, 0); // Center the new stick in the middle
       objetosArrastaveis.push(novoCubo); // Add to the list of draggable objects
       scene.add(novoCubo);
+      console.log("Add Stick!");
     }
-
+*/
     // Render
     function render() {
       renderer.render(scene, camera); 
@@ -248,10 +262,10 @@
   </script>
     <script>
 		// Reference to the location where you want to save the data
-		var dataRef = firebase.database().ref(code);
+		/*var dataRef = firebase.database().ref(code);
 		var someData = "z"; // Anonymous
 		dataRef.set(someData);// Save the data to Firebase
-        console.log("Data sent successfully!");
+        console.log("Data sent successfully!");*/
 	</script>
 </body>
 </html>

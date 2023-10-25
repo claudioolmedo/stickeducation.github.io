@@ -84,7 +84,22 @@
     // Stick (Sample)
     const geometry = new THREE.BoxGeometry(0.384, 0.096, 4.32);
     const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+
+    //setas para mover
+      const geomX = new THREE.CylinderGeometry(0.1, 0.1, 1, 10);
+      const geomY = new THREE.CylinderGeometry(0.1, 0.1, 1, 10); 
+      const geomZ = new THREE.CylinderGeometry(0.1, 0.1, 1, 10);
     
+      // meshes das setas e posicionar corretamente  
+      const setaX = new THREE.Mesh(geomX);
+      setaX.rotation.z = Math.PI/2;
+
+      const setaY = new THREE.Mesh(geomY);  
+      setaY.rotation.x = Math.PI/2;
+
+      const setaZ = new THREE.Mesh(geomZ);  
+      setaZ.rotation.z = Math.PI/2;
+
     // Draggable sticks.
     const objetosArrastaveis = [];
 
@@ -172,11 +187,18 @@ function adicionarPalito() {
 
     // Variable to control the rotation direction
     function selecionarPalito(palito) {
+      deselecionarPalito(); 
+
       if (palitoSelecionado) {
         palitoSelecionado.material.color.set(0x00ff00); // Set the color back to the original
+        
       }
       palitoSelecionado = palito;
       palito.material.color.set(0xff0000); // Set the color of the selected stick
+      palito.add(setaX);
+      palito.add(setaY);
+      palito.add(setaZ);
+      console.log("Selected");
     }
 
     // Function to rotate the selected stick
@@ -209,9 +231,14 @@ function adicionarPalito() {
 
 // Função para deselecionar o palito atualmente selecionado
 function deselecionarPalito() {
+
   if (palitoSelecionado) {
     palitoSelecionado.material.color.set(0x00ff00); // Redefine a cor para a original
     palitoSelecionado = null; // Limpa a referência para o palito selecionado
+    /*
+        palitoSelecionado.remove(setaX);
+  palitoSelecionado.remove(setaY);
+    */
   }
 }
 
@@ -235,7 +262,7 @@ function cliqueNoPalito(event) {
     const palitoClicado = intersects[0].object;
     selecionarPalito(palitoClicado);
     // Change the color of the stick to a random color
-    const newColor = new THREE.Color(Math.random() * 0xffffff);
+    const newColor = new THREE.Color(0xffffff);
     palitoClicado.material.color.copy(newColor);
   }
 }

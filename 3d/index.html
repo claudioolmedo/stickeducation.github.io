@@ -117,7 +117,6 @@ dragControls.addEventListener('dragend', function(event) {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    
 // Atualize os palitos da cena sempre que houver uma alteração no banco de dados
 dbRef.on('value', function(snapshot) {
   // Limpe a cena antes de adicionar novamente os palitos
@@ -127,7 +126,7 @@ dbRef.on('value', function(snapshot) {
   objetosArrastaveis.length = 0;
 
   snapshot.forEach(function(palito) {
-    const cubo = new THREE.Mesh(geometry, material);
+    const cubo = new THREE.Mesh(geometry, material.clone());
     cubo.position.set(palito.val().posicao.x, palito.val().posicao.y, palito.val().posicao.z);
     cubo.rotation.set(palito.val().rotacao.x, palito.val().rotacao.y, palito.val().rotacao.z);
     cubo.userData.id = palito.key; // Defina o ID no userData
@@ -208,41 +207,43 @@ function adicionarPalito() {
     document.getElementById("girar-frente").addEventListener("click", girarPalitoFrente);
     document.getElementById("girar-atras").addEventListener("click", girarPalitoAtras);
 
-    // Function to handle clicks on the stick
-    function cliqueNoPalito(event) {
-      // Calculate the click position on the canvas
-      const rect = renderer.domElement.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-      
-      // Atualiza a posição do mouse
-      mouse.set(x, y);
+// Função para deselecionar o palito atualmente selecionado
+function deselecionarPalito() {
+  if (palitoSelecionado) {
+    palitoSelecionado.material.color.set(0x00ff00); // Redefine a cor para a original
+    palitoSelecionado = null; // Limpa a referência para o palito selecionado
+  }
+}
 
-      // Perform raycasting to check for intersection with the stick
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(objetosArrastaveis);
 
-      if (intersects.length > 0) {
-        const palitoClicado = intersects[0].object;
-        selecionarPalito(palitoClicado);
-        // Change the color of the stick to a random color
-        const newColor = new THREE.Color(Math.random() * 0xffffff);
-        palitoClicado.material.color.copy(newColor);
-      }
-    }
+
+// Função para lidar com cliques em palitos
+function cliqueNoPalito(event) {
+  // Calculate the click position on the canvas
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  // Atualiza a posição do mouse
+  mouse.set(x, y);
+
+  // Perform raycasting to check for intersection with the stick
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(objetosArrastaveis);
+
+  if (intersects.length > 0) {
+    const palitoClicado = intersects[0].object;
+    selecionarPalito(palitoClicado);
+    // Change the color of the stick to a random color
+    const newColor = new THREE.Color(Math.random() * 0xffffff);
+    palitoClicado.material.color.copy(newColor);
+  }
+}
+
 
     // Add a click event listener to the canvas
     renderer.domElement.addEventListener("click", cliqueNoPalito, false);
-/* Testing other Add Palito
-    // Function to add a stick to the scene
-    function adicionarPalito() {
-      const novoCubo = new THREE.Mesh(geometry, material.clone());
-      novoCubo.position.set(0, 0.05, 0); // Center the new stick in the middle
-      objetosArrastaveis.push(novoCubo); // Add to the list of draggable objects
-      scene.add(novoCubo);
-      console.log("Add Stick!");
-    }
-*/
+
     // Render
     function render() {
       renderer.render(scene, camera); 

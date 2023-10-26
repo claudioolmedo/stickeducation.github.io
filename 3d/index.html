@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Stick Education Editor</title>
-  <link rel="icon" type="image/png" href="image/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="../image/favicon-32x32.png" sizes="32x32">
   <meta name="description" content="Stick Education Editor - Crie, Compartilhe e Explore Projetos em Palitos de Sorvete">
   <style>
     body { margin: 0; }
@@ -90,6 +90,8 @@
       const geomY = new THREE.CylinderGeometry(0.1, 0.1, 1, 10); 
       const geomZ = new THREE.CylinderGeometry(0.1, 0.1, 1, 10);
     
+      
+
       // meshes das setas e posicionar corretamente  
       const setaX = new THREE.Mesh(geomX);
       setaX.rotation.z = Math.PI/2;
@@ -111,20 +113,61 @@ dragControls.addEventListener('dragstart', function(event) {
 
 // Movendo um palito
 dragControls.addEventListener('dragend', function(event) {
-  controls.enabled = true;
-  const objetoArrastado = event.object;
-  const novaPosicao = objetoArrastado.position;
-  const objetoId = objetoArrastado.userData.id; // Obtenha o ID do userData
-  if (objetoId) {
-    const firebaseRef = firebase.database().ref(code + '/' + objetoId);
-    firebaseRef.update({
-      posicao: {
-        x: novaPosicao.x,
-        y: novaPosicao.y,
-        z: novaPosicao.z
-      }
-    });
-  }
+//listener de clique para cada botão:
+document.getElementById("girar-esquerda").addEventListener("click", salvarRotacao);
+document.getElementById("girar-direita").addEventListener("click", salvarRotacao);
+document.getElementById("girar-frente").addEventListener("click", salvarRotacao);
+document.getElementById("girar-atras").addEventListener("click", salvarRotacao);
+//função salvarRotacao que atualiza o banco de dados:
+function salvarRotacao() {
+
+if (palitoSelecionado) {
+
+  const rotacao = palitoSelecionado.rotation;
+  
+  const id = palitoSelecionado.userData.id;
+  
+  const ref = firebase.database().ref(code + '/' + id);
+
+  ref.update({
+    rotacao: {
+      x: rotacao.x,
+      y: rotacao.y, 
+      z: rotacao.z
+    }
+  });
+
+}
+
+}
+// etc...
+controls.enabled = true;
+
+const objetoArrastado = event.object;
+const novaPosicao = objetoArrastado.position;
+const novaRotacao = objetoArrastado.rotation;
+
+const objetoId = objetoArrastado.userData.id;
+
+if (objetoId) {
+
+  const firebaseRef = firebase.database().ref(code + '/' + objetoId);
+  
+  firebaseRef.update({
+    posicao: {
+      x: novaPosicao.x, 
+      y: novaPosicao.y,
+      z: novaPosicao.z
+    },
+    rotacao: {
+      x: novaRotacao.x,
+      y: novaRotacao.y,
+      z: novaRotacao.z  
+    }
+  });
+
+}
+
 });
 
 
@@ -176,8 +219,28 @@ function adicionarPalito() {
   });
   console.log("Add Stick!");
 }
+//função salvarRotacao que atualiza o banco de dados:
+      function salvarRotacao() {
 
+      if (palitoSelecionado) {
 
+        const rotacao = palitoSelecionado.rotation;
+        
+        const id = palitoSelecionado.userData.id;
+        
+        const ref = firebase.database().ref(code + '/' + id);
+
+        ref.update({
+          rotacao: {
+            x: rotacao.x,
+            y: rotacao.y,
+            z: rotacao.z
+          }
+        });
+
+      }
+
+      }
 
     // Variable to store the selected stick
     let palitoSelecionado = null;
@@ -191,7 +254,7 @@ function adicionarPalito() {
 
       if (palitoSelecionado) {
         palitoSelecionado.material.color.set(0x00ff00); // Set the color back to the original
-        
+
       }
       palitoSelecionado = palito;
       palito.material.color.set(0xff0000); // Set the color of the selected stick

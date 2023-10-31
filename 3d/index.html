@@ -313,6 +313,12 @@ dbRef.on('value', function(snapshot) {
 
 // Adicionando um novo palito
 function adicionarPalito() {
+  const currentUser = firebase.auth().currentUser;
+  if (!currentUser) {
+  alert("You need to be logged in to add a stick!");
+  GoogleLogin();
+  return;
+}
   const cubo = new THREE.Mesh(geometry, material.clone());
   cubo.position.set(0, 0.05, 0);
   const novoPalitoRef = dbRef.push();
@@ -332,7 +338,8 @@ function adicionarPalito() {
       y: cubo.rotation.y,
       z: cubo.rotation.z
     },
-    id: novoPalitoId
+    idPalito: novoPalitoId,
+    idUsuario: currentUser.uid
   });
   console.log("Add Stick!");
 }

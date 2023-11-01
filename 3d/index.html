@@ -78,6 +78,7 @@
       </ul>
     </div>
   </nav>
+<!--Button for Login if add button and no login active-->
 
   <select id="language-selector" class="form-control" style="width: 200px;">
     <option value="en">English</option>
@@ -98,7 +99,7 @@
 		<button class="button" id="girar-direita">Turn Right</button>
 		<button class="button" id="girar-frente">Turn Forward</button>
 		<button class="button" id="girar-atras">Turn Back</button>
-	</div>
+	  </div>
 
   <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
   <script>
@@ -310,12 +311,15 @@ dbRef.on('value', function(snapshot) {
     console.log("Add Stick from FB!");
   });
 });
-
+// referência para a tabela users:
+const usersRef = firebase.database().ref('users');
 // Adicionando um novo palito
 function adicionarPalito() {
   const currentUser = firebase.auth().currentUser;
   if (!currentUser) {
-  alert("You need to be logged in to add a stick!");
+    alert("You need to be logged in to add a stick!"); //Alert for Login if not logged in
+    //window.location.href = "index.html";
+
   GoogleLogin();
   return;
 }
@@ -327,6 +331,21 @@ function adicionarPalito() {
   objetosArrastaveis.push(cubo);
   scene.add(cubo);
 
+//entrada para esse usuário na tabela users, com o ID do projeto
+const userId = currentUser.uid;
+
+
+usersRef.child(userId).transaction(projetos => {
+  if (projetos) {
+    projetos.push(code);
+  } else {
+    projetos = [code]; 
+  }
+  
+  return projetos;
+})
+
+  // Add new Stick
   novoPalitoRef.set({
     posicao: {
       x: cubo.position.x,
@@ -338,8 +357,8 @@ function adicionarPalito() {
       y: cubo.rotation.y,
       z: cubo.rotation.z
     },
-    idPalito: novoPalitoId,
-    idUsuario: currentUser.uid
+    idStick: novoPalitoId,
+    idUser: currentUser.uid
   });
   console.log("Add Stick!");
 }

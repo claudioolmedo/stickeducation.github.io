@@ -40,7 +40,9 @@
 </head>
 
 <body>
-
+  <div style="position: fixed; left: -50px; bottom: 10px; background-color: #f44336; color: white; padding: 5px 60px; font-weight: bold; z-index: 9999; transform: rotate(45deg);">
+    Beta <br>
+  </div>
   <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
 	<script>
         // Get the query string from the URL
@@ -49,9 +51,6 @@
         const code = urlParams.get("p"); // Get the value of the "p" parameter
         console.log(code); // This will display "code" in the console
     </script>
-<div style="position: fixed; left: -27px; bottom: 10px; background-color: #f44336; color: white; padding: 5px 30px; font-weight: bold; z-index: 9999; transform: rotate(45deg);">
-  Beta <br>
-</div>
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
   <a class="navbar-brand" href="/">stick.education</a>
   <div id="LoginScreen">

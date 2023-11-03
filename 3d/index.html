@@ -190,7 +190,12 @@ function checkAuthState() {
 
     // Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(000080);
+    // Carregue a textura do arquivo de imagem
+    const loader = new THREE.TextureLoader();
+    const bgTexture = loader.load('background.jpg');
+    bgTexture.blur = 0.5;
+// Defina a textura como a cor de fundo da cena
+scene.background = bgTexture;
     // Camera
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
     camera.position.set(0, 10, 20);

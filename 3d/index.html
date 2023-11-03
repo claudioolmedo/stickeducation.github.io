@@ -8,7 +8,9 @@
 
   <meta name="description" content="Stick Education Editor - Crie, Compartilhe e Explore Projetos em Palitos de Sorvete">
   <style>
-    body { margin: 0; }
+    body { 
+      margin: 0; 
+    }
     #button-container {
       position: absolute;
       bottom: 10px;
@@ -188,7 +190,7 @@ function checkAuthState() {
 
     // Scene
     const scene = new THREE.Scene();
-
+    scene.background = new THREE.Color(000080);
     // Camera
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
     camera.position.set(0, 10, 20);

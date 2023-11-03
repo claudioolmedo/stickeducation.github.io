@@ -126,22 +126,16 @@
     let provider = new firebase.auth.GoogleAuthProvider()
 
     function GoogleLogin() {
-  console.log('Login Btn Call')
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(function() {
-      let provider = new firebase.auth.GoogleAuthProvider();
-      return firebase.auth().signInWithPopup(provider);
-    })
-    .then(res => {
-      console.log(res.user)
-      document.getElementById('LoginScreen').style.display = "none"
-      document.getElementById('dashboard').style.display = "block"
-      showUserDetails(res.user)
-    })
-    .catch(e => {
-      console.log(e)
-    })
-}
+      console.log('Login Btn Call')
+      firebase.auth().signInWithPopup(provider).then(res => {
+        console.log(res.user)
+        document.getElementById('LoginScreen').style.display = "none"
+        document.getElementById('dashboard').style.display = "block"
+        showUserDetails(res.user)
+      }).catch(e => {
+        console.log(e)
+      })
+    }
 
     function showUserDetails(user) {
       document.getElementById('userDetails').innerHTML = `

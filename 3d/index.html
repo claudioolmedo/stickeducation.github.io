@@ -31,16 +31,14 @@
       width: 100%;
     }
     #add-stick-image {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-        /* Novo */
-        width: 100%; 
-  height: auto;
-  max-width: 400px;
-  
-}
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw; /* Ocupa 100% da largura da tela */
+    height: auto; /* Mantém a proporção vertical */
+    max-width: 400px; /* Limita a largura máxima da imagem */
+  }
   </style>  
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>

@@ -11,14 +11,14 @@
     body { 
       margin: 0; 
     }
-    #button-container {
+    /*#button-container {
       position: absolute;
       bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
       
-    }
+    }*/
     .container {
       flex: 1;
     }
@@ -30,6 +30,17 @@
       bottom: 0;
       width: 100%;
     }
+    #add-stick-image {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+        /* Novo */
+        width: 100%; 
+  height: auto;
+  max-width: 400px;
+  
+}
   </style>  
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
@@ -98,14 +109,14 @@
     </div>
   </footer>
 
-	<div id="button-container">
-		<button class="button" id="adicionar">Add Stick</button>
-		<button class="button" id="girar-esquerda">Turn Left</button>
-		<button class="button" id="girar-direita">Turn Right</button>
-		<button class="button" id="girar-frente">Turn Forward</button>
-		<button class="button" id="girar-atras">Turn Back</button>
-	  </div>
-
+<div id="button-container" style="display: block;">
+    <img id="add-stick-image" src="stick.png">     <!-- For show button uncommented CSS button</p>-->
+    <button hidden class="button" id="adicionar" style="display: inline-block;">_____________ADD STICK____________</button>		
+    <button hidden class="button" id="girar-esquerda" style="display: none;">Turn Left</button>
+    <button hidden class="button" id="girar-direita" style="display: none;">Turn Right</button>
+    <button hidden class="button" id="girar-frente" style="display: none;">Turn Forward</button>
+    <button hidden class="button" id="girar-atras" style="display: none;">Turn Back</button>
+</div>
   <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
   <script>
     // Configuration Firebase
@@ -487,7 +498,11 @@ usersRef.child(userId).transaction(projetos => {
     }
 
     // Add functionality to the new buttons
+      //Add Stick for Add
+      
     document.getElementById("adicionar").addEventListener("click", adicionarPalito);
+    document.getElementById("add-stick-image").addEventListener("click", adicionarPalito);
+
     document.getElementById("girar-esquerda").addEventListener("click", () => girarPalitoSelecionado(-1));
     document.getElementById("girar-direita").addEventListener("click", () => girarPalitoSelecionado(1));
     document.getElementById("girar-frente").addEventListener("click", girarPalitoFrente);

@@ -61,11 +61,14 @@
     renderer.domElement.addEventListener('pointerdown', () => {
       transformControls.setMode('translate');
     });
-
+/*
     renderer.domElement.addEventListener('pointerup', () => {
       transformControls.setMode('rotate');
+    }); */
+    transformControls.addEventListener('dragging-changed', function(event) {
+      controls.enabled = !event.value;
     });
-
+    
   </script>
 
 </body>

@@ -1,5 +1,5 @@
 // Dados da geometria (copiados do JSON) 
-const geomData =		{
+const stick3D =		{
     "uuid": "6e728275-e0cc-492f-b668-bf614fb61769",
     "type": "BufferGeometry",
     "data": {
@@ -29,4 +29,4 @@ const geomData =		{
         }
     }
 };
-module.exports = geomData;
+module.exports = stick3D;

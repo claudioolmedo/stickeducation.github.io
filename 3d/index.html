@@ -551,6 +551,16 @@ function cliqueNoPalito(event) {
 
     // Add a click event listener to the canvas
     renderer.domElement.addEventListener("click", cliqueNoPalito, false); // Cliques
+    renderer.domElement.addEventListener('touchstart', handleTouch, false);
+    
+    function handleTouch(event) {
+
+  const touch = event.touches[0];
+
+  const x = (touch.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+  const y = - (touch.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+  }
     // Render
     function render() {
       renderer.render(scene, camera); 

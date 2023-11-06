@@ -192,7 +192,54 @@ function checkAuthState() {
     }
     checkAuthState()   
   </script>
+<script>
+    // Adicione um booleano para verificar se o dispositivo suporta toque
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 
+    // Use o evento correto com base no dispositivo
+    const eventStart = isTouchDevice ? 'touchstart' : 'mousedown';
+    const eventMove = isTouchDevice ? 'touchmove' : 'mousemove';
+    const eventEnd = isTouchDevice ? 'touchend' : 'mouseup';
+
+    // Adicione o ouvinte de evento
+    renderer.domElement.addEventListener(eventStart, handleTouchStart, false);
+
+    function handleTouchStart(event) {
+      // Verifique se é um evento de toque
+      if (isTouchDevice) {
+        event.preventDefault(); // Evita o comportamento padrão do toque
+      }
+
+      // Obtenha as coordenadas do toque ou clique
+      const coordinates = isTouchDevice ? event.touches[0] : event;
+
+      const x = (coordinates.clientX / renderer.domElement.clientWidth) * 2 - 1;
+      const y = - (coordinates.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+      // Dispare o raycaster para verificar se algum objeto foi tocado ou clicado
+      raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+
+      // Verifique se algum objeto foi tocado ou clicado
+      if (intersects.length > 0) {
+        // Selecione o objeto
+        selecionarPalito(intersects[0].object);
+      }
+    }
+
+    // Adicione também o evento de movimento e de fim de toque ou clique, se necessário
+    renderer.domElement.addEventListener(eventMove, handleTouchMove, false);
+    renderer.domElement.addEventListener(eventEnd, handleTouchEnd, false);
+
+    function handleTouchMove(event) {
+      // Lógica para lidar com o movimento do toque ou clique, se necessário
+    }
+
+    function handleTouchEnd(event) {
+      // Lógica para lidar com o fim do toque ou clique, se necessário
+    }
+
+</script>
   <script>
 
     // Renderer

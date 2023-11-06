@@ -32,12 +32,13 @@
     }
     #add-stick-image {
     position: absolute;
+    z-index: 999; 
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 100vw; /* Ocupa 100% da largura da tela */
+    width: 100%; /* Ocupa 100% da largura da tela */
     height: auto; /* Mantém a proporção vertical */
-    max-width: 400px; /* Limita a largura máxima da imagem */
+    max-width: 500px; /* Limita a largura máxima da imagem */
   }
 
   </style>  
@@ -59,6 +60,25 @@
   <div style="position: fixed; left: -50px; bottom: 10px; background-color: #f44336; color: white; padding: 5px 60px; font-weight: bold; z-index: 9999; transform: rotate(45deg);">
     Beta <br>
   </div>
+  <script>
+function ajustarTamanhoImagem() {
+  const imagem = document.getElementById('add-stick-image');
+
+  if (window.innerWidth > window.innerHeight) {
+    // Tela horizontal
+    imagem.style.width = '80%';
+    imagem.style.height = 'auto';
+  } else {
+    // Tela vertical
+    imagem.style.width = '90%';
+    imagem.style.height = 'auto';
+  }
+}
+
+// Chame a função quando a página carregar e sempre que a orientação da tela mudar
+window.addEventListener('load', ajustarTamanhoImagem);
+window.addEventListener('resize', ajustarTamanhoImagem);    
+  </script>
   <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
 	<script>
         // Get the query string from the URL
@@ -109,14 +129,13 @@
     <!--  <p class="text-muted text-center" id="copyright-message">&copy; Stick.Education 2023</p>-->
     </div>
   </footer>
-
+  <div> <img id="add-stick-image" src="stick.png"> </div>
 <div id="button-container" style="display: block;">
-    <img id="add-stick-image" src="stick.png">     <!-- For show button uncommented CSS button</p>-->
-    <button  class="button" id="adicionar" style="display: inline-block;">Add Stick</button>		
-    <button  class="button" id="girar-esquerda" style="display: inline-block;">Turn Left</button>
-    <button  class="button" id="girar-direita" style="display: inline-block;">Turn Right</button>
-    <button  class="button" id="girar-frente" style="display: inline-block;">Turn Forward</button>
-    <button  class="button" id="girar-atras" style="display: inline-block;">Turn Back</button>
+    <button hidden  class="button" id="adicionar" style="display: inline-block;">Add Stick</button>		
+    <button hidden  class="button" id="girar-esquerda" style="display: inline-block;">Turn Left</button>
+    <button hidden  class="button" id="girar-direita" style="display: inline-block;">Turn Right</button>
+    <button hidden  class="button" id="girar-frente" style="display: inline-block;">Turn Forward</button>
+    <button hidden  class="button" id="girar-atras" style="display: inline-block;">Turn Back</button>
 </div>
   <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
   <script>
@@ -192,54 +211,7 @@ function checkAuthState() {
     }
     checkAuthState()   
   </script>
-<script>
-    // Adicione um booleano para verificar se o dispositivo suporta toque
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 
-    // Use o evento correto com base no dispositivo
-    const eventStart = isTouchDevice ? 'touchstart' : 'mousedown';
-    const eventMove = isTouchDevice ? 'touchmove' : 'mousemove';
-    const eventEnd = isTouchDevice ? 'touchend' : 'mouseup';
-
-    // Adicione o ouvinte de evento
-    renderer.domElement.addEventListener(eventStart, handleTouchStart, false);
-
-    function handleTouchStart(event) {
-      // Verifique se é um evento de toque
-      if (isTouchDevice) {
-        event.preventDefault(); // Evita o comportamento padrão do toque
-      }
-
-      // Obtenha as coordenadas do toque ou clique
-      const coordinates = isTouchDevice ? event.touches[0] : event;
-
-      const x = (coordinates.clientX / renderer.domElement.clientWidth) * 2 - 1;
-      const y = - (coordinates.clientY / renderer.domElement.clientHeight) * 2 + 1;
-
-      // Dispare o raycaster para verificar se algum objeto foi tocado ou clicado
-      raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
-      const intersects = raycaster.intersectObjects(scene.children, true);
-
-      // Verifique se algum objeto foi tocado ou clicado
-      if (intersects.length > 0) {
-        // Selecione o objeto
-        selecionarPalito(intersects[0].object);
-      }
-    }
-
-    // Adicione também o evento de movimento e de fim de toque ou clique, se necessário
-    renderer.domElement.addEventListener(eventMove, handleTouchMove, false);
-    renderer.domElement.addEventListener(eventEnd, handleTouchEnd, false);
-
-    function handleTouchMove(event) {
-      // Lógica para lidar com o movimento do toque ou clique, se necessário
-    }
-
-    function handleTouchEnd(event) {
-      // Lógica para lidar com o fim do toque ou clique, se necessário
-    }
-
-</script>
   <script>
 
     // Renderer

@@ -210,6 +210,66 @@ function checkAuthState() {
     checkAuthState()   
   </script>
 
+<script>
+    // uporte a toque para habilitar o TransformControls em telas touch 
+    // Referência ao canvas
+    const canvas = renderer.domElement;
+
+    // Mapeie touch para mouse
+    canvas.addEventListener('touchstart', handleTouchStart, false);
+    canvas.addEventListener('touchend', handleTouchEnd, false);
+    canvas.addEventListener('touchmove', handleTouchMove, false);
+
+    function handleTouchStart(event) {
+      event.preventDefault();
+      event.clientX = event.touches[0].clientX;
+      event.clientY = event.touches[0].clientY;
+      onMouseDown(event);
+    } 
+
+    function handleTouchEnd(event) {
+      onMouseUp(event);
+    }
+
+    function handleTouchMove(event) {
+      event.preventDefault();
+      event.clientX = event.touches[0].clientX;
+      event.clientY = event.touches[0].clientY;
+      onMouseMove(event); 
+    }
+
+    // Função chamada no clique do mouse
+    function onMouseDown(event) {
+
+      // Calcula a posição do clique
+      const rect = renderer.domElement.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      // Atualiza o raycaster
+      raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
+
+      // Encontra interseções
+      const intersects = raycaster.intersectObjects(scene.children);
+
+      if (intersects.length > 0) {
+        // Inicia o TransformControls
+        const object = intersects[0].object;
+        transformControls.attach(object);
+      }
+    }
+
+    function onMouseUp(event) {
+      // Finaliza TransformControls
+      transformControls.detach(); 
+    }
+
+    function onMouseMove(event) {
+      // Atualiza TransformControls
+      transformControls.update(); 
+    }
+
+</script>
   <script>
 
     // Renderer
@@ -505,6 +565,7 @@ usersRef.child(userId).transaction(projetos => {
       
     document.getElementById("adicionar").addEventListener("click", adicionarPalito);
     document.getElementById("add-stick-image").addEventListener("click", adicionarPalito);
+    document.getElementById("add-stick-image").addEventListener("touchstart", adicionarPalito);
 
     document.getElementById("girar-esquerda").addEventListener("click", () => girarPalitoSelecionado(-1));
     document.getElementById("girar-direita").addEventListener("click", () => girarPalitoSelecionado(1));
@@ -551,6 +612,7 @@ function cliqueNoPalito(event) {
     // Add a click event listener to the canvas
     renderer.domElement.addEventListener("click", cliqueNoPalito, false); // Cliques
     renderer.domElement.addEventListener("touchstart", cliqueNoPalito, false); // Telas Touch
+    
     // Render
     function render() {
       renderer.render(scene, camera); 

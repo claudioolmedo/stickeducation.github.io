@@ -554,13 +554,18 @@ function cliqueNoPalito(event) {
     renderer.domElement.addEventListener('touchstart', handleTouch, false);
     
     function handleTouch(event) {
-
-  const touch = event.touches[0];
-
-  const x = (touch.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-  const y = - (touch.clientY / renderer.domElement.clientHeight) * 2 + 1;
-
+      const touch = event.touches[0];
+      const x = (touch.clientX / renderer.domElement.clientWidth) * 2 - 1;
+      const y = -(touch.clientY / renderer.domElement.clientHeight) * 2 + 1;
+      const mouse = new THREE.Vector2(x, y);
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children);
+      if (intersects.length > 0) {
+        const intersectedObject = intersects[0].object;
+        cliqueNoPalito(intersectedObject);
   }
+}
+  
     // Render
     function render() {
       renderer.render(scene, camera); 

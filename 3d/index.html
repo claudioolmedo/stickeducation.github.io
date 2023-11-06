@@ -551,19 +551,43 @@ function cliqueNoPalito(event) {
 
     // Add a click event listener to the canvas
     renderer.domElement.addEventListener("click", cliqueNoPalito, false); // Cliques
-    renderer.domElement.addEventListener('touchstart', handleTouch, false);
-    
     function handleTouch(event) {
-      const touch = event.touches[0];
-      const x = (touch.clientX / renderer.domElement.clientWidth) * 2 - 1;
-      const y = -(touch.clientY / renderer.domElement.clientHeight) * 2 + 1;
-      const mouse = new THREE.Vector2(x, y);
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(scene.children);
-      if (intersects.length > 0) {
-        const intersectedObject = intersects[0].object;
-        cliqueNoPalito(intersectedObject);
+
+event.preventDefault(); // previne comportamento padrão
+
+event.clientX = event.touches[0].clientX; 
+event.clientY = event.touches[0].clientY;
+
+cliqueNoPalito(event); // dispara evento de click
+
+}
+function handleTouch(event) {
+  event.preventDefault();
+
+  // mapeia coords touch -> mouse
+  event.clientX = event.touches[0].clientX;
+  event.clientY = event.touches[0].clientY; 
+   
+  cliqueNoPalito(event); 
+}    
+function handleTouch(event) {
+
+  const touch = event.touches[0];
+
+  const x = (touch.clientX / renderer.domElement.clientWidth) * 2 - 1;
+  const y = -(touch.clientY / renderer.domElement.clientHeight) * 2 + 1;
+  
+  const mouse = new THREE.Vector2(x, y);
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(objetosArrastaveis);
+
+  if (intersects.length > 0) {
+    const intersectedObject = intersects[0].object;
+    cliqueNoPalito(intersectedObject);
   }
+
 }
   
     // Render

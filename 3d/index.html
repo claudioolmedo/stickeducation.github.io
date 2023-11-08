@@ -268,7 +268,8 @@ dragControls.addEventListener('dragstart', function(event) {
 dbRef.on('value', function(snapshot) {
   // Limpe a cena antes de adicionar novamente os palitos
   objetosArrastaveis.forEach(objeto => {
-    scene.remove(objeto); 
+    scene.remove(objeto);
+ 
   });
   objetosArrastaveis.length = 0;
 
@@ -428,107 +429,39 @@ function deselecionarPalito() {
 
 // Função para lidar com cliques em palitos
 function cliqueNoPalito(event) {
-  if(event.pointerType === 'touch') {
-    // Touch
-    const touch = event.gesture.center; 
+  // Calculate the click position on the canvas
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-    mouse.x = (touch.x / window.innerWidth) * 2 - 1;
-    mouse.y = - (touch.y / window.innerHeight) * 2 + 1;  
+  // Atualiza a posição do mouse
+  mouse.set(x, y);
 
-    raycaster.setFromCamera(mouse, camera);
+  // Perform raycasting to check for intersection with the stick
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(objetosArrastaveis);
 
-  } else {
-    // Calculate the click position on the canvas
-    const rect = renderer.domElement.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-    // Atualiza a posição do mouse
-    mouse.set(x, y);
-
-    // Perform raycasting to check for intersection with the stick
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(objetosArrastaveis);
-
-    if (intersects.length > 0) {
-      const palitoClicado = intersects[0].object;
-      selecionarPalito(palitoClicado);
-      // Change the color of the stick to a random color
-      const newColor = new THREE.Color(0xffffff);
-      palitoClicado.material.color.copy(newColor);
-    }
+  if (intersects.length > 0) {
+    const palitoClicado = intersects[0].object;
+    selecionarPalito(palitoClicado);
+    // Change the color of the stick to a random color
+    const newColor = new THREE.Color(0xffffff);
+    palitoClicado.material.color.copy(newColor);
   }
 }
 
 
-// Controles de toque 
-const hammer = new Hammer(renderer.domElement);
+    // Add a click event listener to the canvas
+    const hammer = new Hammer(renderer.domElement);
 
-let palitoSelecionado = null;
+    // Adicionar listener de tap
+    hammer.on('tap', (event) => {
+      cliqueNoPalito(event); 
+    });
 
-// Raycaster
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
+    renderer.domElement.addEventListener("click", cliqueNoPalito, false); // Cliques
 
-// Handler de tap
-hammer.on('tap', (event) => {
-
-  if(event.pointerType === 'touch') {
-
-    const touch = event.gesture.center;
-
-    mouse.x = (touch.x / window.innerWidth) * 2 - 1;
-    mouse.y = - (touch.y / window.innerHeight) * 2 + 1; 
-
-    raycaster.setFromCamera(mouse, camera);
-    
-    const intersects = raycaster.intersectObjects(palitos);
-
-    if(intersects.length > 0) {
-
-      const palito = intersects[0].object;
-      
-      selecionarPalito(palito);
-
-    }
-
-  }
-
-});
-
-// Handler de pan 
-hammer.on('pan', (event) => {
-
-  if(event.pointerType === 'touch') {
-
-    const touch = event.gesture.center;
-
-    mouse.x = (touch.x / window.innerWidth) * 2 - 1; 
-    mouse.y = - (touch.y / window.innerHeight) * 2 + 1;
-    
-    raycaster.setFromCamera(mouse, camera);
-
-    const intersects = raycaster.intersectObjects(scene.children);
-
-    if(intersects.length > 0) {
-
-      const ponto = intersects[0].point;
-
-      palitoSelecionado.position.copy(ponto); 
-
-    }
-
-  }
-
-});
-
-function selecionarPalito(palito) {
-
-  palito.material.color.set(0xff0000);
   
-  transformControls.attach(palito);
-
-}
     // Render
     function render() {
       renderer.render(scene, camera);

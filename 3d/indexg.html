@@ -1,59 +1,44 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Meu Primeiro Site com Three.js</title>
-        <style>
-            body { margin: 0; }
-            canvas { display: block; }
-        </style>
-    </head>
-    <body>
-        <script src="https://threejs.org/build/three.js"></script>
-        <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-        <script src="https://threejs.org/examples/js/controls/TransformControls.js"></script>
-        <script>
-            // Criação da cena, câmera e renderizador
-            var scene = new THREE.Scene();
-            var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-            var renderer = new THREE.WebGLRenderer({antialias:true});
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
+<script>
+// Função para lidar com cliques/toques nos palitos
+function cliqueNoPalito(event) {
 
-            // Redimensionamento da janela
-            window.addEventListener('resize', function() {
-                var width = window.innerWidth;
-                var height = window.innerHeight;
-                renderer.setSize(width, height);
-                camera.aspect = width / height;
-                camera.updateProjectionMatrix();
-            });
+  if(evento.srcEvent) { 
+    // Se for evento de toque
+    
+    const toque = evento.srcEvent.touches[0];
+    
+    const x = (toque.clientX / renderer.domElement.clientWidth) * 2 - 1; 
+    const y = -(toque.clientY / renderer.domElement.clientHeight) * 2 + 1;
+    
+    evento.clientX = toque.clientX;
+    evento.clientY = toque.clientY;
+    
+    evento.preventDefault();
+    
+  }
 
-            // Adicionando controles
-            var controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.25;
-            controls.enableZoom = true;
+  // Cálculo para evento de mouse
+  const rect = renderer.domElement.getBoundingClientRect();
+  const x = ((evento.clientX - rect.left) / rect.width) * 2 - 1;
+  const y = -((evento.clientY - rect.top) / rect.height) * 2 + 1;
 
-            // Adicionando objeto à cena
-            var geometry = new THREE.BoxGeometry(1, 1, 1);
-            var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-            var cube = new THREE.Mesh(geometry, material);
-            scene.add(cube);
+  // Atualiza o vetor de posição do mouse
+  mouse.set(x, y);
 
-            camera.position.z = 3;
+  // Faz o raycasting
+  raycaster.setFromCamera(mouse, camera);
 
-            // Adicionando TransformControls
-            var transformControl = new THREE.TransformControls(camera, renderer.domElement);
-            scene.add(transformControl);
-            transformControl.attach(cube);
+  const intersects = raycaster.intersectObjects(objetosArrastaveis);
 
-            // Renderização
-            function animate() {
-                requestAnimationFrame(animate);
-                renderer.render(scene, camera);
-                controls.update();
-            }
-            animate();
-        </script>
-    </body>
-</html>
+  if (intersects.length > 0) {
+    const palitoClicado = intersects[0].object;
+
+    selecionarPalito(palitoClicado);
+
+    // Muda a cor do palito
+    const corAleatoria = new THREE.Color(0xffffff); 
+    palitoClicado.material.color.copy(corAleatoria);
+
+  }
+
+}

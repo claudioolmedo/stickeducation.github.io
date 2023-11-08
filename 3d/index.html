@@ -63,23 +63,23 @@
 
 
   <script>
-function ajustarTamanhoImagem() {
-  const imagem = document.getElementById('addStickButton');
+function ajustSizeButtonAdd() {
+  const button = document.getElementById('addStickButton');
 
   if (window.innerWidth > window.innerHeight) {
     // Tela horizontal
-    imagem.style.width = '30%';
-    imagem.style.height = 'auto';
+    button.style.width = '30%';
+    button.style.height = '10';
   } else {
     // Tela vertical
-    imagem.style.width = '50%';
-    imagem.style.height = 'auto';
+    button.style.width = '50%';
+    button.style.height = '10';
   }
 }
 
 // Chame a função quando a página carregar e sempre que a orientação da tela mudar
-window.addEventListener('load', ajustarTamanhoImagem);
-window.addEventListener('resize', ajustarTamanhoImagem);    
+window.addEventListener('load', ajustSizeButtonAdd);
+window.addEventListener('resize', ajustSizeButtonAdd);    
   </script>
   <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
 	<script>
@@ -153,8 +153,8 @@ window.addEventListener('resize', ajustarTamanhoImagem);
       };
 	  firebase.initializeApp(firebaseConfig);
     const dbRef = firebase.database().ref(code);
+
     // Login Funtion
-  
     document.getElementById('dashboard').style.display = "none"
 
     document.getElementById('login').addEventListener('click', GoogleLogin)
@@ -179,17 +179,7 @@ window.addEventListener('resize', ajustarTamanhoImagem);
 
         `
     }
-    /*
-  Add in body: <div id="userDetails"></div>
-    
-  function showUserDetails(user) {
-      document.getElementById('userDetails').innerHTML = `
-          <img src="${user.photoURL}" style="width:10%">
-          <p>Name: ${user.displayName}</p>
-          <p>Email: ${user.email}</p>
-        `
-    }
-*/
+
 function checkAuthState() {
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
@@ -223,10 +213,12 @@ function checkAuthState() {
 
     // Scene
     const scene = new THREE.Scene();
+
     // Carregue a textura do arquivo de imagem
     const loader = new THREE.TextureLoader();
     const bgTexture = loader.load('background.jpg');
     bgTexture.blur = 0.5;
+    
 // Defina a textura como a cor de fundo da cena
 scene.background = bgTexture;
   
@@ -245,10 +237,6 @@ scene.background = bgTexture;
     // Stick (Sample)
     const transformControls = new THREE.TransformControls(camera, renderer.domElement);
   
-    
-    
-  //const geometry = new THREE.BoxGeometry(0.384, 0.096, 4.32);
-
 
 // Criar geometria a partir dos dados de stick3d.js
 const geometry = new THREE.BufferGeometry();
@@ -256,33 +244,12 @@ const geometry = new THREE.BufferGeometry();
 
 geometry.setAttribute('position', new THREE.Float32BufferAttribute(stick3D.data.attributes.position.array, 3));
 geometry.scale(0.04, 0.04, 0.04);
-//geometry.rotateX(0);
-//geometry.rotateY(0);
-//geometry.rotateZ(0); 
+
 const textureLoader = new THREE.TextureLoader();
 const texture = textureLoader.load('wood.jpg');
 const material = new THREE.MeshBasicMaterial({
   map: texture
 });
-//const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-
-    //setas para mover
-    /*
-      const geomX = new THREE.CylinderGeometry(0.1, 0.1, 1, 10);
-      const geomY = new THREE.CylinderGeometry(0.1, 0.1, 1, 10); 
-      const geomZ = new THREE.CylinderGeometry(0.1, 0.1, 1, 10);
-    
-      
-
-      // meshes das setas e posicionar corretamente  
-      const setaX = new THREE.Mesh(geomX);
-      setaX.rotation.z = Math.PI/2;
-
-      const setaY = new THREE.Mesh(geomY);  
-      setaY.rotation.x = Math.PI/2;
-
-      const setaZ = new THREE.Mesh(geomZ);  
-      setaZ.rotation.z = Math.PI/2; */
 
     // Draggable sticks.
     const objetosArrastaveis = [];
@@ -294,65 +261,7 @@ dragControls.addEventListener('dragstart', function(event) {
 });
 
 
-// Movendo um palito
-/*
-dragControls.addEventListener('dragend', function(event) {
-//listener de clique para cada botão:
-document.getElementById("girar-esquerda").addEventListener("click", salvarRotacao);
-document.getElementById("girar-direita").addEventListener("click", salvarRotacao);
-document.getElementById("girar-frente").addEventListener("click", salvarRotacao);
-document.getElementById("girar-atras").addEventListener("click", salvarRotacao);
-//função salvarRotacao que atualiza o banco de dados:
-function salvarRotacao() {
 
-if (palitoSelecionado) {
-
-  const rotacao = palitoSelecionado.rotation;
-  
-  const id = palitoSelecionado.userData.id;
-  
-  const ref = firebase.database().ref(code + '/' + id);
-
-  ref.update({
-    rotacao: {
-      x: rotacao.x,
-      y: rotacao.y, 
-      z: rotacao.z
-    }
-  });
-
-}
-
-}
-// etc...
-controls.enabled = true;
-
-const objetoArrastado = event.object;
-const novaPosicao = objetoArrastado.position;
-const novaRotacao = objetoArrastado.rotation;
-
-const objetoId = objetoArrastado.userData.id;
-
-if (objetoId) {
-
-  const firebaseRef = firebase.database().ref(code + '/' + objetoId);
-  
-  firebaseRef.update({
-    posicao: {
-      x: novaPosicao.x, 
-      y: novaPosicao.y,
-      z: novaPosicao.z
-    },
-    rotacao: {
-      x: novaRotacao.x,
-      y: novaRotacao.y,
-      z: novaRotacao.z  
-    }
-  });
-
-}
-
-});  */
 
 
     // Raycaster
@@ -382,36 +291,6 @@ dbRef.on('value', function(snapshot) {
 dragControls.enabled = false; // Desabilita arrastrar
 
 
-/*
-// Distância do cubo inicial 
-const offsetX = 0;
-const offsetY = -5;
-const offsetZ = -6;
-
-// Cubo inicial
-
-const cuboInicial = new THREE.Mesh(geometry, material);
-//cuboInicial.rotation.y = Math.PI / 2; // 45 graus ao redor do eixo X
-
-
-function InitialStick() {
-
-  // Posiciona o cubo inicial
-  cuboInicial.position.x = camera.position.x + offsetZ;
-  cuboInicial.position.y = camera.position.y + offsetZ; 
-  cuboInicial.position.z = camera.position.z + offsetZ;
-
-  cuboInicial.rotation.x = camera.rotation.x;
-  cuboInicial.rotation.y = camera.rotation.y; 
-  cuboInicial.rotation.z = camera.rotation.z; 
-
-  // Adiciona na cena
-  scene.add(cuboInicial);
-
-}
-
-InitialStick();
-*/
 // referência para a tabela users:
 const usersRef = firebase.database().ref('users');
 
@@ -447,7 +326,6 @@ usersRef.child(userId).transaction(projetos => {
   
   return projetos;
 })
-
   // Add new Stick
   novoPalitoRef.set({
     posicao: {
@@ -509,13 +387,6 @@ usersRef.child(userId).transaction(projetos => {
       }
       palitoSelecionado = palito;
       palito.material.color.set(0xff0000); // Set the color of the selected stick
-      /*
-      palito.add(setaX);
-      palito.add(setaY);
-      palito.add(setaZ);
-      */
-    
-
 
       console.log("Selected");
     }
@@ -557,10 +428,7 @@ function deselecionarPalito() {
   if (palitoSelecionado) {
     palitoSelecionado.material.color.set(0x00ff00); // Redefine a cor para a original
     palitoSelecionado = null; // Limpa a referência para o palito selecionado
-    /*
-        palitoSelecionado.remove(setaX);
-  palitoSelecionado.remove(setaY);
-    */
+
   }
 }
 
@@ -602,18 +470,7 @@ function cliqueNoPalito(event) {
     // Render
     function render() {
       renderer.render(scene, camera);
- /*
-      // Atualiza posição
-  cuboInicial.position.x = camera.position.x + offsetX;
-  cuboInicial.position.y = camera.position.y + offsetY;
-  cuboInicial.position.z = camera.position.z + offsetZ;
 
-  // Atualiza rotação 
-  
-  cuboInicial.rotation.x = camera.rotation.x;
-  cuboInicial.rotation.y = camera.rotation.y; 
-  cuboInicial.rotation.z = camera.rotation.z; 
-*/
     }
 
     // Animation
@@ -665,14 +522,7 @@ function cliqueNoPalito(event) {
     animate();
 
   </script>
-    <script>
-		// Reference to the location where you want to save the data
-		/*var dataRef = firebase.database().ref(code);
-		var someData = "z"; // Anonymous
-		dataRef.set(someData);// Save the data to Firebase
-        console.log("Data sent successfully!");*/
-        
-	</script>
+
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>

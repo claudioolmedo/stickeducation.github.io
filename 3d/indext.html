@@ -1,55 +1,43 @@
+<!DOCTYPE html>
 <html>
 <head>
-<script src="https://cdn.jsdelivr.net/npm/three@0.124/build/three.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+  <title>Exemplo Hammer.js</title>
+  <script src="https://hammerjs.github.io/dist/hammer.js"></script>
+<style>
+  #myElement {
+  background: silver;
+  height: 300px;
+  text-align: center;
+  font: 30px/300px Helvetica, Arial, sans-serif;
+}
+</style>
 </head>
 <body>
-<script>
+  <div id="myElement" style="width: 400px; height: 400px; background-color: lightblue;"></div>
+  <div id="myText" style="width: 400px; height: 400px; background-color: rgb(221, 255, 0);"></div>
+  <script>
+var myElement = document.getElementById('myElement');
+var myText = document.getElementById('myText');
+    // create a simple instance
+    // by default, it only adds horizontal recognizers
+    var mc = new Hammer(myElement);
+    // let the pan gesture support all directions.
+    // this will block the vertical scrolling on a touch-device while on the element
+    mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+    // listen to events...
+    mc.on("panleft panright panup pandown tap press", function(ev) {
+      if (ev.type === "tap") {
+        // Ação a ser executada quando ocorrer o evento "tap"
+        console.log("Tap foi acionado!"); // This will display "code" in the console
 
-const scene = new THREE.Scene();
+        myText.textContent = "Tap foi acionado!";
+        
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
-
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-
-const hammer = new Hammer(renderer.domElement);
-
-let controls = null;
-
-hammer.on('tap', (event) => {
-
-  if(event.pointerType === 'touch') {
-
-    controls = new THREE.TransformControls(camera, renderer.domElement);
-    controls.attach(cube);
-    scene.add(controls);
-
-  }
-
-});
-
-function animate() {
-
-  requestAnimationFrame(animate);
-
-  if (controls) {
-    controls.update();
-  }
-
-  renderer.render(scene, camera);
-
-}
-
-animate();
-
-</script>
+      } else {
+        console.log (ev.type);
+        myText.textContent = ev.type;
+      }
+    });
+  </script>
 </body>
 </html>

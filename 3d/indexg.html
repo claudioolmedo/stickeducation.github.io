@@ -1,44 +1,112 @@
-<script>
-// Função para lidar com cliques/toques nos palitos
-function cliqueNoPalito(event) {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .cell {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #ccc;
+      display: inline-block;
+    }
+  </style>
+  <title>Conway's Game of Life</title>
+</head>
+<body>
+  <h1>Conway's Game of Life</h1>
+  <button onclick="startGame()">Start Game (Press 'v')</button>
+  <div id="grid"></div>
 
-  if(evento.srcEvent) { 
-    // Se for evento de toque
-    
-    const toque = evento.srcEvent.touches[0];
-    
-    const x = (toque.clientX / renderer.domElement.clientWidth) * 2 - 1; 
-    const y = -(toque.clientY / renderer.domElement.clientHeight) * 2 + 1;
-    
-    evento.clientX = toque.clientX;
-    evento.clientY = toque.clientY;
-    
-    evento.preventDefault();
-    
-  }
+  <script>
+    const rows = 30;
+    const cols = 30;
+    const cellSize = 20;
+    let grid = createGrid();
 
-  // Cálculo para evento de mouse
-  const rect = renderer.domElement.getBoundingClientRect();
-  const x = ((evento.clientX - rect.left) / rect.width) * 2 - 1;
-  const y = -((evento.clientY - rect.top) / rect.height) * 2 + 1;
+    function createGrid() {
+      return new Array(rows).fill(null)
+        .map(() => new Array(cols).fill(false));
+    }
 
-  // Atualiza o vetor de posição do mouse
-  mouse.set(x, y);
+    function renderGrid() {
+      const gridContainer = document.getElementById('grid');
+      gridContainer.innerHTML = '';
 
-  // Faz o raycasting
-  raycaster.setFromCamera(mouse, camera);
+      grid.forEach((row, i) => {
+        row.forEach((cell, j) => {
+          const cellElement = document.createElement('div');
+          cellElement.classList.add('cell');
+          cellElement.style.width = cellSize + 'px';
+          cellElement.style.height = cellSize + 'px';
+          cellElement.style.backgroundColor = grid[i][j] ? 'black' : 'white';
+          cellElement.onclick = () => toggleCell(i, j);
+          gridContainer.appendChild(cellElement);
+        });
+        gridContainer.appendChild(document.createElement('br'));
+      });
+    }
 
-  const intersects = raycaster.intersectObjects(objetosArrastaveis);
+    function toggleCell(row, col) {
+      grid[row][col] = !grid[row][col];
+      renderGrid();
+    }
 
-  if (intersects.length > 0) {
-    const palitoClicado = intersects[0].object;
+    function startGame() {
+      setInterval(() => {
+        grid = getNextGeneration();
+        renderGrid();
+      }, 200);
+    }
 
-    selecionarPalito(palitoClicado);
+    function getNextGeneration() {
+      const newGrid = createGrid();
 
-    // Muda a cor do palito
-    const corAleatoria = new THREE.Color(0xffffff); 
-    palitoClicado.material.color.copy(corAleatoria);
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          const neighbors = countNeighbors(i, j);
+          if (grid[i][j]) {
+            newGrid[i][j] = neighbors === 2 || neighbors === 3;
+          } else {
+            newGrid[i][j] = neighbors === 3;
+          }
+        }
+      }
 
-  }
+      return newGrid;
+    }
 
-}
+    function countNeighbors(row, col) {
+      const offsets = [-1, 0, 1];
+      let count = 0;
+
+      offsets.forEach((i) => {
+        offsets.forEach((j) => {
+          const neighborRow = row + i;
+          const neighborCol = col + j;
+
+          if (
+            neighborRow >= 0 &&
+            neighborRow < rows &&
+            neighborCol >= 0 &&
+            neighborCol < cols &&
+            !(i === 0 && j === 0)
+          ) {
+            count += grid[neighborRow][neighborCol] ? 1 : 0;
+          }
+        });
+      });
+
+      return count;
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'v') {
+        startGame();
+      }
+    });
+
+    renderGrid();
+  </script>
+</body>
+</html>

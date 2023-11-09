@@ -2,7 +2,14 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Stick Education Editor test touch</title>
+  <title>Stick Education Editor </title>
+  <!-- 
+  #O##
+  ##O#
+  OOO#
+  ####
+    The goal of this code is to have all the ice cream stick projects in the world here, thank you for contributing.-->
+
   <link rel="icon" type="image/png" href="../image/favicon-32x32.png" sizes="32x32">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
@@ -13,12 +20,16 @@
     }
     #button-container {
       position: absolute;
-      bottom: 10px;
+      bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
-      
+      display: flex;
+      order: 2;
+      opacity: 0; /* Para fazer desaparecer o botão inicialmente */
+
     }
+    
     .container {
       flex: 1;
     }
@@ -28,7 +39,7 @@
       text-align: center;
       position: fixed;
       bottom: 0;
-      width:
+      width:0;
     }
     #addStickButton {
     position: absolute;
@@ -36,7 +47,8 @@
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
-
+    order: 1; 
+    
   }
 
   </style>  
@@ -53,8 +65,8 @@
 </head>
 
 <body>
-  <div style="position: fixed; left: -50px; bottom: 10px; background-color: #f44336; color: white; padding: 5px 60px; font-weight: bold; z-index: 9999; transform: rotate(45deg);">
-    Beta 0.13<br>
+  <div style="position: fixed; left: -80px; bottom: 20px; background-color: #f44336; color: white; padding: 5px 80px; font-weight: bold; z-index: 9999; transform: rotate(45deg);">
+  Beta 0.13<br>
   </div>
 
 
@@ -166,13 +178,13 @@ window.addEventListener('resize', ajustSizeButtonAdd);
     <!--  <p class="text-muted text-center" id="copyright-message">&copy; Stick.Education 2023</p>-->
     </div>
   </footer>
-  <button   class="button" id="addStickButton" style="display: inline-block;">Add Stick</button>		
+  <div><button   class="button" id="addStickButton" style="display: inline-block;">Add Stick</button></div>		
 
 <div id="button-container" style="display: block;">
-    <button hidden  class="button" id="girar-esquerda" style="display: inline-block;">Turn Left</button>
-    <button hidden  class="button" id="girar-direita" style="display: inline-block;">Turn Right</button>
-    <button hidden  class="button" id="girar-frente" style="display: inline-block;">Turn Forward</button>
-    <button hidden  class="button" id="girar-atras" style="display: inline-block;">Turn Back</button>
+    <button   class="button" id="girar-esquerda" style="display: inline-block;">Turn Left</button>
+    <button   class="button" id="girar-direita" style="display: inline-block;">Turn Right</button>
+    <button   class="button" id="girar-frente" style="display: inline-block;">Turn Forward</button>
+    <button   class="button" id="girar-atras" style="display: inline-block;">Turn Back</button>
 </div>
   <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
   <script>
@@ -403,6 +415,9 @@ usersRef.child(userId).transaction(projetos => {
 
     // Variable to control the rotation direction
     function selecionarPalito(palito) {
+    // Mostrar botões de mover
+
+  
     //XYZ Gizmo  
     transformControls.attach(palito);
     scene.add(transformControls);
@@ -418,6 +433,8 @@ usersRef.child(userId).transaction(projetos => {
       palito.material.color.set(0xff0000); // Set the color of the selected stick
 
       console.log("Selected");
+      document.getElementById('button-container').style.removeProperty('opacity');
+      document.getElementById('button-container').style.opacity = 1;
     }
 
     // Function to rotate the selected stick
@@ -453,6 +470,8 @@ usersRef.child(userId).transaction(projetos => {
 
 // Função para deselecionar o palito atualmente selecionado
 function deselecionarPalito() {
+  //esconde os botões de mover
+  document.getElementById('button-container').style.opacity = 0;  
 
   if (palitoSelecionado) {
     palitoSelecionado.material.color.set(0x00ff00); // Redefine a cor para a original

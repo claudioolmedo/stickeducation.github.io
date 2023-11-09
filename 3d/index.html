@@ -54,7 +54,7 @@
 
 <body>
   <div style="position: fixed; left: -50px; bottom: 10px; background-color: #f44336; color: white; padding: 5px 60px; font-weight: bold; z-index: 9999; transform: rotate(45deg);">
-    Beta <br>
+    Beta 0.13<br>
   </div>
 
 
@@ -68,9 +68,48 @@ function ajustSizeButtonAdd() {
     button.style.height = '10';
   } else {
     // Tela vertical
-    button.style.width = '50%';
-    button.style.height = '10';
+    button.style.width = '60%';
+    button.style.height = '20';
+    button.style.fontSize = '300%'; // Aumentar o tamanho da letra para 20 pixels
+
   }
+const buttonLogin = document.getElementById('login');
+
+if (window.innerWidth > window.innerHeight) {
+  // Tela horizontal
+  buttonLogin.style.width = '100%';
+  buttonLogin.style.height = '10';
+} else {
+  // Tela vertical
+  buttonLogin.style.width = '300%';
+  buttonLogin.style.height = '20';
+  buttonLogin.style.fontSize = '250%'; // Aumentar o tamanho da letra para 20 pixels
+
+}
+const buttonLogout = document.getElementById('logout');
+
+if (window.innerWidth > window.innerHeight) {
+  // Tela horizontal
+  buttonLogout.style.width = '100%';
+  buttonLogout.style.height = '10';
+} else {
+  // Tela vertical
+  buttonLogout.style.width = '300%';
+  buttonLogout.style.height = '20';
+  buttonLogout.style.fontSize = '180%'; // Aumentar o tamanho da letra para 20 pixels
+
+}
+const navbarbrand = document.getElementById('navbar-brand');
+
+if (window.innerWidth > window.innerHeight) {
+  // Tela horizontal
+
+} else {
+  // Tela vertical
+
+  navbarbrand.style.fontSize = '350%'; // Aumentar o tamanho da letra para 20 pixels
+
+}
 }
 
 // Chame a função quando a página carregar e sempre que a orientação da tela mudar
@@ -86,7 +125,7 @@ window.addEventListener('resize', ajustSizeButtonAdd);
         console.log(code); // This will display "code" in the console
     </script>
 <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-  <a class="navbar-brand" href="#">stick.education</a>
+  <a class="navbar-brand" id="navbar-brand" href="/">stick.education</a>
   <div id="LoginScreen">
     <button id="login">Login</button>
   </div>
@@ -253,7 +292,7 @@ const material = new THREE.MeshBasicMaterial({
 // Drag controls
 const dragControls = new THREE.DragControls(objetosArrastaveis, camera, renderer.domElement);
 dragControls.addEventListener('dragstart', function(event) {
-  controls.enabled = false;
+  controls.enabled = true;
 });
     // Raycaster
     const raycaster = new THREE.Raycaster();
@@ -421,6 +460,33 @@ function deselecionarPalito() {
 
   }
 }
+// Hammer.js 
+const mc = new Hammer(renderer.domElement);
+
+mc.on("tap", function(ev) {
+
+  // Converte coordenadas do toque para posição mouse
+  const x = ev.center.x; 
+  const y = ev.center.y;
+
+  const mouse = new THREE.Vector2();
+  mouse.x = (x / window.innerWidth) * 2 - 1;
+  mouse.y = - (y / window.innerHeight) * 2 + 1; 
+
+  // Chama função de clique
+  cliqueNoPalito({clientX: x, clientY: y});
+
+});
+
+function cliqueNoPalito(event) {
+
+  // Lógica para selecionar palito...
+
+  raycaster.setFromCamera(mouse, camera);
+
+  // Restante da lógica...
+
+}
 
 // Função para lidar com cliques em palitos
 function cliqueNoPalito(event) {
@@ -449,7 +515,6 @@ function cliqueNoPalito(event) {
   
 
     renderer.domElement.addEventListener("click", cliqueNoPalito, false); // Cliques
-
   
     // Render
     function render() {

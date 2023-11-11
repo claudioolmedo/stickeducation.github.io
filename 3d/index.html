@@ -503,7 +503,10 @@ function cliqueNoPalito(event) {
 
   raycaster.setFromCamera(mouse, camera);
 
+  // Restante da lógica...
+
 }
+
 // Função para lidar com cliques em palitos
 function cliqueNoPalito(event) {
   // Calculate the click position on the canvas
@@ -524,9 +527,6 @@ function cliqueNoPalito(event) {
     // Change the color of the stick to a random color
     const newColor = new THREE.Color(0xffffff);
     palitoClicado.material.color.copy(newColor);
-    //Show Rotate buttons
-    document.getElementById('button-container').style.opacity = 0;  
-
   }
 }
 
@@ -580,6 +580,9 @@ function cliqueNoPalito(event) {
             z: newRotation.z
           }
         });
+
+        // Reabilite os controles de arrastar
+
 
       }
     });

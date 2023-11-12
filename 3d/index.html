@@ -20,16 +20,22 @@
     }
     #button-container {
       position: absolute;
-      bottom: 40px;
+      bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
       display: flex;
       order: 2;
-      opacity: 0; /* Para fazer desaparecer o botão inicialmente */
-
+      flex-direction: row;  
     }
-    
+    #button-container button {
+      padding: 10px; 
+    }
+    @media only screen and (max-width: 600px) {
+      body {
+        font-size: 40px;
+      }
+    }
     .container {
       flex: 1;
     }
@@ -43,10 +49,11 @@
     }
     #addStickButton {
     position: absolute;
-    z-index: 999; 
+    /* z-index: 1; */
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
+    margin-top: 10px;
     order: 1; 
     
   }
@@ -180,11 +187,11 @@ window.addEventListener('resize', ajustSizeButtonAdd);
   </footer>
   <div><button   class="button" id="addStickButton" style="display: inline-block;">Add Stick</button></div>		
 
-<div id="button-container" style="display: block;">
-    <button   class="button" id="girar-esquerda" style="display: inline-block;">Turn Left</button>
-    <button   class="button" id="girar-direita" style="display: inline-block;">Turn Right</button>
-    <button   class="button" id="girar-frente" style="display: inline-block;">Turn Forward</button>
-    <button   class="button" id="girar-atras" style="display: inline-block;">Turn Back</button>
+<div id="button-container" hidden style="display: block;">
+    <button  class="button" id="girar-esquerda" style="display: inline-block;">Turn Left</button>
+    <button  class="button" id="girar-direita" style="display: inline-block;">Turn Right</button>
+    <button  class="button" id="girar-frente" style="display: inline-block;">Turn Forward</button>
+    <button  class="button" id="girar-atras" style="display: inline-block;">Turn Back</button>
 </div>
   <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
   <script>
@@ -433,8 +440,8 @@ usersRef.child(userId).transaction(projetos => {
       palito.material.color.set(0xff0000); // Set the color of the selected stick
 
       console.log("Selected");
-      document.getElementById('button-container').style.removeProperty('opacity');
-      document.getElementById('button-container').style.opacity = 1;
+      const buttonContainer = document.getElementById('button-container');
+      buttonContainer.removeAttribute('hidden');
     }
 
     // Function to rotate the selected stick
@@ -471,7 +478,6 @@ usersRef.child(userId).transaction(projetos => {
 // Função para deselecionar o palito atualmente selecionado
 function deselecionarPalito() {
   //esconde os botões de mover
-  document.getElementById('button-container').style.opacity = 0;  
 
   if (palitoSelecionado) {
     palitoSelecionado.material.color.set(0x00ff00); // Redefine a cor para a original

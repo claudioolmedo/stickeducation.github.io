@@ -448,6 +448,7 @@ usersRef.child(userId).transaction(projetos => {
     function girarPalitoSelecionado(direcao) {
       if (palitoSelecionado) {
         palitoSelecionado.rotation.y += THREE.MathUtils.degToRad(5 * direcao); // Gira o palito selecionado em 5 graus na direção atual
+        salvarRotacao();
       }
     }
 
@@ -455,6 +456,7 @@ usersRef.child(userId).transaction(projetos => {
     function girarPalitoFrente() {
       if (palitoSelecionado) {
         palitoSelecionado.rotation.x += THREE.MathUtils.degToRad(5); // Rotate the selected stick vertically forward by 5 degrees
+        salvarRotacao();
       }
     }
 
@@ -462,6 +464,7 @@ usersRef.child(userId).transaction(projetos => {
     function girarPalitoAtras() {
       if (palitoSelecionado) {
         palitoSelecionado.rotation.x -= THREE.MathUtils.degToRad(5); // Rotate the selected stick vertically backward by 5 degrees
+        salvarRotacao();
       }
     }
 

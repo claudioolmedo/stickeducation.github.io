@@ -47,7 +47,7 @@
                 <label for="email" class="email-label">Email:</label>
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-center">Join Waitlist</button>
+            <button type="submit" class="btn btn-primary btn-center" id="joinWaitlistButton">Join Waitlist</button>
         </form>
     </div>
     <footer class="bg-light py-3">
@@ -99,6 +99,22 @@
             }).catch((error) => {
                 console.error("Error adding document: ", error);
             });
+        });
+
+        // Detect browser language and set button text accordingly
+        document.addEventListener('DOMContentLoaded', function() {
+            const language = navigator.language || navigator.userLanguage; 
+            const joinWaitlistTranslations = {
+                'en': 'Join Waitlist',
+                'es': 'Únete a la Lista de Espera',
+                'fr': 'Rejoindre la Liste d\'attente',
+                'de': 'Warteliste Beitreten',
+                'pt': 'Junte-se à Lista de Espera',
+                'pt-BR': 'Entre na Lista de Espera'
+            };
+            const button = document.getElementById('joinWaitlistButton');
+            const buttonText = joinWaitlistTranslations[language.split('-')[0]] || joinWaitlistTranslations['en']; // Default to English if no match
+            button.textContent = buttonText;
         });
     </script>
 </body>

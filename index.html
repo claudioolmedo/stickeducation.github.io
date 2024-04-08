@@ -26,14 +26,26 @@
       bottom: 0;
       width: 100%;
     }
+    /* Adjusting the width of the email input field */
+    #email {
+        max-width: 300px; /* Smaller width for the email input */
+        margin: 0 auto; /* Centering the input field */
+    }
+    /* Centering the email label */
+    .email-label {
+        display: block;
+        text-align: center;
+        margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
     <div class="container mt-5">
+        <img src="image/stickEr.png" alt="stickEr Image" class="img-fluid mb-3" style="display: block; margin: 0 auto;"> <!-- Added image above Join Our Waitlist -->
         <h2 class="text-center">Join Our Waitlist</h2>
         <form id="waitlistForm">
             <div class="form-group">
-                <label for="email">Email:</label>
+                <label for="email" class="email-label">Email:</label>
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
             <button type="submit" class="btn btn-primary btn-center">Join Waitlist</button>

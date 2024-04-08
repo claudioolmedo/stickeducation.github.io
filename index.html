@@ -87,12 +87,16 @@
             // Get the email value from the form
             const email = document.getElementById('email').value;
 
+            // Detect the browser language
+            const language = navigator.language || navigator.userLanguage; 
+
             // Reference to 'waitlist' node in your database
             const refWaitlist = ref(database, 'waitlist');
 
-            // Push the email to the 'waitlist' node in your database
+            // Push the email and language to the 'waitlist' node in your database
             push(refWaitlist, {
-                email: email
+                email: email,
+                language: language
             }).then(() => {
                 alert('Thank you for joining our waitlist!');
                 form.reset(); // Reset the form fields
@@ -111,7 +115,32 @@
                 'fr': 'Rejoindre la Liste d\'attente',
                 'de': 'Warteliste Beitreten',
                 'pt': 'Junte-se à Lista de Espera',
-                'pt-BR': 'Entre na Lista de Espera'
+                'pt-BR': 'Entre na Lista de Espera',
+                'it': 'Unisciti alla Lista d\'Attesa',
+                'nl': 'Aanmelden Wachtlijst',
+                'ru': 'Присоединиться к Списку Ожидания',
+                'ja': 'ウェイトリストに参加する',
+                'zh': '加入等候名单',
+                'ar': 'انضم إلى قائمة الانتظار',
+                'ko': '대기 목록에 가입',
+                'sv': 'Gå med i Väntelistan',
+                'da': 'Tilmeld Ventelisten',
+                'fi': 'Liity Odottavien Listalle',
+                'no': 'Bli med på Ventelisten',
+                'pl': 'Dołącz do Listy Oczekujących',
+                'cs': 'Připojit se k Seznamu Čekatelů',
+                'hu': 'Csatlakozás a Várólistához',
+                'tr': 'Bekleme Listesine Katıl',
+                'el': 'Συμμετοχή στη Λίστα Αναμονής',
+                'bg': 'Присъединете се към Листата на Чакащите',
+                'ro': 'Alăturați-vă Listei de Așteptare',
+                'hr': 'Pridruži se Listi Čekanja',
+                'sk': 'Pridať sa na Zoznam Čakateľov',
+                'sl': 'Pridružite se Čakalni Listi',
+                'lt': 'Prisijunkite prie Laukiančiųjų Sąrašo',
+                'lv': 'Pievienojieties Gaidīšanas Sarakstam',
+                'et': 'Liitu Ootenimekirjaga',
+                'mt': 'Ingħaqad mal-Lista ta’ Stennija'
             };
             const button = document.getElementById('joinWaitlistButton');
             const buttonText = joinWaitlistTranslations[language.split('-')[0]] || joinWaitlistTranslations['en']; // Default to English if no match

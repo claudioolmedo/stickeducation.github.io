@@ -106,6 +106,7 @@
             const language = navigator.language || navigator.userLanguage; 
             const joinWaitlistTranslations = {
                 'en': 'Join Waitlist',
+                'en-US': 'Join Waitlist',
                 'es': 'Únete a la Lista de Espera',
                 'fr': 'Rejoindre la Liste d\'attente',
                 'de': 'Warteliste Beitreten',
@@ -115,6 +116,9 @@
             const button = document.getElementById('joinWaitlistButton');
             const buttonText = joinWaitlistTranslations[language.split('-')[0]] || joinWaitlistTranslations['en']; // Default to English if no match
             button.textContent = buttonText;
+
+            // Display browser language for testing
+            alert('Your browser language is: ' + language);
         });
     </script>
 </body>

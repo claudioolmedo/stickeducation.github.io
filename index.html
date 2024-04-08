@@ -5,16 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Our Waitlist</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+        .text-center {
+            text-align: center;
+        }
+        .btn-center {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Join Our Waitlist</h2>
+        <h2 class="text-center">Join Our Waitlist</h2>
         <form id="waitlistForm">
             <div class="form-group">
                 <label for="email">Email:</label>
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
-            <button type="submit" class="btn btn-primary">Join Waitlist</button>
+            <button type="submit" class="btn btn-primary btn-center">Join Waitlist</button>
         </form>
     </div>
 
@@ -27,7 +36,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyCmKB-3GsdM0kYuSups-wO047quU1YE9TQ",
             authDomain: "stick-d4f7b.firebaseapp.com",
-            databaseURL: "https://stick-d4f7b-default-rtdb.firebaseio.com/", // Updated database URL
+            databaseURL: "https://stick-d4f7b-default-rtdb.firebaseio.com/",
             projectId: "stick-d4f7b",
             storageBucket: "stick-d4f7b.appspot.com",
             messagingSenderId: "459914689023",
@@ -41,7 +50,6 @@
 
         // Reference to the waitlistForm element
         const form = document.getElementById('waitlistForm');
-
 
         // Listen for form submission
         form.addEventListener('submit', function(e) {

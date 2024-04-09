@@ -37,6 +37,16 @@
         text-align: center;
         margin-bottom: 10px;
     }
+    /* Style for the thank you message box */
+    #StickMessage {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 5px;
+        display: none; /* Initially hidden */
+    }
   </style>
 </head>
 <body>
@@ -49,6 +59,8 @@
             </div>
             <button type="submit" class="btn btn-primary btn-center" id="joinWaitlistButton">Join Waitlist</button>
         </form>
+        <!-- Thank you message box -->
+        <div id="StickMessage">Thanks!</div>
     </div>
     <footer class="bg-light py-3">
       <div class="container">
@@ -98,42 +110,14 @@
                 email: email,
                 language: language
             }).then(() => {
-                // Translation map for the success message
-                const thankYouTranslations = {
-                    'en': 'Thank you for joining our waitlist!',
-                    'en-US': 'Thank you for joining our waitlist!',
-                    'es': '¡Gracias por unirte a nuestra lista de espera!',
-                    'fr': 'Merci de vous être inscrit sur notre liste d\'attente!',
-                    'de': 'Danke, dass Sie sich auf unserer Warteliste eingetragen haben!',
-                    'pt': 'Obrigado por entrar na nossa lista de espera!',
-                    'pt-BR': 'Obrigado por entrar na nossa lista de espera!',
-                    'it': 'Grazie per esserti iscritto alla nostra lista d\'attesa!',
-                    'nl': 'Bedankt voor het aanmelden voor onze wachtlijst!',
-                    'ru': 'Спасибо за подписку на наш список ожидания!',
-                    'ja': 'ウェイトリストに参加していただきありがとうございます！',
-                    'zh': '感谢您加入我们的等候名单！',
-                    'ar': 'شكرًا لانضمامك إلى قائمة الانتظار الخاصة بنا!',
-                    'ko': '대기 목록에 가입해 주셔서 감사합니다!',
-                    'sv': 'Tack för att du gick med i vår väntelista!',
-                    'da': 'Tak fordi du tilmeldte dig vores venteliste!',
-                    'fi': 'Kiitos, että liityit odotuslistallemme!',
-                    'no': 'Takk for at du ble med på ventelisten vår!',
-                    'pl': 'Dziękujemy za dołączenie do naszej listy oczekujących!',
-                    'cs': 'Děkujeme, že jste se připojili k naší čekací listině!',
-                    'hu': 'Köszönjük, hogy csatlakozott a várólistánkhoz!',
-                    'tr': 'Bekleme listemize katıldığınız için teşekkür ederiz!',
-                    'el': 'Ευχαριστούμε που συμμετείχατε στη λίστα αναμονής μας!',
-                    'bg': 'Благодарим ви, че се присъединихте към нашия списък на изчакване!',
-                    'ro': 'Vă mulțumim că v-ați alăturat listei noastre de așteptare!',
-                    'hr': 'Hvala što ste se pridružili našoj listi čekanja!',
-                    'sk': 'Ďakujeme, že ste sa pridali na náš zoznam čakateľov!',
-                    'sl': 'Hvala, ker ste se pridružili našemu čakalnemu seznamu!',
-                    'lt': 'Dėkojame, kad prisijungėte prie mūsų laukiančiųjų sąrašo!',
-                    'lv': 'Paldies, ka pievienojāties mūsu gaidīšanas sarakstam!',
-                    'et': 'Täname, et liitusite meie ootenimekirjaga!',
-                    'mt': 'Grazzi talli ngħaqadt mal-lista ta’ stennija tagħna!'
-                };
-                alert(thankYouTranslations[language.split('-')[0]] || thankYouTranslations['en']); // Default to English if no match
+                // Show the thank you message
+                const StickMessage = document.getElementById('StickMessage');
+                StickMessage.style.display = 'block';
+                // Hide the message after 3 seconds
+                setTimeout(() => {
+                    StickMessage.style.display = 'none';
+                }, 3000);
+
                 form.reset(); // Reset the form fields
             }).catch((error) => {
                 console.error("Error adding document: ", error);

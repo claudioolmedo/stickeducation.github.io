@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stick.Education</title>
-    <link rel="icon" type="image/png" href="image/@stickEr.png" sizes="32x32">
-    <!-- Meta tags for social media preview -->
-    <meta property="og:title" content="Join Stick.Education Waitlist" />
-    <meta property="og:description" content="Be the first to experience the future of education with Stick.Education." />
+    <link rel="icon" type="image/png" href="image/favicon-32x32.png" sizes="32x32">
+    <!-- Social Media Preview -->
+    <meta property="og:title" content="Stick.Education" />
+    <meta property="og:description" content="Join Stick.Education for innovative learning experiences." />
     <meta property="og:image" content="image/stickEr.png" />
     <meta property="og:url" content="https://stick.education" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image:alt" content="Stick.Education" />
+    <meta name="twitter:image:alt" content="Stick.Education " />
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <style>
@@ -93,11 +93,47 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
 
+        // Reference to the waitlistForm element
+        const form = document.getElementById('waitlistForm');
+
+        // Listen for form submission
+        form.addEventListener('submit', function(e) {
+            // Prevent the default form submission behavior
+            e.preventDefault();
+
+            // Get the email value from the form
+            const email = document.getElementById('email').value;
+
+            // Detect the browser language
+            const language = navigator.language || navigator.userLanguage; 
+
+            // Reference to 'waitlist' node in your database
+            const refWaitlist = ref(database, 'waitlist');
+
+            // Push the email and language to the 'waitlist' node in your database
+            push(refWaitlist, {
+                email: email,
+                language: language
+            }).then(() => {
+                // Show the thank you message
+                const StickMessage = document.getElementById('StickMessage');
+                StickMessage.style.display = 'block';
+                // Hide the message after 3 seconds
+                setTimeout(() => {
+                    StickMessage.style.display = 'none';
+                }, 3000);
+
+                form.reset(); // Reset the form fields
+            }).catch((error) => {
+                console.error("Error adding document: ", error);
+            });
+        });
 
         // Detect browser language and set button text accordingly
         document.addEventListener('DOMContentLoaded', function() {
-            const language = navigator.language or navigator.userLanguage; 
+            const language = navigator.language || navigator.userLanguage; 
             const joinWaitlistTranslations = {
                 'en': 'Join Waitlist',
                 'en-US': 'Join Waitlist',

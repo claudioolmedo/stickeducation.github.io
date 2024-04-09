@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" style="height: 100%; margin: 0;">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stick.Education PDF Display</title>
+    <link rel="icon" type="image/png" href="image/favicon-32x32.png" sizes="32x32">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <style>
         body, html {
             height: 100%;
@@ -10,15 +13,31 @@
         }
         .pdf-link {
             display: block;
-            margin: 20px;
+            margin: 20px auto;
             font-size: 20px;
             text-decoration: none;
             color: black;
+            text-align: center;
+            max-width: 300px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
         }
     </style>
 </head>
 <body>
-    <a href="1d1rv4_top.pdf" class="pdf-link" target="_blank">View 1d1rv4_top.pdf</a>
-    <a href="connection_rj45_LinkE_v1.pdf" class="pdf-link" target="_blank">View connection_rj45_LinkE_v1.pdf</a>
+    <div class="container">
+        <div>
+            <a href="1d1rv4_top.pdf" class="pdf-link" target="_blank">1d1rv4_top.pdf</a>
+            <a href="connection_rj45_LinkE_v1.pdf" class="pdf-link" target="_blank">connection_rj45_LinkE_v1.pdf</a>
+        </div>
+    </div>
 </body>
 </html>

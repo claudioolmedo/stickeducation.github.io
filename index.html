@@ -161,10 +161,48 @@
                 'et': 'Liitu Ootenimekirjaga',
                 'mt': 'Ingħaqad mal-Lista ta’ Stennija'
             };
+            const thankYouMessageTranslations = {
+                'en': 'Thanks!',
+                'en-US': 'Thanks!',
+                'es': '¡Gracias!',
+                'fr': 'Merci!',
+                'de': 'Danke!',
+                'pt': 'Obrigado!',
+                'pt-BR': 'Obrigado!',
+                'it': 'Grazie!',
+                'nl': 'Bedankt!',
+                'ru': 'Спасибо!',
+                'ja': 'ありがとうございます!',
+                'zh': '谢谢!',
+                'ar': 'شكراً!',
+                'ko': '감사합니다!',
+                'sv': 'Tack!',
+                'da': 'Tak!',
+                'fi': 'Kiitos!',
+                'no': 'Takk!',
+                'pl': 'Dziękuję!',
+                'cs': 'Děkuji!',
+                'hu': 'Köszönöm!',
+                'tr': 'Teşekkürler!',
+                'el': 'Ευχαριστώ!',
+                'bg': 'Благодаря!',
+                'ro': 'Mulțumesc!',
+                'hr': 'Hvala!',
+                'sk': 'Ďakujem!',
+                'sl': 'Hvala!',
+                'lt': 'Ačiū!',
+                'lv': 'Paldies!',
+                'et': 'Aitäh!',
+                'mt': 'Grazzi!'
+            };
             const button = document.getElementById('joinWaitlistButton');
             const buttonText = joinWaitlistTranslations[language.split('-')[0]] || joinWaitlistTranslations['en']; // Default to English if no match
             button.textContent = buttonText;
 
+            // Set the thank you message according to the browser language
+            const StickMessage = document.getElementById('StickMessage');
+            const thankYouText = thankYouMessageTranslations[language.split('-')[0]] || thankYouMessageTranslations['en']; // Default to English if no match
+            StickMessage.textContent = thankYouText;
         });
     </script>
 </body>

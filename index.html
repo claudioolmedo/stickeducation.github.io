@@ -65,6 +65,7 @@
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
             <input type="hidden" id="userSegment" name="userSegment">
+            <input type="hidden" id="userIp" name="userIp">
             <button type="submit" class="btn btn-primary btn-center" id="joinWaitlistButton">Join Waitlist</button>
         </form>
         <!-- Thank you message box -->
@@ -108,6 +109,14 @@
         const userSegment = getQueryParam('u');
         document.getElementById('userSegment').value = userSegment;
 
+        // Fetch and set user IP
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('userIp').value = data.ip;
+            })
+            .catch(error => console.error('Error fetching IP:', error));
+
         form.addEventListener('submit', function(e) {
             // Prevent the default form submission behavior
             e.preventDefault();
@@ -121,14 +130,18 @@
             // Get the user segment value from the hidden input
             const userSegmentValue = document.getElementById('userSegment').value;
 
+            // Get the user IP value from the hidden input
+            const userIpValue = document.getElementById('userIp').value;
+
             // Reference to 'waitlist' node in your database
             const refWaitlist = ref(database, 'waitlist');
 
-            // Push the email, language, and user segment to the 'waitlist' node in your database
+            // Push the email, language, user segment, and user IP to the 'waitlist' node in your database
             push(refWaitlist, {
                 email: email,
                 language: language,
-                userSegment: userSegmentValue // Add this line
+                userSegment: userSegmentValue,
+                userIp: userIpValue // Add this line
             }).then(() => {
                 // Show the thank you message
                 const StickMessage = document.getElementById('StickMessage');

@@ -104,7 +104,10 @@
             return urlParams.get(param);
         }
 
-        // Listen for form submission
+        // Set user segment based on URL parameter
+        const userSegment = getQueryParam('u');
+        document.getElementById('userSegment').value = userSegment;
+
         form.addEventListener('submit', function(e) {
             // Prevent the default form submission behavior
             e.preventDefault();
@@ -115,9 +118,8 @@
             // Detect the browser language
             const language = navigator.language || navigator.userLanguage; 
 
-            // Set user segment based on URL parameter
-            const userSegment = getQueryParam('u');
-            document.getElementById('userSegment').value = userSegment;
+            // Get the user segment value from the hidden input
+            const userSegmentValue = document.getElementById('userSegment').value;
 
             // Reference to 'waitlist' node in your database
             const refWaitlist = ref(database, 'waitlist');
@@ -126,7 +128,7 @@
             push(refWaitlist, {
                 email: email,
                 language: language,
-                userSegment: userSegment // Add this line
+                userSegment: userSegmentValue // Add this line
             }).then(() => {
                 // Show the thank you message
                 const StickMessage = document.getElementById('StickMessage');

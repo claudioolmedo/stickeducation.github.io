@@ -5,7 +5,22 @@ import { SetScriptValueCommand } from './commands/SetScriptValueCommand.js';
 import { RemoveScriptCommand } from './commands/RemoveScriptCommand.js';
 
 const isElectron = () => {
-    return typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer';
+    // Verifica se está rodando em Electron (renderer process)
+    if (typeof window !== 'undefined' && window.process && window.process.type === 'renderer') {
+        return true;
+    }
+
+    // Main process
+    if (typeof process !== 'undefined' && process.versions && process.versions.electron) {
+        return true;
+    }
+
+    // Detect the user agent when the `nodeIntegration` is set to true
+    if (typeof navigator === 'object' && navigator.userAgent && navigator.userAgent.includes('Electron')) {
+        return true;
+    }
+
+    return false;
 };
 
 let fs, os, exec, path, __dirname;
@@ -62,15 +77,16 @@ function SidebarScript( editor ) {
 	container.add( newScript );
 
 	// Compile button
-	const compileScript = new UIButton( 'Compile' );
-	compileScript.setMarginLeft( '4px' );
-	compileScript.onClick( function () {
-		const editorContent = editor.codemirror.getValue();
-    	createAndCompileSketch(editorContent);
-		console.log('Compile script clicked: ' + editorContent);
-		// You might want to dispatch a signal or call a function to handle the compilation.
-	});
-	container.add( compileScript );
+	if (isElectron()) {
+		const compileScript = new UIButton( 'Compile' );
+		compileScript.setMarginLeft( '4px' );
+		compileScript.onClick( function () {
+			const editorContent = editor.codemirror.getValue();
+			createAndCompileSketch(editorContent);
+			console.log('Compile script clicked: ' + editorContent);
+		});
+		container.add( compileScript );
+	}
 
 	function setupArduinoCliIfNeeded() {
 		if (isElectron()) {

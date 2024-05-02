@@ -104,7 +104,7 @@ function SidebarScript( editor ) {
 				}
 			});
 		} else {
-			console.log("Arduino CLI setup is not available in a standard web browser.");
+			console.log("Compiler is not available in a standard web browser.");
 		}
 	}
 

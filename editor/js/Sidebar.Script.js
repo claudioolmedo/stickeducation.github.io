@@ -381,6 +381,12 @@ function SidebarScript( editor ) {
 	signals.scriptRemoved.add( update );
 	signals.scriptChanged.add( update );
 
+	editor.codemirror.on('change', function() {
+		console.log('O código foi modificado.');
+		window.editorContent = editor.codemirror.getValue(); // Armazena o conteúdo atual do editor em uma variável global
+		//console.log(window.editorContent); // Imprime o conteúdo atual do editor armazenado globalmente
+	});
+
 	return container;
 
 }

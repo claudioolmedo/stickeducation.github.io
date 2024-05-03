@@ -275,5 +275,48 @@
 			}
 
 		</script>
+		<script type="module">
+		  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+		  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+
+		  const firebaseConfig = {
+		    apiKey: "AIzaSyBaATlo1GuJw7s7Vb0jT7Hf7J7l9sbsaOY",
+		    authDomain: "editor-1946b.firebaseapp.com",
+		    databaseURL: "https://editor-1946b-default-rtdb.firebaseio.com",
+		    projectId: "editor-1946b",
+		    storageBucket: "editor-1946b.appspot.com",
+		    messagingSenderId: "462487638341",
+		    appId: "1:462487638341:web:7e56e691d9c12daa8eee2c",
+		    measurementId: "G-K15B7WVP0J"
+		  };
+
+		  const app = initializeApp(firebaseConfig);
+		  const database = getDatabase(app);
+
+		  function getQueryParam(param) {
+		    const urlParams = new URLSearchParams(window.location.search);
+		    return urlParams.get(param);
+		  }
+
+		  // Obter o parâmetro 'user' da URL
+		  const userEditor = getQueryParam('user');
+
+		  // Verificar se o parâmetro 'user' existe
+		  if (userEditor) {
+		    // Referência para o local no banco de dados onde os dados do usuário serão salvos
+		    const userEditorRef = ref(database, 'users/' + userEditor);
+
+		    // Salvar o usuário no Firebase
+		    set(userEditorRef, {
+		      editor: userEditor
+		    }).then(() => {
+		      console.log('Usuário adicionado com sucesso.');
+		    }).catch((error) => {
+		      console.error('Erro ao adicionar usuário:', error);
+		    });
+		  } else {
+		    console.log('Parâmetro "user" não encontrado na URL.');
+		  }
+		</script>
 	</body>
 </html>

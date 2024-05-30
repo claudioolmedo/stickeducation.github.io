@@ -88,25 +88,6 @@ function MenubarAdd( editor ) {
         	const singleMesh = new THREE.Mesh(mergedGeometry, material);
         	singleMesh.name = 'Wooden Stick';
 
-
-			
-			const planeWidth = 10; // Example width of the plane
-			const planeHeight = 10; // Example height of the plane
-	
-			// Calculate the bounding box of the object
-			const box = new THREE.Box3().setFromObject(singleMesh);
-			const size = new THREE.Vector3();
-			box.getSize(size);
-	
-			// Determine the scale factors for width and height
-			const scaleX = planeWidth / size.x;
-			const scaleY = planeHeight / size.y;
-			
-			// Use the smallest scale factor to maintain the object's aspect ratio
-			const uniformScale = Math.min(scaleX, scaleY);
-	
-			// Apply the uniform scale to all dimensions to maintain the aspect ratio
-			singleMesh.scale.set(uniformScale, uniformScale, uniformScale);
 			singleMesh.rotation.x = -Math.PI / 2; // Adjust rotation if necessary
 			singleMesh.rotation.y = Math.PI / 2;
 			

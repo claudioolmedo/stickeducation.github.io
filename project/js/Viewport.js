@@ -44,7 +44,7 @@ function Viewport( editor ) {
 
 	const grid = new THREE.Group();
 
-	const grid1 = new THREE.GridHelper( 30, 30, 0x888888 );
+	const grid1 = new THREE.GridHelper( 500, 500, 0x888888 );
 	grid1.material.color.setHex( 0x888888 );
 	grid1.material.vertexColors = false;
 	grid.add( grid1 );

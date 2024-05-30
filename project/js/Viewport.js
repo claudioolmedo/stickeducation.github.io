@@ -52,7 +52,7 @@ function Viewport( editor ) {
 	const grid2 = new THREE.GridHelper( 30, 6, 0x222222 );
 	grid2.material.color.setHex( 0x222222 );
 	grid2.material.vertexColors = false;
-	grid.add( grid2 );
+	//grid.add( grid2 );
 
 	const viewHelper = new ViewHelper( camera, container );
 	const vr = new VR( editor );

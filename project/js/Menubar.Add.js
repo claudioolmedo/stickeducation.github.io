@@ -570,56 +570,39 @@ function addstick(editor){
         	const singleMesh = new THREE.Mesh(mergedGeometry, material);
         	singleMesh.name = 'Stick';
 
+		// Set the scale to 1 (100%)
+		singleMesh.scale.set(1, 1, 1);
+		singleMesh.rotation.x = -Math.PI / 2; // Adjust rotation if necessary
 
-			
-			const planeWidth = 10; // Example width of the plane
-			const planeHeight = 10; // Example height of the plane
-	
-			// Calculate the bounding box of the object
-			const box = new THREE.Box3().setFromObject(singleMesh);
-			const size = new THREE.Vector3();
-			box.getSize(size);
-	
-			// Determine the scale factors for width and height
-			const scaleX = planeWidth / size.x;
-			const scaleY = planeHeight / size.y;
-			
-			// Use the smallest scale factor to maintain the object's aspect ratio
-			const uniformScale = Math.min(scaleX, scaleY);
-	
-			// Apply the uniform scale to all dimensions to maintain the aspect ratio
-			singleMesh.scale.set(uniformScale, uniformScale, uniformScale);
-			singleMesh.rotation.x = -Math.PI / 2; // Adjust rotation if necessary
+		const group = new THREE.Group();
+		group.name = 'Light';
+		// Adding Ambient Light
+		if (!editor.scene.getObjectByName('AmbientLight')) {
+			const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // soft white light
+			ambientLight.name = 'AmbientLight';
+			group.add(ambientLight);
+		}	
+		// Adding Directional Light
+		if (!editor.scene.getObjectByName('DirectionalLight')) {
+			const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+			directionalLight.position.set(5, 10, 7.5); // Example position
+			directionalLight.name = 'DirectionalLight';
+			group.add(directionalLight);
+		}
 
-			const group = new THREE.Group();
-    		group.name = 'Light';
-			// Adding Ambient Light
-			if(!editor.scene.getObjectByName('AmbientLight')){
-				const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // soft white light
-				ambientLight.name = 'AmbientLight';
-				group.add(ambientLight);
-			}	
-			// Adding Directional Light
-			if(!editor.scene.getObjectByName('DirectionalLight')){
-				const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-				directionalLight.position.set(5, 10, 7.5); // Example position
-				directionalLight.name = 'DirectionalLight';
-				group.add(directionalLight);
-			}
-
-			// Use the editor's execute method to add the group to the scene
-			if(!editor.scene.getObjectByName('Light')){	
-				editor.execute(new AddObjectCommand(editor, group));
-			}
-			
-			// Use the editor's execute method to add the mesh to the scene
-        	editor.execute(new AddObjectCommand(editor, singleMesh));
-        // Dispatch the signal to update the editor
-        	editor.signals.sceneGraphChanged.dispatch();
-    	}, undefined, function (error) {
-        	console.error('An error happened while loading the .3mf file:', error);
-    	});
-
+		// Use the editor's execute method to add the group to the scene
+		if (!editor.scene.getObjectByName('Light')) {	
+			editor.execute(new AddObjectCommand(editor, group));
+		}
+		
+		// Use the editor's execute method to add the mesh to the scene
+		editor.execute(new AddObjectCommand(editor, singleMesh));
+		// Dispatch the signal to update the editor
+		editor.signals.sceneGraphChanged.dispatch();
+	}, undefined, function (error) {
+		console.error('An error happened while loading the .3mf file:', error);
+	});
 }
-export {addstick};	
+export { addstick };	
 export { MenubarAdd };
+

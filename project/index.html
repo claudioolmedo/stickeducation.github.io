@@ -300,8 +300,11 @@
 		  };
 
 		  const app = initializeApp(firebaseConfig);
+		  console.log('Firebase App initialized:', app);
 		  const database = getDatabase(app);
+		  console.log('Firebase Database connected:', database);
 		  const auth = getAuth(app);
+		  console.log('Firebase Auth initialized:', auth);
 
 		  function getQueryParam(param) {
 		    const urlParams = new URLSearchParams(window.location.search);

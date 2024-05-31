@@ -21,6 +21,14 @@
 		<meta name="msapplication-TileColor" content="#ffffff">
 		<meta name="msapplication-TileImage" content="images/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
+		<link rel="stylesheet" href="css/main.css">
+		<style>
+			#google-login {
+				position: absolute;
+				top: 0;
+				right: 0;
+			}
+		</style>
 	</head>
 	<body>
 		<link rel="stylesheet" href="css/main.css">
@@ -278,6 +286,7 @@
 		<script type="module">
 		  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 		  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+		  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
 		  const firebaseConfig = {
 		    apiKey: "AIzaSyBaATlo1GuJw7s7Vb0Jl9sbsaOY",
@@ -292,6 +301,7 @@
 
 		  const app = initializeApp(firebaseConfig);
 		  const database = getDatabase(app);
+		  const auth = getAuth(app);
 
 		  function getQueryParam(param) {
 		    const urlParams = new URLSearchParams(window.location.search);
@@ -301,41 +311,60 @@
 		  // Obter o parâmetro 'user' da URL
 		  const userEditor = getQueryParam('user');
 
-		  // Verificar se o parâmetro 'user' existe
+		  // Check if the 'user' parameter exists
 		  if (userEditor) {
-		    // Referência para o local no banco de dados onde os dados do usuário serão salvos
+		    // Reference to the location in the database where the user data will be saved
 		    const userEditorRef = ref(database, 'users/' + userEditor);
 
-		    // Salvar o usuário no Firebase
+		    // Save the user to Firebase
 		    set(userEditorRef, {
 		      editor: userEditor
 		    }).then(() => {
-		      console.log('Usuário adicionado com sucesso.');
-		      window.editorContent = userEditor; // Guarda o conteúdo da variável 'userEditor' em 'window.editorContent'
+		      console.log('User added successfully.');
+		      window.editorContent = userEditor; // Store the content of the variable 'userEditor' in 'window.editorContent'
 		    }).catch((error) => {
-		      console.error('Erro ao adicionar usuário:', error);
+		      console.error('Error adding user:', error);
 		    });
 
 		    let lastEditorContent = window.editorContent;
 		    setInterval(() => {
 		      if (window.editorContent !== lastEditorContent) {
-		        console.log('Conteúdo modificado:', window.editorContent);
+		        console.log('Content modified:', window.editorContent);
 		        lastEditorContent = window.editorContent;
 		        const contentRef = ref(database, 'editorContent/' + userEditor);
 		        set(contentRef, {
 		          user: userEditor,
 		          content: window.editorContent
 		        }).then(() => {
-		          console.log('Conteúdo modificado salvo com sucesso.');
-		        console.log('Conteúdo atual:', window.editorContent);
+		          console.log('Modified content saved successfully.');
+		        console.log('Current content:', window.editorContent);
 		        }).catch((error) => {
-		          console.error('Erro ao salvar o conteúdo modificado:', error);
+		          console.error('Error saving modified content:', error);
 		        });
 		      }
 		    }, 1000);
 		  } else {
-		    console.log('Parâmetro "user" não encontrado na URL.');
+		    console.log('Parameter "user" not found in the URL.');
 		  }
+
+		  const googleButton = document.createElement('button');
+		  googleButton.textContent = 'Login or Create account';
+		  document.body.appendChild(googleButton);
+		  googleButton.id = 'google-login';
+
+		  // Add the click event to the Google login button
+		  googleButton.addEventListener('click', () => {
+		    const provider = new GoogleAuthProvider();
+		    signInWithPopup(auth, provider)
+		      .then((result) => {
+		        console.log('User logged in successfully:', result.user);
+		      })
+		      .catch((error) => {
+		        console.error('Error logging in:', error);
+		      });
+		  });
+
 		</script>
 	</body>
 </html>
+

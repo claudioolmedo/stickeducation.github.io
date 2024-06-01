@@ -50,14 +50,20 @@
 
       function GoogleLogin(){
         console.log('Login Btn Call')
-        firebase.auth().signInWithPopup(provider).then(res=>{
-          console.log(res.user)
-          document.getElementById('LoginScreen').style.display="none"
-          document.getElementById('dashboard').style.display="block"
-          showUserDetails(res.user)
-        }).catch(e=>{
-          console.log(e)
-        })
+        firebase.auth().signInWithRedirect(provider) // Alterado de signInWithPopup para signInWithRedirect
+      }
+
+      function handleRedirectResult(){
+        firebase.auth().getRedirectResult().then(function(result) {
+          if (result.user) {
+            console.log(result.user)
+            document.getElementById('LoginScreen').style.display="none"
+            document.getElementById('dashboard').style.display="block"
+            showUserDetails(result.user)
+          }
+        }).catch(function(error) {
+          console.log(error)
+        });
       }
 
       function showUserDetails(user){
@@ -91,9 +97,10 @@
           console.log(e)
         })
       }
+
       checkAuthState()
+      handleRedirectResult() // Chama a função para lidar com o resultado do redirecionamento após o login
     </script>
   </body>
-</html>
 </html>
 </html>

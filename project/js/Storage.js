@@ -76,6 +76,8 @@ function Storage() {
 
                 // Check if Firebase is available and user is logged in
                 if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
+					console.log('Check connection Firebase in Storage');
+
                     const db = firebase.database();
                     const ref = db.ref('savedStates');
                     ref.push({

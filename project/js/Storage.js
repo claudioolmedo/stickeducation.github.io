@@ -24,6 +24,23 @@ function Storage() {
     // Variable to store the database instance
 	let database;
 
+    // Função para testar a conexão com o Firebase
+    function testFirebaseConnection() {
+        const dbRef = firebase.database().ref('test/connection');
+        const testData = { timestamp: new Date().toISOString() };
+
+        dbRef.set(testData)
+            .then(() => {
+                console.log('Firebase connection test: Data written successfully.');
+                dbRef.once('value', snapshot => {
+                    console.log('Firebase connection test: Data read successfully:', snapshot.val());
+                });
+            })
+            .catch(error => {
+                console.error('Firebase connection test failed:', error);
+            });
+    }
+
     // Return an object containing methods to interact with IndexedDB
 	return {
         // Initialize the database
@@ -96,7 +113,8 @@ function Storage() {
                 // Log the successful clearing
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Cleared IndexedDB.' );
 			};
-		}
+		},
+        testFirebaseConnection: testFirebaseConnection // Adiciona a função de teste ao objeto retornado
 	};
 }
 

@@ -285,13 +285,11 @@
 		</script>
 		<script type="module">
 		  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-		  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-		  import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+		  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
 		  const firebaseConfig = {
 		    apiKey: "AIzaSyBaATlo1GuJw7s7Vb0jT7Hf7J7l9sbsaOY",
-		    //authDomain: "editor-1946b.firebaseapp.com",
-			authDomain: "auth.stick.education",
+		    authDomain: "auth.stick.education",
 		    databaseURL: "https://editor-1946b-default-rtdb.firebaseio.com",
 		    projectId: "editor-1946b",
 		    storageBucket: "editor-1946b.appspot.com",
@@ -301,74 +299,37 @@
 		  };
 
 		  const app = initializeApp(firebaseConfig);
-		  console.log('Firebase App initialized:', app);
-		  const database = getDatabase(app);
-		  console.log('Firebase Database connected:', database);
 		  const auth = getAuth(app);
-		  console.log('Firebase Auth initialized:', auth);
-
-		  function getQueryParam(param) {
-		    const urlParams = new URLSearchParams(window.location.search);
-		    return urlParams.get(param);
-		  }
-
-		  // Obter o parâmetro 'user' da URL
-		  const userEditor = getQueryParam('user');
-
-		  // Check if the 'user' parameter exists
-		  if (userEditor) {
-		    // Reference to the location in the database where the user data will be saved
-		    const userEditorRef = ref(database, 'users/' + userEditor);
-
-		    // Save the user to Firebase
-		    set(userEditorRef, {
-		      editor: userEditor
-		    }).then(() => {
-		      console.log('User added successfully.');
-		      window.editorContent = userEditor; // Store the content of the variable 'userEditor' in 'window.editorContent'
-		    }).catch((error) => {
-		      console.error('Error adding user:', error);
-		    });
-
-		    let lastEditorContent = window.editorContent;
-		    setInterval(() => {
-		      if (window.editorContent !== lastEditorContent) {
-		        console.log('Content modified:', window.editorContent);
-		        lastEditorContent = window.editorContent;
-		        const contentRef = ref(database, 'editorContent/' + userEditor);
-		        set(contentRef, {
-		          user: userEditor,
-		          content: window.editorContent
-		        }).then(() => {
-		          console.log('Modified content saved successfully.');
-		        console.log('Current content:', window.editorContent);
-		        }).catch((error) => {
-		          console.error('Error saving modified content:', error);
-		        });
-		      }
-		    }, 1000);
-		  } else {
-		    console.log('Parameter "user" not found in the URL.');
-		  }
 
 		  const googleButton = document.createElement('button');
-		  googleButton.textContent = 'Login or Create account';
 		  document.body.appendChild(googleButton);
 		  googleButton.id = 'google-login';
 
-		  // Add the click event to the Google login button
-		  googleButton.addEventListener('click', () => {
-		    const provider = new GoogleAuthProvider();
-		    signInWithPopup(auth, provider)
-		      .then((result) => {
-		        console.log('User logged in successfully:', result.user);
-		      })
-		      .catch((error) => {
-		        console.error('Error logging in:', error);
-		      });
+		  // Monitorar o estado de autenticação
+		  onAuthStateChanged(auth, (user) => {
+		    if (user) {
+		      googleButton.textContent = '_____Logout_____';
+		      googleButton.onclick = () => {
+		        signOut(auth).then(() => {
+		          console.log('User logged out successfully.');
+		        }).catch((error) => {
+		          console.error('Error logging out:', error);
+		        });
+		      };
+		    } else {
+		      googleButton.textContent = 'Login or Create account';
+		      googleButton.onclick = () => {
+		        const provider = new GoogleAuthProvider();
+		        signInWithPopup(auth, provider)
+		          .then((result) => {
+		            console.log('User logged in successfully:', result.user);
+		          })
+		          .catch((error) => {
+		            console.error('Error logging in:', error);
+		          });
+		      };
+		    }
 		  });
-
 		</script>
 	</body>
 </html>
-

@@ -286,6 +286,7 @@
 		<script type="module">
 		  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 		  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+		  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
 		  const firebaseConfig = {
 		    apiKey: "AIzaSyBaATlo1GuJw7s7Vb0jT7Hf7J7l9sbsaOY",
@@ -299,7 +300,7 @@
 		  };
 
 		  const app = initializeApp(firebaseConfig);
-		  const auth = getAuth(app);
+		  const auth = getAuth();
 
 		  const googleButton = document.createElement('button');
 		  document.body.appendChild(googleButton);
@@ -330,6 +331,31 @@
 		      };
 		    }
 		  });
+
+		  // Ler o parâmetro da URL
+		  const urlParams = new URLSearchParams(window.location.search);
+		  const IdProject = urlParams.get('id'); // '2k3hlslwhe'
+
+		  // Verificar usuário logado e adicionar dados ao Firebase
+		  onAuthStateChanged(auth, (user) => {
+		    if (user) {
+		      // Usuário está logado, proceda com a adição ao Firebase
+		      addStickDataToFirebase(user, IdProject);
+		    } else {
+		      console.log('No user logged in');
+		    }
+		  });
+
+		  function addStickDataToFirebase(user, IdProject) {
+		    const db = getDatabase();
+		    const stickData = {
+		      userId: user.uid,
+		      IdProject: IdProject,
+		      position: { x: 0, y: 0, z: 0 } // Substitua por valores reais
+		    };
+		    push(ref(db, 'sticks'), stickData);
+		  }
+
 		</script>
 	</body>
 </html>

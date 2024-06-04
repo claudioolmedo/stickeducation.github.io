@@ -73,22 +73,7 @@ function Storage() {
 			request.onsuccess = function () {
                 // Log the successful storage and the time taken
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
-
-                // Check if Firebase is available and user is logged in
-                if (typeof firebase !== 'undefined' && firebase.auth().currentUser) {
-                    const db = firebase.database();
-                    const ref = db.ref('savedStates');
-                    ref.push({
-                        userId: firebase.auth().currentUser.uid,
-                        timestamp: new Date().toISOString(),
-                        data: data
-                    }).then(() => {
-                        console.log('State also saved to Firebase.');
-                    }).catch((error) => {
-                        console.error('Error saving state to Firebase:', error);
-                    });
-                }
-            };
+			};
 		},
         // Clear all data from the database
 		clear: function () {

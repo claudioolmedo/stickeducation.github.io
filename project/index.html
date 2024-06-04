@@ -332,14 +332,14 @@
 		    }
 		  });
 
-		  // Ler o parâmetro da URL
+		  // Read URL parameter
 		  const urlParams = new URLSearchParams(window.location.search);
 		  const IdProject = urlParams.get('id'); // '2k3hlslwhe'
 
-		  // Verificar usuário logado e adicionar dados ao Firebase
+		  // Check logged-in user and add data to Firebase
 		  onAuthStateChanged(auth, (user) => {
 		    if (user) {
-		      // Usuário está logado, proceda com a adição ao Firebase
+		      // User is logged in, proceed with adding to Firebase
 		      addStickDataToFirebase(user, IdProject);
 		    } else {
 		      console.log('No user logged in');
@@ -351,7 +351,7 @@
 		    const stickData = {
 		      userId: user.uid,
 		      IdProject: IdProject,
-		      position: { x: 0, y: 0, z: 0 } // Substitua por valores reais
+		      position: { x: 0, y: 0, z: 0 } // Replace with real values
 		    };
 		    push(ref(db, 'sticks'), stickData);
 		  }
@@ -359,3 +359,4 @@
 		</script>
 	</body>
 </html>
+

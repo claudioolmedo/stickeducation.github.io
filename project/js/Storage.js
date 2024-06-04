@@ -11,6 +11,12 @@ function Storage() {
 		return { init: function () {}, get: function () {}, set: function () {}, clear: function () {} };
 	}
 
+    // Check if Firebase is available
+    if (typeof firebase === 'undefined') {
+        // Log a warning if Firebase is not available
+        console.warn('Storage: Firebase is not available.');
+    }
+
     // Define the database name and version for IndexedDB
 	const name = 'threejs-editor';
 	const version = 1;

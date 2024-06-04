@@ -1,3 +1,22 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBaATlo1GuJw7s7Vb0jT7Hf7J7l9sbsaOY",
+    authDomain: "auth.stick.education",
+    databaseURL: "https://editor-1946b-default-rtdb.firebaseio.com",
+    projectId: "editor-1946b",
+    storageBucket: "editor-1946b.appspot.com",
+    messagingSenderId: "462487638341",
+    appId: "1:462487638341:web:7e56e691d9c12daa8eee2c",
+    measurementId: "G-K15B7WVP0J"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const db = getDatabase();
+
 function Config() {
 
 	const name = 'threejs-editor';
@@ -49,9 +68,8 @@ function Config() {
 		}
 	}
 
-	firebase.auth().onAuthStateChanged(function(user) {
+	auth.onAuthStateChanged(function(user) {
 		if (user) {
-			const db = firebase.database();
 			const ref = db.ref('configurations/' + user.uid);
 			ref.once('value').then(function(snapshot) {
 				const firebaseData = snapshot.val();
@@ -81,8 +99,7 @@ function Config() {
 			window.localStorage[name] = JSON.stringify(storage);
 
 			// Salvar no Firebase
-			const db = firebase.database();
-			const ref = db.ref('configurations/' + firebase.auth().currentUser.uid);
+			const ref = db.ref('configurations/' + auth.currentUser.uid);
 			ref.set(storage)
 				.then(() => console.log('Saved config to Firebase.'))
 				.catch(error => console.error('Error saving config to Firebase:', error));

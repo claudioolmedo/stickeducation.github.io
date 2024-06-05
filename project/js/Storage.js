@@ -1,4 +1,3 @@
-import { firebaseConfig } from '../config/firebaseConfig.js'; // Adjust the path as needed
 
 function Storage() {
 
@@ -98,4 +97,4 @@ function Storage() {
 
 export { Storage };
 
-console.log('Firebase Config:', firebaseConfig);
+console.log('Firebase Config:', window.firebaseConfig);

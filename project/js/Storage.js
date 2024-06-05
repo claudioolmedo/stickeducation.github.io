@@ -1,3 +1,5 @@
+import { firebaseConfig } from '../config/firebaseConfig.js'; // Adjust the path as needed
+
 function Storage() {
 
     // Access the IndexedDB API from the window object
@@ -95,3 +97,5 @@ function Storage() {
 }
 
 export { Storage };
+
+console.log('Firebase Config:', firebaseConfig);

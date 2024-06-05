@@ -37,4 +37,5 @@ export function pushData(path, data) {
   return push(ref(db, path), data);
 }
 
-
+// Exporta diretamente a função importada sem redeclaração
+export { onAuthStateChanged };

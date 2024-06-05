@@ -284,34 +284,18 @@
 
 		</script>
 		<script type="module">
-		  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-		  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-		  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-
-		  window. firebaseConfig = {
-		    apiKey: "AIzaSyBaATlo1GuJw7s7Vb0jT7Hf7J7l9sbsaOY",
-		    authDomain: "auth.stick.education",
-		    databaseURL: "https://editor-1946b-default-rtdb.firebaseio.com",
-		    projectId: "editor-1946b",
-		    storageBucket: "editor-1946b.appspot.com",
-		    messagingSenderId: "462487638341",
-		    appId: "1:462487638341:web:7e56e691d9c12daa8eee2c",
-		    measurementId: "G-K15B7WVP0J"
-		  };
-
-		  const app = initializeApp(firebaseConfig);
-		  const auth = getAuth();
+		  import { firebaseAuth, signInWithGoogle, signOutUser, pushData } from './js/config/firebase.js';
 
 		  const googleButton = document.createElement('button');
 		  document.body.appendChild(googleButton);
 		  googleButton.id = 'google-login';
 
-		  // Monitorar o estado de autenticação
-		  onAuthStateChanged(auth, (user) => {
+		  // Monitor the authentication state
+		  onAuthStateChanged(firebaseAuth, (user) => {
 		    if (user) {
-		      googleButton.textContent = '_____Logout_____';
+		      googleButton.textContent = 'Logout';
 		      googleButton.onclick = () => {
-		        signOut(auth).then(() => {
+		        signOutUser().then(() => {
 		          console.log('User logged out successfully.');
 		        }).catch((error) => {
 		          console.error('Error logging out:', error);
@@ -320,8 +304,7 @@
 		    } else {
 		      googleButton.textContent = 'Login or Create account';
 		      googleButton.onclick = () => {
-		        const provider = new GoogleAuthProvider();
-		        signInWithPopup(auth, provider)
+		        signInWithGoogle()
 		          .then((result) => {
 		            console.log('User logged in successfully:', result.user);
 		          })
@@ -337,7 +320,7 @@
 		  const IdProject = urlParams.get('id'); // '2k3hlslwhe'
 
 		  // Check logged-in user and add data to Firebase
-		  onAuthStateChanged(auth, (user) => {
+		  onAuthStateChanged(firebaseAuth, (user) => {
 		    if (user) {
 		      // User is logged in, proceed with adding to Firebase
 		      addStickDataToFirebase(user, IdProject);
@@ -347,16 +330,14 @@
 		  });
 
 		  function addStickDataToFirebase(user, IdProject) {
-		    const db = getDatabase();
 		    const stickData = {
 		      userId: user.uid,
 		      IdProject: IdProject,
 		      position: { x: 0, y: 0, z: 0 } // Replace with real values
 		    };
-		    push(ref(db, 'sticks'), stickData);
+		    pushData('sticks', stickData);
 		  }
 
 		</script>
 	</body>
 </html>
-

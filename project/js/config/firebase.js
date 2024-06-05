@@ -1,6 +1,6 @@
 // Importa as bibliotecas necessárias do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
 // Configuração do Firebase
@@ -36,3 +36,4 @@ export function signOutUser() {
 export function pushData(path, data) {
   return push(ref(db, path), data);
 }
+

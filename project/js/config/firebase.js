@@ -36,3 +36,6 @@ export function signOutUser() {
 export function pushData(path, data) {
   return push(ref(db, path), data);
 }
+
+// Exporta onAuthStateChanged
+export { onAuthStateChanged };

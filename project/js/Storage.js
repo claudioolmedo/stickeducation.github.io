@@ -1,4 +1,4 @@
-import { firebaseAuth, onAuthStateChanged } from './config/firebase.js'; // Asegúrate de que la ruta sea correcta
+import { firebaseAuth, onAuthStateChanged, saveData } from './config/firebase.js'; // Asegúrate de que la ruta sea correcta
 
 function Storage() {
 
@@ -84,6 +84,12 @@ function Storage() {
 			request.onsuccess = function () {
                 // Log the successful storage and the time taken
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
+                // Salva também no Firebase
+                saveData('path/to/data', data).then(() => {
+                    console.log('Data also saved to Firebase');
+                }).catch(error => {
+                    console.error('Failed to save data to Firebase:', error);
+                });
 			};
 		},
         // Clear all data from the database

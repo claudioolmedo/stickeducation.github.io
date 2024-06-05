@@ -23,6 +23,7 @@ const db = getDatabase(app);
 // Funções para exportar
 export const firebaseAuth = auth;
 export const firebaseDB = db;
+export const onAuthStateChanged = onAuthStateChanged; // Adiciona esta linha
 
 export function signInWithGoogle() {
   const provider = new GoogleAuthProvider();
@@ -36,6 +37,3 @@ export function signOutUser() {
 export function pushData(path, data) {
   return push(ref(db, path), data);
 }
-
-// Exporta diretamente a função importada sem redeclaração
-export { onAuthStateChanged };

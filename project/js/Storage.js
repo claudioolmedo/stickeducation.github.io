@@ -1,3 +1,4 @@
+import { firebaseAuth, onAuthStateChanged } from './config/firebase.js'; // Asegúrate de que la ruta sea correcta
 
 function Storage() {
 
@@ -18,6 +19,15 @@ function Storage() {
 
     // Variable to store the database instance
 	let database;
+
+    // Verifica el estado de autenticación al inicializar el almacenamiento
+    onAuthStateChanged(firebaseAuth, user => {
+        if (user) {
+            console.log('User is signed in:', user);
+        } else {
+            console.log('No user is signed in.');
+        }
+    });
 
     // Return an object containing methods to interact with IndexedDB
 	return {

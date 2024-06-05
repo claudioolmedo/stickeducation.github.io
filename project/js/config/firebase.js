@@ -23,7 +23,6 @@ const db = getDatabase(app);
 // Funções para exportar
 export const firebaseAuth = auth;
 export const firebaseDB = db;
-export const onAuthStateChanged = onAuthStateChanged; // Adiciona esta linha
 
 export function signInWithGoogle() {
   const provider = new GoogleAuthProvider();

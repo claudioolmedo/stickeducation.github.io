@@ -324,13 +324,14 @@
 		  onAuthStateChanged(firebaseAuth, (user) => {
 		    if (user) {
 		      // User is logged in, proceed with adding to Firebase under 'projects'
-		      addProjectDataToFirebase(user, projectId);
+		      addProjectDataToFirebase(user);
 		    } else {
 		      console.log('No user logged in');
 		    }
 		  });
 
-		  function addProjectDataToFirebase(user, projectId) {
+		  function addProjectDataToFirebase(user) {
+		    const projectId = user.uid; // Usar user.uid como projectId
 		    const projectData = {
 		      userId: user.uid,
 		      projectId: projectId

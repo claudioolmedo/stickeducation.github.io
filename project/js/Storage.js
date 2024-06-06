@@ -125,5 +125,3 @@ function Storage() {
 }
 
 export { Storage };
-
-console.log('Firebase Config:', window.firebaseConfig);

@@ -336,8 +336,7 @@
 		      userId: user.uid,
 		      projectId: projectId
 		    };
-		    // Usar set() en lugar de push() para sobrescribir los datos en la misma clave
-		    firebase.database().ref(`projects/${projectId}`).set(projectData);
+		    pushData(`projects/${projectId}`, projectData);
 		  }
 
 		</script>

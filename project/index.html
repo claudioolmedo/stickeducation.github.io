@@ -320,24 +320,34 @@
 		  const projectId = urlParams.get('id'); // 'qwleehekw2'
 		  console.log('Received project ID:', projectId); // Log the received project ID for debugging
 
-		  // Check logged-in user and add data to Firebase under 'projects'
+		  // Check logged-in user and verify project existence before adding data to Firebase under 'projects'
 		  onAuthStateChanged(firebaseAuth, (user) => {
 		    if (user) {
-		      // User is logged in, proceed with adding to Firebase under 'projects'
-		      addProjectDataToFirebase(user, projectId);
+		      // User is logged in, verify project existence
+		      verifyAndAddProjectData(user, projectId);
 		    } else {
 		      console.log('No user logged in');
 		    }
 		  });
 
-		  function addProjectDataToFirebase(user, projectId) {
-		    const projectData = {
-		      userId: user.uid,
-		      projectId: projectId
-		    };
-		    pushData(`projects/${projectId}`, projectData);
+		  function verifyAndAddProjectData(user, projectId) {
+		    const projectRef = ref(firebaseDB, `projects/${projectId}`);
+		    get(projectRef).then((snapshot) => {
+		      if (snapshot.exists()) {
+		        console.log('Project already exists in Firebase:', projectId);
+		      } else {
+		        // Project does not exist, proceed with adding to Firebase under 'projects'
+		        const projectData = {
+		          userId: user.uid,
+		          projectId: projectId
+		        };
+		        set(projectRef, projectData);
+		        console.log('Project added to Firebase:', projectId);
+		      }
+		    }).catch((error) => {
+		      console.error('Error accessing Firebase:', error);
+		    });
 		  }
-
 		</script>
 	</body>
 </html>

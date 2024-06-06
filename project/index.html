@@ -317,7 +317,8 @@
 
 		  // Read URL parameter
 		  const urlParams = new URLSearchParams(window.location.search);
-		  const IdProject = urlParams.get('id'); // '2k3hlslwhe'
+		  const IdProject = urlParams.get('id'); // 'qwleehekw2'
+		  console.log('Received project ID:', IdProject); // Log the received project ID for debugging
 
 		  // Check logged-in user and add data to Firebase
 		  onAuthStateChanged(firebaseAuth, (user) => {

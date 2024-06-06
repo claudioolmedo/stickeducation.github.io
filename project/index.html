@@ -336,7 +336,13 @@
 		      if (snapshot.exists()) {
 		        console.log('Project already exists in Firebase:', projectId);
 		      } else {
-		        console.log('No action taken as project already exists:', projectId);
+		        // Project does not exist, proceed with adding to Firebase under 'projects'
+		        const projectData = {
+		          userId: user.uid,
+		          projectId: projectId
+		        };
+		        set(projectRef, projectData);
+		        console.log('Project added to Firebase:', projectId);
 		      }
 		    }).catch((error) => {
 		      console.error('Error accessing Firebase:', error);

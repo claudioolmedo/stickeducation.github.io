@@ -1,17 +1,17 @@
-import { firebaseAuth, onAuthStateChanged, saveData } from './config/firebase.js'; // Asegúrate de que la ruta sea correcta
+import { firebaseAuth, onAuthStateChanged, saveData } from './config/firebase.js'; // Ensure the path is correct
 
 function Storage() {
 
     // Access the IndexedDB API from the window object
-	const indexedDB = window.indexedDB;
+    const indexedDB = window.indexedDB;
 
     // Check if IndexedDB is available in the browser
-	if ( indexedDB === undefined ) {
+    if ( indexedDB === undefined ) {
         // Log a warning if IndexedDB is not available
-		console.warn( 'Storage: IndexedDB not available.' );
+        console.warn( 'Storage: IndexedDB not available.' );
         // Return a dummy object with empty methods to avoid errors when calling these methods
-		return { init: function () {}, get: function () {}, set: function () {}, clear: function () {} };
-	}
+        return { init: function () {}, get: function () {}, set: function () {}, clear: function () {} };
+    }
 
     // Define the database name and version for IndexedDB
 	const name = 'threejs-editor';
@@ -19,26 +19,29 @@ function Storage() {
 
     // Variable to store the database instance
 	let database;
+    let currentUser = null;
 
-    // Verifica el estado de autenticación al inicializar el almacenamiento
+    // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {
         if (user) {
             console.log('User is signed in:', user);
+            currentUser = user; // Store the current user
         } else {
             console.log('No user is signed in.');
+            currentUser = null; // Clear the current user
         }
     });
 
     // Return an object containing methods to interact with IndexedDB
-	return {
+    return {
         // Initialize the database
 		init: function ( callback ) {
             // Open a connection to the IndexedDB
 			const request = indexedDB.open( name, version );
             // Setup the database if it's the first time opening this version
-			request.onupgradeneeded = function ( event ) {
+            request.onupgradeneeded = function ( event ) {
                 // Get the database from the event
-				const db = event.target.result;
+                const db = event.target.result;
                 // Create an object store named 'states' if it doesn't already exist
 				if ( db.objectStoreNames.contains( 'states' ) === false ) {
 					db.createObjectStore( 'states' );
@@ -83,13 +86,16 @@ function Storage() {
             // Handle successful data storage
 			request.onsuccess = function () {
                 // Log the successful storage and the time taken
-				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
-                // Salva também no Firebase
-                saveData('path/to/data', data).then(() => {
-                    console.log('Data also saved to Firebase');
-                }).catch(error => {
-                    console.error('Failed to save data to Firebase:', error);
-                });
+                console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
+                // Check if there is a logged-in user before saving to Firebase
+                if (currentUser) {
+                    const path = `users/${currentUser.uid}/data`; // Path includes the user ID
+                    saveData(path, data).then(() => {
+                        console.log('Data also saved to Firebase at:', path);
+                    }).catch(error => {
+                        console.error('Failed to save data to Firebase:', error);
+                    });
+                }
 			};
 		},
         // Clear all data from the database

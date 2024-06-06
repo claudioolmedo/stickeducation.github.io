@@ -324,30 +324,25 @@
 		  onAuthStateChanged(firebaseAuth, (user) => {
 		    if (user) {
 		      // User is logged in, proceed with adding to Firebase under 'projects'
-		      addProjectDataToFirebase(user);
+					// Check if the project data already exists before pushing new data
+					const projectRef = ref(firebaseDB, `projects/${projectId}`);
+					get(projectRef).then((snapshot) => {
+					if (!snapshot.exists()) { // Only push data if the project ID does not exist
+						saveData(`projects/${projectId}`, { userId: user.uid }); // Save only the userId to Firebase under the specified project ID
+					} else {
+						console.log('Project data already exists, not adding duplicate.');
+					}
+					}).catch((error) => {
+					console.error('Error checking project data:', error);
+					});
 		    } else {
 		      console.log('No user logged in');
 		    }
 		  });
 
-		  function addProjectDataToFirebase(user) {
-		    const projectId = user.uid; // Use user.uid as projectId
-		    const projectData = {
-		      userId: user.uid,
-		      projectId: projectId
-		    };
-		    // Check if the project data already exists before pushing new data
-		    const projectRef = ref(firebaseDB, `projects/${projectId}`);
-		    get(projectRef).then((snapshot) => {
-		      if (!snapshot.exists()) { // Only push data if the project ID does not exist
-		        saveData(`projects/${projectId}`, { userId: user.uid }); // Save only the userId to Firebase under the specified project ID
-		      } else {
-		        console.log('Project data already exists, not adding duplicate.');
-		      }
-		    }).catch((error) => {
-		      console.error('Error checking project data:', error);
-		    });
-		  }
+
+
+		  
 
 		</script>
 	</body>

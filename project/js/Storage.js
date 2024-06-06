@@ -37,34 +37,7 @@ function Storage() {
     const projectId = urlParams.get('id');
     console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
 
-    // Verifica se o projectId existe no Firebase e cria se necessário
-    function checkAndCreateProjectInFirebase(projectId, data) {
-        if (!currentUser) {
-            console.log('No user is signed in. Cannot check or create project in Firebase.');
-            return;
-        }
 
-        const projectPath = `projects/${projectId}`;
-        firebase.database().ref(projectPath).once('value', snapshot => {
-            if (snapshot.exists()) {
-                console.log('Project ID already exists in Firebase:', projectId);
-            } else {
-                console.log('Creating new project in Firebase with ID:', projectId);
-                const projectData = {
-                    editorContent: data.editorContent,
-                    path: data.path,
-                    sticks: data.sticks
-                };
-                firebase.database().ref(projectPath).set(projectData, error => {
-                    if (error) {
-                        console.error('Failed to create project in Firebase:', error);
-                    } else {
-                        console.log('Project created in Firebase with ID:', projectId);
-                    }
-                });
-            }
-        });
-    }
 
     // Return an object containing methods to interact with IndexedDB
     return {

@@ -57,5 +57,16 @@ export function getData(path) {
     });
 }
 
-// Exporta onAuthStateChanged
-export { onAuthStateChanged };
+// Função para criar e guardar um novo projeto
+export function createProject(projectData) {
+    const db = getDatabase();
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+        const newProjectRef = ref(db, `projects/${projectData.id}`);
+        const projectInfo = {
+            ...projectData,
+            createdBy: user.uid
+        };
+        set(newProjectRef, projectInfo).then(() => {

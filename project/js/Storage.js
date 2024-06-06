@@ -39,32 +39,31 @@ function Storage() {
 
     // Verifica se o projectId existe no Firebase e cria se necessário
     function checkAndCreateProjectInFirebase(projectId, data) {
-        if (currentUser) {
-            // Caminho atualizado para incluir o projectId sob 'projects'
-            const projectPath = `projects/${projectId}`;
-            firebase.database().ref(projectPath).once('value', snapshot => {
-                if (snapshot.exists()) {
-                    console.log('Project ID already exists in Firebase:', projectId);
-                } else {
-                    console.log('Creating new project in Firebase with ID:', projectId);
-                    // Estrutura de dados atualizada para incluir o conteúdo do editor e outras informações
-                    const projectData = {
-                        editorContent: data,
-                        path: 'your_path_here', // Substitua com o caminho relevante
-                        sticks: 'your_sticks_data_here' // Substitua com os dados relevantes
-                    };
-                    firebase.database().ref(projectPath).set(projectData, error => {
-                        if (error) {
-                            console.error('Failed to create project in Firebase:', error);
-                        } else {
-                            console.log('Project created in Firebase with ID:', projectId);
-                        }
-                    });
-                }
-            });
-        } else {
+        if (!currentUser) {
             console.log('No user is signed in. Cannot check or create project in Firebase.');
+            return;
         }
+
+        const projectPath = `projects/${projectId}`;
+        firebase.database().ref(projectPath).once('value', snapshot => {
+            if (snapshot.exists()) {
+                console.log('Project ID already exists in Firebase:', projectId);
+            } else {
+                console.log('Creating new project in Firebase with ID:', projectId);
+                const projectData = {
+                    editorContent: data.editorContent,
+                    path: data.path,
+                    sticks: data.sticks
+                };
+                firebase.database().ref(projectPath).set(projectData, error => {
+                    if (error) {
+                        console.error('Failed to create project in Firebase:', error);
+                    } else {
+                        console.log('Project created in Firebase with ID:', projectId);
+                    }
+                });
+            }
+        });
     }
 
     // Return an object containing methods to interact with IndexedDB

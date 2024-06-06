@@ -32,6 +32,11 @@ function Storage() {
         }
     });
 
+    // Retrieve project ID from URL parameters to check if it's being received
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+    console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
+
     // Return an object containing methods to interact with IndexedDB
     return {
         // Initialize the database

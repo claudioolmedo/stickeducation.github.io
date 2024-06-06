@@ -37,16 +37,23 @@ function Storage() {
     const projectId = urlParams.get('id');
     console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
 
-    // Check if the projectId exists in Firebase and create it if necessary
+    // Verifica se o projectId existe no Firebase e cria se necessário
     function checkAndCreateProjectInFirebase(projectId, data) {
         if (currentUser) {
-            const projectPath = `users/${currentUser.uid}/projects/${projectId}`;
+            // Caminho atualizado para incluir o projectId sob 'projects'
+            const projectPath = `projects/${projectId}`;
             firebase.database().ref(projectPath).once('value', snapshot => {
                 if (snapshot.exists()) {
                     console.log('Project ID already exists in Firebase:', projectId);
                 } else {
                     console.log('Creating new project in Firebase with ID:', projectId);
-                    firebase.database().ref(projectPath).set(data, error => {
+                    // Estrutura de dados atualizada para incluir o conteúdo do editor e outras informações
+                    const projectData = {
+                        editorContent: data,
+                        path: 'your_path_here', // Substitua com o caminho relevante
+                        sticks: 'your_sticks_data_here' // Substitua com os dados relevantes
+                    };
+                    firebase.database().ref(projectPath).set(projectData, error => {
                         if (error) {
                             console.error('Failed to create project in Firebase:', error);
                         } else {

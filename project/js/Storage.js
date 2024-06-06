@@ -1,4 +1,4 @@
-import { firebaseAuth, onAuthStateChanged, saveData, getData } from './config/firebase.js'; // Ensure the path is correct
+import { firebaseAuth, onAuthStateChanged, saveData } from './config/firebase.js'; // Ensure the path is correct
 
 function Storage() {
 
@@ -20,23 +20,12 @@ function Storage() {
     // Variable to store the database instance
 	let database;
     let currentUser = null;
-    let currentProjectId = null; // Store the current project ID
 
     // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {
         if (user) {
             console.log('User is signed in:', user);
             currentUser = user; // Store the current user
-            // Check if the user is the owner of the project
-            if (currentProjectId) {
-                getData(`projects/${currentProjectId}`).then(project => {
-                    if (project.userId === user.uid) {
-                        console.log('User is the owner of the project.');
-                    } else {
-                        console.log('User is not the owner of the project.');
-                    }
-                });
-            }
         } else {
             console.log('No user is signed in.');
             currentUser = null; // Clear the current user
@@ -98,9 +87,9 @@ function Storage() {
 			request.onsuccess = function () {
                 // Log the successful storage and the time taken
                 console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
-                // Check if there is a logged-in user and a current project ID before saving to Firebase
-                if (currentUser && currentProjectId) {
-                    const path = `projects/${currentProjectId}/data`; // Path includes the project ID
+                // Check if there is a logged-in user before saving to Firebase
+                if (currentUser) {
+                    const path = `users/${currentUser.uid}/data`; // Path includes the user ID
                     saveData(path, data).then(() => {
                         console.log('Data also saved to Firebase at:', path);
                     }).catch(error => {
@@ -124,11 +113,7 @@ function Storage() {
                 // Log the successful clearing
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Cleared IndexedDB.' );
 			};
-		},
-        // Set the current project ID
-        setCurrentProjectId: function (id) {
-            currentProjectId = id;
-        }
+		}
 	};
 }
 

@@ -340,7 +340,7 @@
 		    const projectRef = ref(firebaseDB, `projects/${projectId}`);
 		    get(projectRef).then((snapshot) => {
 		      if (!snapshot.exists()) { // Only push data if the project ID does not exist
-		        pushData(`projects/${projectId}`, projectData);
+		        saveData(`projects/${projectId}`, { userId: user.uid }); // Save only the userId to Firebase under the specified project ID
 		      } else {
 		        console.log('Project data already exists, not adding duplicate.');
 		      }

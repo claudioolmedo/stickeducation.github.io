@@ -90,7 +90,9 @@
 		  // Check if projectId is null and generate a random ID if true
 		  if (!projectId) {
 		    projectId = Math.random().toString(36).substring(2, 10); // Generate a random alphanumeric string
-		    console.log('Generated new project ID:', projectId); // Log the new generated project ID
+		    const dateHex = new Date().getTime().toString(16); // Get current date and time in hexadecimal
+		    projectId += '-' + dateHex; // Append the hexadecimal date to the project ID
+		    console.log('Generated new project ID with timestamp:', projectId); // Log the new generated project ID with timestamp
 		    window.location.search = `?id=${projectId}`; // Reload the page with the new project ID
 		  }
 		</script>

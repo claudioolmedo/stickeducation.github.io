@@ -84,9 +84,15 @@
 		<script>
 		  // Read URL parameter
 		  const urlParams = new URLSearchParams(window.location.search);
-		  const projectId = urlParams.get('id'); // 'qwleehekw2'
+		  let projectId = urlParams.get('id'); // Attempt to get 'id' parameter
 		  console.log('Received project ID:', projectId); // Log the received project ID for debugging
 
+		  // Check if projectId is null and generate a random ID if true
+		  if (!projectId) {
+		    projectId = Math.random().toString(36).substring(2, 10); // Generate a random alphanumeric string
+		    console.log('Generated new project ID:', projectId); // Log the new generated project ID
+		    window.location.search = `?id=${projectId}`; // Reload the page with the new project ID
+		  }
 		</script>
 
 		<script type="module">

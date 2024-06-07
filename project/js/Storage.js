@@ -34,18 +34,10 @@ function Storage() {
 
     // Retrieve project ID from URL parameters to check if it's being received
     const urlParams = new URLSearchParams(window.location.search);
-    let projectId = urlParams.get('id');
-
-    if (!projectId) {
-        projectId = generateUniqueId();
-        checkAndCreateProjectInFirebase(projectId, () => {
-            const newUrl = `${window.location.pathname}?id=${projectId}`;
-            window.history.pushState({ path: newUrl }, '', newUrl);
-            window.location.reload();
-        });
-    }
-
+    const projectId = urlParams.get('id');
     console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
+
+
 
     // Return an object containing methods to interact with IndexedDB
     return {
@@ -145,27 +137,9 @@ function Storage() {
 	};
 }
 
-function generateUniqueId() {
-    return 'id' + Math.random().toString(36).substr(2, 9);
-}
-
-function checkAndCreateProjectInFirebase(projectId, callback) {
-    const projectPath = `projects/${projectId}`;
-    firebase.database().ref(projectPath).once('value', snapshot => {
-        if (snapshot.exists()) {
-            console.log('Project already exists in Firebase:', projectId);
-            callback();
-        } else {
-            firebase.database().ref(projectPath).set({ createdAt: new Date().toISOString() }, error => {
-                if (error) {
-                    console.error('Error creating project in Firebase:', error);
-                } else {
-                    console.log('Project created in Firebase:', projectId);
-                    callback();
-                }
-            });
-        }
-    });
-}
-
 export { Storage };
+
+
+
+
+

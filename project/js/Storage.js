@@ -80,6 +80,22 @@ function Storage() {
 				callback( event.target.result );
 			};
 		},
+        // Store data in Firebase under the user's project
+		set: function (data) {
+            // Check if there is a logged-in user
+            if (currentUser) {
+                // Define the path to store data, including the user ID and project ID
+                const path = `users/${currentUser.uid}/projects/${projectId}/data`;
+                // Save data to Firebase at the specified path
+                saveData(path, data).then(() => {
+                    console.log('Data saved to Firebase at:', path);
+                }).catch(error => {
+                    console.error('Failed to save data to Firebase:', error);
+                });
+            } else {
+                console.log('No user is signed in. Cannot save data to Firebase.');
+            }
+        },
         // Store data in the database
 		set: function ( data ) {
             // Record the start time for performance measurement
@@ -125,3 +141,8 @@ function Storage() {
 }
 
 export { Storage };
+
+
+
+
+

@@ -102,10 +102,10 @@ function Storage() {
                     // Define the path to store general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
                     // Save to user's path
-                    saveData(userPath, data).then(() => {
-                        console.log('Data also saved to Firebase at:', userPath);
+                    saveData(userPath, { projectId: projectId }).then(() => {
+                        console.log('Reference to project saved to Firebase at:', userPath);
                     }).catch(error => {
-                        console.error('Failed to save data to Firebase:', error);
+                        console.error('Failed to save project reference to Firebase:', error);
                     });
                     // Save to project's path
                     saveData(projectPath, { data: data, firebaseId: currentUser.uid }).then(() => {

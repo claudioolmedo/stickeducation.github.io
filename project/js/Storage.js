@@ -37,7 +37,26 @@ function Storage() {
     const projectId = urlParams.get('id');
     console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
 
+    function loadAndDisplayProject(projectId) {
+        // Caminho no Firebase onde os dados estão armazenados
+        const path = `projects/${projectId}`;
 
+        // Carregar dados do Firebase
+        getData(path).then(data => {
+            if (data) {
+                // Atualizar IndexedDB
+                storage.set(data);
+
+                // Atualizar a UI
+                updateUI(data);
+            }
+        });
+    }
+
+    function updateUI(data) {
+        // Supondo que você tenha um elemento com id 'projectData' para mostrar os dados
+        document.getElementById('projectData').textContent = JSON.stringify(data, null, 2);
+    }
 
     // Return an object containing methods to interact with IndexedDB
     return {
@@ -139,7 +158,12 @@ function Storage() {
 
 export { Storage };
 
-
-
-
-
+// Supondo que você tenha uma instância de Storage
+const storage = new Storage();
+storage.init(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+    if (projectId) {
+        loadAndDisplayProject(projectId);
+    }
+});

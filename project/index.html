@@ -337,7 +337,7 @@
 		      projectId: projectId
 		    };
 		    // Check if the project data already exists before pushing new data
-		    const projectRef = ref(firebaseDB, `projects/${projectId}`);
+		    const projectRef = ref(database, `projects/${projectId}`);
 		    get(projectRef).then((snapshot) => {
 		      if (!snapshot.exists()) { // Only push data if the project ID does not exist
 		        saveData(`projects/${projectId}`, projectData); // Use saveData to set the project data with projectId as the key

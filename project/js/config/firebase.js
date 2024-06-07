@@ -1,7 +1,7 @@
 // Importa as bibliotecas necessárias do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getDatabase, ref, push, set as firebaseSet, get as firebaseGet } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+import { getDatabase, ref, push, set as firebaseSet } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -44,17 +44,3 @@ export function saveData(path, data) {
 
 // Exporta onAuthStateChanged
 export { onAuthStateChanged };
-
-export function getData(path) {
-    const dbRef = ref(firebaseDB, path);
-    return firebaseGet(dbRef).then((snapshot) => {
-        if (snapshot.exists()) {
-            return snapshot.val();
-        } else {
-            console.log("No data available");
-            return null;
-        }
-    }).catch((error) => {
-        console.error(error);
-    });
-}

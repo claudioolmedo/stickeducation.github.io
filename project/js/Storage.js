@@ -80,6 +80,7 @@ function Storage() {
 				callback( event.target.result );
 			};
 		},
+        
         // Store data in the database firebase
 		set: function ( data ) {
             // Record the start time for performance measurement
@@ -96,15 +97,25 @@ function Storage() {
                 console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
                 // Check if there is a logged-in user before saving to Firebase
                 if (currentUser) {
-                    const path = `users/${currentUser.uid}/projects/${projectId}/data`; // Path includes the user ID and project ID
-                    saveData(path, data).then(() => {
-                        console.log('Data also saved to Firebase at:', path);
+                    const userPath = `users/${currentUser.uid}/projects/${projectId}/data`; // Path includes the user ID and project ID
+                    const projectPath = `projects/${projectId}`; // Path for project data
+                    // Save to user's path
+                    saveData(userPath, data).then(() => {
+                        console.log('Data also saved to Firebase at:', userPath);
+                    }).catch(error => {
+                        console.error('Failed to save data to Firebase:', error);
+                    });
+                    // Save to project's path
+                    saveData(projectPath, { data: data, firebaseId: currentUser.uid }).then(() => {
+                        console.log('Data also saved to Firebase at:', projectPath);
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);
                     });
                 }
 			};
 		},
+
+
         // Clear all data from the database
 		clear: function () {
             // Check if the database instance is available

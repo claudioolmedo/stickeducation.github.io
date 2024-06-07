@@ -80,7 +80,7 @@ function Storage() {
 				callback( event.target.result );
 			};
 		},
-        // Store data in the database
+        // Store data in the database firebase
 		set: function ( data ) {
             // Record the start time for performance measurement
 			const start = performance.now();
@@ -93,10 +93,10 @@ function Storage() {
             // Handle successful data storage
 			request.onsuccess = function () {
                 // Log the successful storage and the time taken
-                console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
+                console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
                 // Check if there is a logged-in user before saving to Firebase
                 if (currentUser) {
-                    const path = `users/${currentUser.uid}/data`; // Path includes the user ID
+                    const path = `users/${currentUser.uid}/projects/${projectId}/data`; // Path includes the user ID and project ID
                     saveData(path, data).then(() => {
                         console.log('Data also saved to Firebase at:', path);
                     }).catch(error => {

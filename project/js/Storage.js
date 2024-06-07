@@ -98,11 +98,11 @@ function Storage() {
                 // Check if there is a logged-in user before saving to Firebase
                 if (currentUser) {
                     // Define the path to store project data under the current user's directory
-                    const userPath = `users/${currentUser.uid}/projects/${projectId}`;
-                    // Define the path to store general project data accessible by all users
+                    // Define the path to store user-specific project data
+                    const userPath = `users/${currentUser.uid}/${projectId}`;
                     const projectPath = `projects/${projectId}`;
                     // Save to user's path
-                    saveData(userPath, data).then(() => {
+                    saveData(userPath).then(() => {
                         console.log('Data also saved to Firebase at:', userPath);
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);

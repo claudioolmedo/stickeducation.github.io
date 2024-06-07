@@ -81,6 +81,13 @@
 				}
 			}
 		</script>
+		<script>
+		  // Read URL parameter
+		  const urlParams = new URLSearchParams(window.location.search);
+		  const projectId = urlParams.get('id'); // 'qwleehekw2'
+		  console.log('Received project ID:', projectId); // Log the received project ID for debugging
+
+		</script>
 
 		<script type="module">
 
@@ -317,10 +324,6 @@
 		    }
 		  });
 
-		  // Read URL parameter
-		  const urlParams = new URLSearchParams(window.location.search);
-		  const projectId = urlParams.get('id'); // 'qwleehekw2'
-		  console.log('Received project ID:', projectId); // Log the received project ID for debugging
 
 		</script>
 	</body>

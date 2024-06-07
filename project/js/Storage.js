@@ -97,8 +97,10 @@ function Storage() {
                 console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
                 // Check if there is a logged-in user before saving to Firebase
                 if (currentUser) {
-                    const userPath = `users/${currentUser.uid}/projects/${projectId}/data`; // Path includes the user ID and project ID
-                    const projectPath = `projects/${projectId}`; // Path for project data
+                    // Define the path to store project data under the current user's directory
+                    const userPath = `users/${currentUser.uid}/projects/${projectId}`;
+                    // Define the path to store general project data accessible by all users
+                    const projectPath = `projects/${projectId}`;
                     // Save to user's path
                     saveData(userPath, data).then(() => {
                         console.log('Data also saved to Firebase at:', userPath);

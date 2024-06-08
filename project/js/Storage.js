@@ -67,24 +67,19 @@ function Storage() {
 			};
 		},
         // Retrieve data from the database
-        get: function ( callback ) {
-            // Define the path to retrieve project data from Firebase
-            const projectPath = `projects/${projectId}`;
-            // Retrieve data from Firebase using the project ID
-            getData(projectPath).then(data => {
-                // Call the callback function with the result from Firebase
-                callback(data);
-            }).catch(error => {
-                console.error('Failed to retrieve data from Firebase:', error);
-                // Fallback to IndexedDB if Firebase fetch fails
-                const transaction = database.transaction(['states'], 'readonly');
-                const objectStore = transaction.objectStore('states');
-                const request = objectStore.get(0);
-                request.onsuccess = function (event) {
-                    callback(event.target.result);
-                };
-            });
-        },
+		get: function ( callback ) {
+            // Start a transaction to read data
+			const transaction = database.transaction( [ 'states' ], 'readwrite' );
+            // Access the 'states' object store
+			const objectStore = transaction.objectStore( 'states' );
+            // Get the data at index 0
+			const request = objectStore.get( 0 );
+            // Handle successful data retrieval
+			request.onsuccess = function ( event ) {
+                // Call the callback function with the result
+				callback( event.target.result );
+			};
+		},
         
         // Store data in the database firebase
 		set: function ( data ) {
@@ -143,8 +138,6 @@ function Storage() {
 }
 
 export { Storage };
-
-
 
 
 

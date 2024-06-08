@@ -28,15 +28,23 @@ function Storage() {
             window.currentUser = user; // Store the current user
             console.log('Current user window.currentUser:', window.currentUser);
             console.log('Project ID:', projectId);
-            // Define the path to query project data under the current user's directory
-            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-            // Query data from Firebase at the specified path using the ref and once methods from firebase.js
-            ref(firebaseDB, userPath).once('value').then(snapshot => {
-                const firebaseData = snapshot.val();
-                console.log('Data retrieved from Firebase at:', userPath, firebaseData);
-            }).catch(error => {
-                console.error('Failed to retrieve data from Firebase:', error);
-            });
+                    // Define the path to retrieve project data from the current user's directory
+                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
+                    // Define the path to retrieve general project data accessible by all users
+                    const projectPath = `projects/${projectId}`;
+                    // Read from user's path
+                    firebaseDB.ref(userPath).once('value').then(snapshot => {
+                        console.log('Project data retrieved from Firebase at:', userPath, snapshot.val());
+                    }).catch(error => {
+                        console.error('Failed to retrieve project data from Firebase:', error);
+                    });
+                    // Read from project's path
+                    firebaseDB.ref(projectPath).once('value').then(snapshot => {
+                        console.log('General project data retrieved from Firebase at:', projectPath, snapshot.val());
+                    }).catch(error => {
+                        console.error('Failed to retrieve general project data from Firebase:', error);
+                    });
+
         } else {
             console.log('No user is signed in.');
             window.currentUser = null; // Clear the current user

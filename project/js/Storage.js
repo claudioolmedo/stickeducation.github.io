@@ -79,6 +79,7 @@ function Storage() {
                 // Log the successful data retrieval
                 console.log('Data retrieved from IndexedDB:', event.target.result);
                             // Check if there is a logged-in user before querying Firebase
+                            console.log('Data retrieved Firebase:Current user:', currentUser);
                             if (currentUser) {
                                 // Define the path to query project data under the current user's directory
                                 const userPath = `users/${currentUser.uid}/projects/${projectId}`;

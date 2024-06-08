@@ -26,6 +26,8 @@ function Storage() {
         if (user) {
             console.log('User is signed in:', user);
             window.currentUser = user; // Store the current user
+            console.log('Current user window.currentUser:', window.currentUser);
+
         } else {
             console.log('No user is signed in.');
             window.currentUser = null; // Clear the current user
@@ -34,7 +36,6 @@ function Storage() {
 
 
                 // Print the current user using console
-                console.log('Current user window.currentUser:', window.currentUser);
                 // Check if there is a logged-in user before querying Firebase
                 if (window.currentUser) {
                     // Define the path to query project data under the current user's directory

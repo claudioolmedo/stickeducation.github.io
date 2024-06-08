@@ -87,10 +87,10 @@ function Storage() {
                                     const firebaseData = snapshot.val();
                                     console.log('Data retrieved from Firebase at:', userPath, firebaseData);
                                 }).catch(error => {
-                                    console.error('Failed to retrieve data from Firebase:', error);
+                                    console.error('Data retrieved Firebase: Failed to retrieve data from Firebase:', error);
                                 });
                             } else {
-                                console.log('No current user logged-in, skipping Firebase data retrieval.');
+                                console.log('Data retrieved Firebase: No current user logged-in, skipping Firebase data retrieval.');
                             }
                 // Call the callback function with the result
 				callback( event.target.result );

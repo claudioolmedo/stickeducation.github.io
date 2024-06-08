@@ -25,10 +25,10 @@ function Storage() {
     onAuthStateChanged(firebaseAuth, user => {
         if (user) {
             console.log('User is signed in:', user);
-            currentUser = user; // Store the current user
+            window.currentUser = user; // Store the current user
         } else {
             console.log('No user is signed in.');
-            currentUser = null; // Clear the current user
+            window.currentUser = null; // Clear the current user
         }
     });
 

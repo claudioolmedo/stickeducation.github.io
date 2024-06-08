@@ -19,7 +19,7 @@ function Storage() {
 
     // Variable to store the database instance
 	let database;
-    let currentUser = null;
+    //let currentUser = null;
 
     // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {

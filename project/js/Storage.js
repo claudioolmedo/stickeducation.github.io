@@ -30,12 +30,12 @@ function Storage() {
             console.log('Project ID:', projectId);
             // Define the path to query project data under the current user's directory
             const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-            // Query data from Firebase at the specified path
-            firebaseDB.ref(userPath).once('value').then(snapshot => {
+            // Query data from Firebase at the specified path using the ref and once methods from firebase.js
+            ref(firebaseDB, userPath).once('value').then(snapshot => {
                 const firebaseData = snapshot.val();
                 console.log('Data retrieved from Firebase at:', userPath, firebaseData);
             }).catch(error => {
-                console.error('Data retrieved Firebase: Failed to retrieve data from Firebase:', error);
+                console.error('Failed to retrieve data from Firebase:', error);
             });
         } else {
             console.log('No user is signed in.');

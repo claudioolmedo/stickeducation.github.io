@@ -76,6 +76,8 @@ function Storage() {
 			const request = objectStore.get( 0 );
             // Handle successful data retrieval
 			request.onsuccess = function ( event ) {
+                // Log the successful data retrieval
+                console.log('Data retrieved from IndexedDB:', event.target.result);
                 // Call the callback function with the result
 				callback( event.target.result );
 			};
@@ -138,6 +140,9 @@ function Storage() {
 }
 
 export { Storage };
+
+
+
 
 
 

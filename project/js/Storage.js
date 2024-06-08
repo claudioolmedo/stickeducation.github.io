@@ -27,31 +27,22 @@ function Storage() {
             console.log('User is signed in:', user);
             window.currentUser = user; // Store the current user
             console.log('Current user window.currentUser:', window.currentUser);
-
+            console.log('Project ID:', projectId);
+            // Define the path to query project data under the current user's directory
+            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
+            // Query data from Firebase at the specified path
+            firebase.database().ref(userPath).once('value').then(snapshot => {
+                const firebaseData = snapshot.val();
+                console.log('Data retrieved from Firebase at:', userPath, firebaseData);
+            }).catch(error => {
+                console.error('Data retrieved Firebase: Failed to retrieve data from Firebase:', error);
+            });
         } else {
             console.log('No user is signed in.');
             window.currentUser = null; // Clear the current user
         }
     });
 
-
-                // Print the current user using console
-                // Check if there is a logged-in user before querying Firebase
-                if (window.currentUser) {
-                    console.log(' if (window.currentUser) {');
-                    console.log('Project ID:', projectId);
-                    // Define the path to query project data under the current user's directory
-                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-                    // Query data from Firebase at the specified path
-                    firebase.database().ref(userPath).once('value').then(snapshot => {
-                        const firebaseData = snapshot.val();
-                        console.log('Data retrieved from Firebase at:', userPath, firebaseData);
-                    }).catch(error => {
-                        console.error('Data retrieved Firebase: Failed to retrieve data from Firebase:', error);
-                    });
-                } else {
-                    console.log('Data retrieved Firebase: No current user logged-in, skipping Firebase data retrieval.');
-                }
 
     // Retrieve project ID from URL parameters to check if it's being received
     const urlParams = new URLSearchParams(window.location.search);

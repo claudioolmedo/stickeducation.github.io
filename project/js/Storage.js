@@ -78,15 +78,6 @@ function Storage() {
 			request.onsuccess = function ( event ) {
                 // Log the successful data retrieval
                 console.log('Data retrieved from IndexedDB:', event.target.result);
-                    // Check the authentication state when initializing storage
-                            onAuthStateChanged(firebaseAuth, user => {
-                                if (user) {
-                                    console.log('User is signed in:', user);
-                                    currentUser = user; // Store the current user
-                                } else {
-                                    console.log('No user is signed in.');
-                                    currentUser = null; // Clear the current user
-                                }
                             // Check if there is a logged-in user before querying Firebase
                             console.log('Data retrieved Firebase:Current user:', currentUser);
                             if (currentUser) {

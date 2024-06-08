@@ -17,20 +17,7 @@ function Storage() {
 	const name = 'threejs-editor';
 	const version = 1;
 
-    // Variable to store the database instance
-	let database;
-    //let currentUser = null;
 
-    // Check the authentication state when initializing storage
-    onAuthStateChanged(firebaseAuth, user => {
-        if (user) {
-            console.log('User is signed in:', user);
-            window.currentUser = user; // Store the current user
-        } else {
-            console.log('No user is signed in.');
-            window.currentUser = null; // Clear the current user
-        }
-    });
 
     // Retrieve project ID from URL parameters to check if it's being received
     const urlParams = new URLSearchParams(window.location.search);

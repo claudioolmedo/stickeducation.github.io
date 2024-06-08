@@ -32,17 +32,7 @@ function Storage() {
                     // Define the path to retrieve general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
                     // Read from user's path
-                    firebaseDB().ref(userPath).once('value').then(snapshot => {
-                        console.log('Project data retrieved from Firebase at:', userPath, snapshot.val());
-                    }).catch(error => {
-                        console.error('Failed to retrieve project data from Firebase:', error);
-                    });
-                    // Read from project's path
-                    firebaseDB().ref(projectPath).once('value').then(snapshot => {
-                        console.log('General project data retrieved from Firebase at:', projectPath, snapshot.val());
-                    }).catch(error => {
-                        console.error('Failed to retrieve general project data from Firebase:', error);
-                    });
+
 
         } else {
             console.log('No user is signed in.');

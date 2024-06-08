@@ -86,6 +86,8 @@
 		  const urlParams = new URLSearchParams(window.location.search);
 		  let projectId = urlParams.get('id'); // Attempt to get 'id' parameter
 		  console.log('Received project ID:', projectId); // Log the received project ID for debugging
+		  // Define a global variable for currentUser
+		  window.currentUser = null;
 
 		  // Check if projectId is null and generate a random ID if true
 		  if (!projectId) {
@@ -303,8 +305,6 @@
 		<script type="module">
 		  import { firebaseAuth, signInWithGoogle, signOutUser, pushData, onAuthStateChanged } from './js/config/firebase.js';
 
-		  // Define a global variable for currentUser
-		  window.currentUser = null;
 
 		  // Monitor the authentication state
 		  onAuthStateChanged(firebaseAuth, (user) => {

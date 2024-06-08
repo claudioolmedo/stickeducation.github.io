@@ -39,7 +39,7 @@ function Storage() {
                 // Check if there is a logged-in user before querying Firebase
                 if (window.currentUser) {
                     console.log(' if (window.currentUser) {');
-
+                    console.log('Project ID:', projectId);
                     // Define the path to query project data under the current user's directory
                     const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
                     // Query data from Firebase at the specified path

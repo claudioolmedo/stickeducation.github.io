@@ -31,7 +31,7 @@ function Storage() {
             // Define the path to query project data under the current user's directory
             const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
             // Query data from Firebase at the specified path
-            firebase.database().ref(userPath).once('value').then(snapshot => {
+            firebaseDB.ref(userPath).once('value').then(snapshot => {
                 const firebaseData = snapshot.val();
                 console.log('Data retrieved from Firebase at:', userPath, firebaseData);
             }).catch(error => {

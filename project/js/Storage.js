@@ -1,4 +1,4 @@
-import { firebaseAuth, onAuthStateChanged, saveData } from './config/firebase.js'; // Ensure the path is correct
+import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js'; // Ensure the path is correct
 
 function Storage() {
 

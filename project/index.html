@@ -303,38 +303,48 @@
 		<script type="module">
 		  import { firebaseAuth, signInWithGoogle, signOutUser, pushData, onAuthStateChanged } from './js/config/firebase.js';
 
-		  const googleButton = document.createElement('button');
-		  document.body.appendChild(googleButton);
-		  googleButton.id = 'google-login';
+		  // Define a global variable for currentUser
+		  window.currentUser = null;
 
 		  // Monitor the authentication state
 		  onAuthStateChanged(firebaseAuth, (user) => {
 		    if (user) {
-		      googleButton.textContent = 'Logout';
-		      googleButton.onclick = () => {
-		        signOutUser().then(() => {
-		          console.log('User logged out successfully.');
-		        }).catch((error) => {
-		          console.error('Error logging out:', error);
-		        });
-		      };
+		      console.log('User is signed in:', user);
+		      window.currentUser = user; // Store the current user globally
 		    } else {
-		      googleButton.textContent = 'Login or Create account';
-		      googleButton.onclick = () => {
-		        signInWithGoogle()
-		          .then((result) => {
-		            console.log('User logged in successfully:', result.user);
-		          })
-		          .catch((error) => {
-		            console.error('Error logging in:', error);
-		          });
-		      };
+		      console.log('No user is signed in.');
+		      window.currentUser = null; // Clear the current user
 		    }
 		  });
 
+		  const googleButton = document.createElement('button');
+		  document.body.appendChild(googleButton);
+		  googleButton.id = 'google-login';
 
+		  googleButton.onclick = () => {
+		    if (window.currentUser) {
+		      signOutUser().then(() => {
+		        console.log('User logged out successfully.');
+		      }).catch((error) => {
+		        console.error('Error logging out:', error);
+		      });
+		    } else {
+		      signInWithGoogle().then((result) => {
+		        console.log('User logged in successfully:', result.user);
+		      }).catch((error) => {
+		        console.error('Error logging in:', error);
+		      });
+		    }
+		  };
+
+		  // Update button text based on authentication state
+		  onAuthStateChanged(firebaseAuth, (user) => {
+		    if (user) {
+		      googleButton.textContent = 'Logout';
+		    } else {
+		      googleButton.textContent = 'Login or Create account';
+		    }
+		  });
 		</script>
 	</body>
 </html>
-
-

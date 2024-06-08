@@ -37,6 +37,8 @@ function Storage() {
     const projectId = urlParams.get('id');
     console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
 
+
+
     // Return an object containing methods to interact with IndexedDB
     return {
         // Initialize the database
@@ -77,11 +79,11 @@ function Storage() {
                 // Log the successful data retrieval
                 console.log('Data retrieved from IndexedDB:', event.target.result);
                 // Print the current user using console
-                console.log('Current user:', currentUser);
+                console.log('Current user:', window.currentUser);
                 // Check if there is a logged-in user before querying Firebase
-                if (currentUser) {
+                if (window.currentUser) {
                     // Define the path to query project data under the current user's directory
-                    const userPath = `users/${currentUser.uid}/projects/${projectId}`;
+                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
                     // Query data from Firebase at the specified path
                     firebase.database().ref(userPath).once('value').then(snapshot => {
                         const firebaseData = snapshot.val();
@@ -112,9 +114,9 @@ function Storage() {
                 // Log the successful storage and the time taken
                 console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
                 // Check if there is a logged-in user before saving to Firebase
-                if (currentUser) {
+                if (window.currentUser) {
                     // Define the path to store project data under the current user's directory
-                    const userPath = `users/${currentUser.uid}/projects/${projectId}`;
+                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
                     // Define the path to store general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
                     // Save to user's path
@@ -124,7 +126,7 @@ function Storage() {
                         console.error('Failed to save project reference to Firebase:', error);
                     });
                     // Save to project's path
-                    saveData(projectPath, { data: data, firebaseId: currentUser.uid }).then(() => {
+                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid }).then(() => {
                         console.log('Data also saved to Firebase at:', projectPath);
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);
@@ -154,3 +156,4 @@ function Storage() {
 }
 
 export { Storage };
+

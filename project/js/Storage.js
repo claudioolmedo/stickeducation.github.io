@@ -32,6 +32,21 @@ function Storage() {
                     // Define the path to retrieve general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
                     // Read from user's path
+        // Read data from Firebase database at the user-specific path
+        firebaseDB.ref(userPath).once('value').then(snapshot => {
+            const userData = snapshot.val();
+            console.log('Data from user-specific path:', userData);
+        }).catch(error => {
+            console.error('Error reading user-specific data:', error);
+        });
+
+        // Read data from Firebase database at the general project path
+        firebaseDB.ref(projectPath).once('value').then(snapshot => {
+            const projectData = snapshot.val();
+            console.log('Data from general project path:', projectData);
+        }).catch(error => {
+            console.error('Error reading general project data:', error);
+        });
 
 
         } else {

@@ -1,4 +1,4 @@
-import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js'; // Ensure the path is correct
+import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
 function Storage() {
@@ -32,11 +32,13 @@ function Storage() {
                     const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
                     // Define the path to retrieve general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
-                    // Fetch project data from Firebase and log the results
+                    // Fetch project data from Firebase and update IndexedDB
                     const userDataRef = ref(firebaseDB, userPath);
                     get(userDataRef).then((snapshot) => {
                         if (snapshot.exists()) {
-                            console.log('User project data:', snapshot.val());
+                            const data = snapshot.val();
+                            console.log('User project data:', data);
+                            updateIndexedDB(data);
                         } else {
                             console.log('No user project data found.');
                         }
@@ -56,7 +58,14 @@ function Storage() {
     const projectId = urlParams.get('id');
     console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
 
-
+    function updateIndexedDB(data) {
+        const transaction = database.transaction(['states'], 'readwrite');
+        const objectStore = transaction.objectStore('states');
+        const request = objectStore.put(data, 0);
+        request.onsuccess = function () {
+            console.log('Data updated in IndexedDB.');
+        };
+    }
 
     // Return an object containing methods to interact with IndexedDB
     return {

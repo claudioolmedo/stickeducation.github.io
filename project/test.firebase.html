@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Read Test</title>
+    <script type="module">
+        // Import the necessary Firebase functions
+        import { firebaseDB } from './js/config/firebase.js';
+        import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+
+        // Function to read data from Firebase
+        async function readData(path) {
+            const dataRef = ref(firebaseDB, path);
+            try {
+                const snapshot = await get(dataRef);
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    document.getElementById('output').innerText = JSON.stringify(snapshot.val(), null, 2);
+                } else {
+                    console.log("No data available");
+                    document.getElementById('output').innerText = "No data available";
+                }
+            } catch (error) {
+                console.error("Error reading data:", error);
+                document.getElementById('output').innerText = "Error reading data: " + error;
+            }
+        }
+
+        // Read data from a specific path when the page loads
+        window.onload = () => {
+            readData('/path/to/data'); // Change this to the path you want to read from
+        };
+    </script>
+</head>
+<body>
+    <h1>Firebase Read Test</h1>
+    <pre id="output">Loading...</pre>
+</body>
+</html>

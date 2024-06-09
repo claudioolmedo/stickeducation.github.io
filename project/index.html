@@ -31,7 +31,7 @@
 			}
 			#fork-button {
 				position: fixed;
-				top: 50;
+				bottom: 0;
 				left: 0;
 				margin: 10px;
 				padding: 10px 20px;
@@ -109,31 +109,6 @@
 		    console.log('Generated new project ID with timestamp:', projectId); // Log the new generated project ID with timestamp
 		    window.location.search = `?id=${projectId}`; // Reload the page with the new project ID
 		  }
-		</script>
-
-		<script>
-		  // Function to generate a random alphanumeric string
-		  function generateRandomId() {
-		    return Math.random().toString(36).substring(2, 10);
-		  }
-
-		  // Function to generate a timestamp in hexadecimal
-		  function generateTimestamp() {
-		    return new Date().getTime().toString(16);
-		  }
-
-		  // Generate idFork
-		  let idFork = generateRandomId() + '-' + generateTimestamp();
-		  console.log('Generated new fork ID with timestamp:', idFork); // Log the new generated fork ID with timestamp
-
-		  // Make idFork accessible globally
-		  window.idFork = idFork;
-
-		  // Update the FORK button with the generated link
-		  const forkButton = document.getElementById('fork-button');
-		  forkButton.onclick = () => {
-		    window.location.href = `?fork=${idFork}`;
-		  };
 		</script>
 
 		<script type="module">

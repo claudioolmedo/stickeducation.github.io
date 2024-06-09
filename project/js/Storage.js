@@ -33,20 +33,6 @@ function Storage() {
                     const projectPath = `projects/${projectId}`;
                     // Read from user's path
 
-        // Retrieve data from Firebase database and log it to the console
-        firebaseDB.ref(userPath).once('value').then(snapshot => {
-            const userData = snapshot.val();
-            console.log('Data from user path:', userData);
-        }).catch(error => {
-            console.error('Error fetching user data:', error);
-        });
-
-        firebaseDB.ref(projectPath).once('value').then(snapshot => {
-            const projectData = snapshot.val();
-            console.log('Data from project path:', projectData);
-        }).catch(error => {
-            console.error('Error fetching project data:', error);
-        });
 
         } else {
             console.log('No user is signed in.');

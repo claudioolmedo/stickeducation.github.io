@@ -6,7 +6,7 @@
     <title>Firebase Read and Write Test</title>
     <script type="module">
         // Import the necessary Firebase functions
-        import { firebaseDB, saveData } from './js/config/firebase.js';
+        import { firebaseAuth, signInWithGoogle, signOutUser, saveData, onAuthStateChanged } from './js/config/firebase.js';
         import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
         // Function to read data from Firebase
@@ -39,8 +39,48 @@
             }
         }
 
+        // Monitor the authentication state
+        onAuthStateChanged(firebaseAuth, (user) => {
+            if (user) {
+                console.log('User is signed in:', user);
+                window.currentUser = user; // Store the current user globally
+            } else {
+                console.log('No user is signed in.');
+                window.currentUser = null; // Clear the current user
+            }
+        });
+
         // Event listener for the write button
         document.addEventListener('DOMContentLoaded', () => {
+            const googleButton = document.createElement('button');
+            document.body.appendChild(googleButton);
+            googleButton.id = 'google-login';
+
+            googleButton.onclick = () => {
+                if (window.currentUser) {
+                    signOutUser().then(() => {
+                        console.log('User logged out successfully.');
+                    }).catch((error) => {
+                        console.error('Error logging out:', error);
+                    });
+                } else {
+                    signInWithGoogle().then((result) => {
+                        console.log('User logged in successfully:', result.user);
+                    }).catch((error) => {
+                        console.error('Error logging in:', error);
+                    });
+                }
+            };
+
+            // Update button text based on authentication state
+            onAuthStateChanged(firebaseAuth, (user) => {
+                if (user) {
+                    googleButton.textContent = 'Logout';
+                } else {
+                    googleButton.textContent = 'Login or Create account';
+                }
+            });
+
             document.getElementById('writeButton').addEventListener('click', () => {
                 const path = document.getElementById('pathInput').value;
                 const data = document.getElementById('dataInput').value;

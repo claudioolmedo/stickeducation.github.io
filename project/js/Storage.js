@@ -1,4 +1,4 @@
-import { firebaseAuth, getDatabase, ref, get, child, onAuthStateChanged } from './config/firebase.js'; // Ensure the path is correct
+import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js'; // Ensure the path is correct
 
 function Storage() {
 
@@ -27,41 +27,27 @@ function Storage() {
             window.currentUser = user; // Store the current user
             console.log('Current user window.currentUser:', window.currentUser);
             console.log('Project ID:', projectId);
+                    // Define the path to retrieve project data from the current user's directory
+                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
+                    // Define the path to retrieve general project data accessible by all users
+                    const projectPath = `projects/${projectId}`;
+                    // Read from user's path
+        // Read data from Firebase database at the user-specific path
+        firebaseDB.ref(userPath).once('value').then(snapshot => {
+            const userData = snapshot.val();
+            console.log('Data from user-specific path:', userData);
+        }).catch(error => {
+            console.error('Error reading user-specific data:', error);
+        });
 
-            // Get the database instance
-            const db = getDatabase();
+        // Read data from Firebase database at the general project path
+        firebaseDB.ref(projectPath).once('value').then(snapshot => {
+            const projectData = snapshot.val();
+            console.log('Data from general project path:', projectData);
+        }).catch(error => {
+            console.error('Error reading general project data:', error);
+        });
 
-            // Define the path to retrieve project data from the current user's directory
-            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-            const userRef = ref(db, userPath);
-
-            // Read data from Firebase database at the user-specific path
-            get(userRef).then(snapshot => {
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    console.log('Data retrieved from Firebase at:', userPath, userData);
-                } else {
-                    console.log('No data available at:', userPath);
-                }
-            }).catch(error => {
-                console.error('Error reading user-specific data:', error);
-            });
-
-            // Define the path to retrieve general project data accessible by all users
-            const projectPath = `projects/${projectId}`;
-            const projectRef = ref(db, projectPath);
-
-            // Read data from Firebase database at the general project path
-            get(projectRef).then(snapshot => {
-                if (snapshot.exists()) {
-                    const projectData = snapshot.val();
-                    console.log('Data retrieved from Firebase at:', projectPath, projectData);
-                } else {
-                    console.log('No data available at:', projectPath);
-                }
-            }).catch(error => {
-                console.error('Error reading general project data:', error);
-            });
 
         } else {
             console.log('No user is signed in.');
@@ -143,13 +129,13 @@ function Storage() {
                     // Define the path to store general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
                     // Save to user's path
-                    saveData(ref(getDatabase(), userPath), { projectId: projectId }).then(() => {
+                    saveData(userPath, { projectId: projectId }).then(() => {
                         console.log('Reference to project saved to Firebase at:', userPath);
                     }).catch(error => {
                         console.error('Failed to save project reference to Firebase:', error);
                     });
                     // Save to project's path
-                    saveData(ref(getDatabase(), projectPath), { data: data, firebaseId: window.currentUser.uid }).then(() => {
+                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid }).then(() => {
                         console.log('Data also saved to Firebase at:', projectPath);
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);

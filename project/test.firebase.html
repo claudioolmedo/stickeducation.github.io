@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Read Test</title>
+    <title>Firebase Read and Write Test</title>
     <script type="module">
         // Import the necessary Firebase functions
-        import { firebaseDB } from './js/config/firebase.js';
+        import { firebaseDB, saveData } from './js/config/firebase.js';
         import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
         // Function to read data from Firebase
@@ -27,14 +27,42 @@
             }
         }
 
-        // Read data from a specific path when the page loads
-        window.onload = () => {
+        // Function to write data to Firebase
+        async function writeData(path, data) {
+            try {
+                await saveData(path, data);
+                console.log("Data saved successfully");
+                document.getElementById('output').innerText = "Data saved successfully";
+            } catch (error) {
+                console.error("Error saving data:", error);
+                document.getElementById('output').innerText = "Error saving data: " + error;
+            }
+        }
+
+        // Event listener for the write button
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('writeButton').addEventListener('click', () => {
+                const path = document.getElementById('pathInput').value;
+                const data = document.getElementById('dataInput').value;
+                writeData(path, JSON.parse(data));
+            });
+
+            // Read data from a specific path when the page loads
             readData('/path/to/data'); // Change this to the path you want to read from
-        };
+        });
     </script>
 </head>
 <body>
-    <h1>Firebase Read Test</h1>
+    <h1>Firebase Read and Write Test</h1>
+    <div>
+        <label for="pathInput">Path:</label>
+        <input type="text" id="pathInput" value="/path/to/data">
+    </div>
+    <div>
+        <label for="dataInput">Data (JSON format):</label>
+        <textarea id="dataInput" rows="4" cols="50">{"key": "value"}</textarea>
+    </div>
+    <button id="writeButton">Write Data</button>
     <pre id="output">Loading...</pre>
 </body>
 </html>

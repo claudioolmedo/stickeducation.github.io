@@ -33,6 +33,27 @@ function Storage() {
                     const projectPath = `projects/${projectId}`;
                     // Read from user's path
 
+        // Fetch project data from Firebase and log the results
+        firebaseDB.ref(userPath).once('value').then((snapshot) => {
+            if (snapshot.exists()) {
+                console.log('User project data:', snapshot.val());
+            } else {
+                console.log('No user project data found.');
+            }
+        }).catch((error) => {
+            console.error('Error fetching user project data:', error);
+        });
+
+        // Fetch general project data accessible by all users and log the results
+        firebaseDB.ref(projectPath).once('value').then((snapshot) => {
+            if (snapshot.exists()) {
+                console.log('General project data:', snapshot.val());
+            } else {
+                console.log('No general project data found.');
+            }
+        }).catch((error) => {
+            console.error('Error fetching general project data:', error);
+        });
 
         } else {
             console.log('No user is signed in.');

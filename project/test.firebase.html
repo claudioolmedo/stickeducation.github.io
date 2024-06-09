@@ -58,6 +58,7 @@
             if (user) {
                 console.log('User is signed in:', user);
                 window.currentUser = user; // Store the current user globally
+                readData('/path/to/data'); // Read data after user is authenticated
             } else {
                 console.log('No user is signed in.');
                 window.currentUser = null; // Clear the current user
@@ -100,9 +101,6 @@
                 const data = document.getElementById('dataInput').value;
                 writeData(path, JSON.parse(data));
             });
-
-            // Read data from a specific path when the page loads
-            readData('/path/to/data'); // Change this to the path you want to read from
         });
     </script>
 </head>

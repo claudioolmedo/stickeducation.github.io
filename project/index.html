@@ -304,19 +304,51 @@
 		</script>
 		<script type="module">
 		  import { firebaseAuth, signInWithGoogle, signOutUser, pushData, onAuthStateChanged } from './js/config/firebase.js';
+		  import { ref, get, set } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+		  import { firebaseDB } from './js/config/firebase.js';
 
-
-		  // Monitor the authentication state
+		  // Monitor the authentication state and project ownership
 		  onAuthStateChanged(firebaseAuth, (user) => {
 		    if (user) {
 		      console.log('User is signed in:', user);
 		      window.currentUser = user; // Store the current user globally
+		      checkProjectOwnership(user.uid, projectId);
 		    } else {
 		      console.log('No user is signed in.');
 		      window.currentUser = null; // Clear the current user
+		      displayForkButton(); // Always display fork button if no user is signed in
 		    }
 		  });
 
+		  function checkProjectOwnership(userId, projectId) {
+		    const projectUserPath = `users/${userId}/projects/${projectId}`;
+		    const projectRef = ref(firebaseDB, projectUserPath);
+		    get(projectRef).then((snapshot) => {
+		      if (!snapshot.exists()) {
+		        displayForkButton();
+		      }
+		    });
+		  }
+
+		  function displayForkButton() {
+		    const forkButton = document.createElement('button');
+		    forkButton.textContent = 'FORK';
+		    forkButton.onclick = forkProject;
+		    document.body.appendChild(forkButton);
+		  }
+
+		  function forkProject() {
+		    const newProjectId = generateNewProjectId();
+		    const newProjectPath = `projects/${newProjectId}`;
+		    const originalProjectPath = `projects/${projectId}`;
+
+		    // Fetch original project data
+		    const originalDataRef = ref(firebaseDB, originalProjectPath);
+		    get(originalDataRef).then((snapshot) => {
+		      if (snapshot.exists()) {
+		        const originalData = snapshot.val();
+		        originalData.forkedFrom = projectId; // Add reference to original project
+		        // Save the forked project
 		  const googleButton = document.createElement('button');
 		  document.body.appendChild(googleButton);
 		  googleButton.id = 'google-login';

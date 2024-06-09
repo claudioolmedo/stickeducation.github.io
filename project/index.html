@@ -346,29 +346,5 @@
 		    }
 		  });
 		</script>
-	<script type="module">
-	  import { firebaseDB, onAuthStateChanged } from './js/config/firebase.js';
-
-	  // Function to read data from Firebase and log it
-	  function readDataFromFirebase() {
-	    const dbRef = firebase.database().ref();
-	    dbRef.once('value', (snapshot) => {
-	      const data = snapshot.val();
-	      console.log('Data retrieved from Firebase:', data);
-	    }).catch((error) => {
-	      console.error('Error fetching data from Firebase:', error);
-	    });
-	  }
-
-	  // Call readDataFromFirebase when a user is authenticated
-	  onAuthStateChanged(firebaseDB, (user) => {
-	    if (user) {
-	      console.log('User is authenticated, reading data...');
-	      readDataFromFirebase();
-	    } else {
-	      console.log('User is not authenticated.');
-	    }
-	  });
-	</script>
 	</body>
 </html>

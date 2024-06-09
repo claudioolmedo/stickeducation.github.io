@@ -32,11 +32,9 @@ function Storage() {
                     const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
                     // Define the path to retrieve general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
-                    // Read from user's path
-
                     // Fetch project data from Firebase and log the results
-                    const dataRef = ref(firebaseDB, userPath);
-                    get(dataRef).then((snapshot) => {
+                    const userDataRef = ref(firebaseDB, userPath);
+                    get(userDataRef).then((snapshot) => {
                         if (snapshot.exists()) {
                             console.log('User project data:', snapshot.val());
                         } else {

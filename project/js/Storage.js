@@ -44,18 +44,6 @@ function Storage() {
                         console.error('Error fetching user project data:', error);
                     });
 
-                    // Fetch general project data accessible by all users and log the results
-                    const projectDataRef = ref(firebaseDB, projectPath);
-                    get(projectDataRef).then((snapshot) => {
-                        if (snapshot.exists()) {
-                            console.log('General project data:', snapshot.val());
-                        } else {
-                            console.log('No general project data found.');
-                        }
-                    }).catch((error) => {
-                        console.error('Error fetching general project data:', error);
-                    });
-
         } else {
             console.log('No user is signed in.');
             window.currentUser = null; // Clear the current user

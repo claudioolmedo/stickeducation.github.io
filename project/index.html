@@ -349,6 +349,19 @@
 		        const originalData = snapshot.val();
 		        originalData.forkedFrom = projectId; // Add reference to original project
 		        // Save the forked project
+		        const newDataRef = ref(firebaseDB, newProjectPath);
+		        set(newDataRef, originalData).then(() => {
+		          console.log('Forked project saved successfully');
+		          window.location.href = `?id=${newProjectId}`; // Redirect to the new project
+		        });
+		      }
+		    });
+		  }
+
+		  function generateNewProjectId() {
+		    return Math.random().toString(36).substring(2, 15) + '-' + new Date().getTime().toString(16);
+		  }
+
 		  const googleButton = document.createElement('button');
 		  document.body.appendChild(googleButton);
 		  googleButton.id = 'google-login';

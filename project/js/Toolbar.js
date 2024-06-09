@@ -61,21 +61,32 @@ function Toolbar( editor ) {
 	} );
 	container.add( local );
 
+	// FORK button
+	const forkButton = new UIButton();
+	forkButton.dom.className = 'Button';
+	forkButton.dom.textContent = 'FORK';
+	forkButton.onClick( function () {
+
+		window.location.href = '?id=p74z2fpg-TEST';
+
+	} );
+	container.add( forkButton );
+
 	//
 
 	signals.transformModeChanged.add( function ( mode ) {
 
-		translate.dom.classList.remove( 'selected' );
-		rotate.dom.classList.remove( 'selected' );
-		scale.dom.classList.remove( 'selected' );
+			translate.dom.classList.remove( 'selected' );
+			rotate.dom.classList.remove( 'selected' );
+			scale.dom.classList.remove( 'selected' );
 
-		switch ( mode ) {
+			switch ( mode ) {
 
-			case 'translate': translate.dom.classList.add( 'selected' ); break;
-			case 'rotate': rotate.dom.classList.add( 'selected' ); break;
-			case 'scale': scale.dom.classList.add( 'selected' ); break;
+				case 'translate': translate.dom.classList.add( 'selected' ); break;
+				case 'rotate': rotate.dom.classList.add( 'selected' ); break;
+				case 'scale': scale.dom.classList.add( 'selected' ); break;
 
-		}
+			}
 
 	} );
 

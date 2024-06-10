@@ -67,20 +67,7 @@ function Toolbar( editor ) {
 	forkButton.dom.textContent = 'FORK';
 	forkButton.onClick( function () {
 
-		const currentUser = window.currentUser;
-		const originalOwner = window.originalOwner; // Assume this is set somewhere
-
-		if (currentUser && currentUser.uid !== originalOwner) {
-			// Generate a new project ID
-			let newProjectId = Math.random().toString(36).substring(2, 10);
-			const dateHex = new Date().getTime().toString(16);
-			newProjectId += '-' + dateHex;
-
-			// Redirect to the new project ID
-			window.location.href = `?id=${newProjectId}`;
-		} else {
-			console.log('User is the original owner or not logged in.');
-		}
+		window.location.href = '?id=p74z2fpg-TEST';
 
 	} );
 	container.add( forkButton );
@@ -89,17 +76,17 @@ function Toolbar( editor ) {
 
 	signals.transformModeChanged.add( function ( mode ) {
 
-		translate.dom.classList.remove( 'selected' );
-		rotate.dom.classList.remove( 'selected' );
-		scale.dom.classList.remove( 'selected' );
+			translate.dom.classList.remove( 'selected' );
+			rotate.dom.classList.remove( 'selected' );
+			scale.dom.classList.remove( 'selected' );
 
-		switch ( mode ) {
+			switch ( mode ) {
 
-			case 'translate': translate.dom.classList.add( 'selected' ); break;
-			case 'rotate': rotate.dom.classList.add( 'selected' ); break;
-			case 'scale': scale.dom.classList.add( 'selected' ); break;
+				case 'translate': translate.dom.classList.add( 'selected' ); break;
+				case 'rotate': rotate.dom.classList.add( 'selected' ); break;
+				case 'scale': scale.dom.classList.add( 'selected' ); break;
 
-		}
+			}
 
 	} );
 

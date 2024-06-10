@@ -86,13 +86,9 @@ function Toolbar( editor ) {
 	const currentUser = window.currentUser;
 	const originalOwner = window.originalOwner; // Assume this is set somewhere
 
-	if (currentUser) {
-		if (currentUser.uid !== originalOwner) {
-			// Show the FORK button
-			container.add( forkButton );
-		} else {
-			console.log('OWNER');
-		}
+	if (currentUser && currentUser.uid !== originalOwner) {
+		// Show the FORK button
+		container.add( forkButton );
 	}
 
 	//

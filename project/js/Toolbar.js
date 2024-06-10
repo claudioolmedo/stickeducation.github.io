@@ -1,3 +1,5 @@
+// To display some hidden items, uncomment the respective item. Example:
+// container.add( scale );
 import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
 
 function Toolbar( editor ) {
@@ -81,14 +83,19 @@ function Toolbar( editor ) {
 		}
 
 	} );
+	container.add( forkButton );
 
-	// Check if the current user is different from the original owner
+	// Add logic to check if the current user is not the original owner
 	const currentUser = window.currentUser;
 	const originalOwner = window.originalOwner; // Assume this is set somewhere
 
 	if (currentUser && currentUser.uid !== originalOwner) {
-		// Show the FORK button
-		container.add( forkButton );
+		// Change the style of the FORK button to indicate that it can be forked
+		forkButton.dom.style.backgroundColor = 'green';
+		forkButton.dom.style.color = 'white';
+	} else {
+		forkButton.dom.style.backgroundColor = 'gray';
+		forkButton.dom.style.color = 'black';
 	}
 
 	//
@@ -96,7 +103,7 @@ function Toolbar( editor ) {
 	signals.transformModeChanged.add( function ( mode ) {
 
 		translate.dom.classList.remove( 'selected' );
-		rotate.dom.classList.remove( 'selected' );
+		 rotate.dom.classList.remove( 'selected' );
 		scale.dom.classList.remove( 'selected' );
 
 		switch ( mode ) {

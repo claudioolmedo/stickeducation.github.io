@@ -48,7 +48,7 @@ function Toolbar( editor ) {
 		signals.transformModeChanged.dispatch( 'scale' );
 
 	} );
-	//container.add( scale );
+	container.add( scale );
 
 	const local = new UICheckbox( false );
 	local.dom.title = strings.getKey( 'toolbar/local' );
@@ -66,7 +66,7 @@ function Toolbar( editor ) {
 	forkButton.onClick( function () {
 
 		const currentUser = window.currentUser;
-		const originalOwner = window.originalOwner; // Assume this is set somewhere
+		const originalOwner = window.originalOwner;
 
 		if (currentUser && currentUser.uid !== originalOwner) {
 			// Generate a new project ID
@@ -82,23 +82,25 @@ function Toolbar( editor ) {
 
 	} );
 
-	// Check if the current user is different from the original owner
-	const currentUser = window.currentUser;
-	const originalOwner = window.originalOwner; // Assume this is set somewhere
+	container.update = function () {
+		const currentUser = window.currentUser;
+		const originalOwner = window.originalOwner;
 
-	console.log('Current User:', currentUser);
-	console.log('Original Owner:', originalOwner);
+		console.log('Current User:', currentUser);
+		console.log('Original Owner:', originalOwner);
 
-	if (currentUser) {
-		if (currentUser.uid !== originalOwner) {
-			// Show the FORK button
-			container.add(forkButton);
-		} else {
-			console.log('OWNER');
+		if (currentUser) {
+			if (currentUser.uid !== originalOwner) {
+				// Show the FORK button
+				container.add(forkButton);
+			} else {
+				console.log('OWNER');
+			}
 		}
-	}
+	};
 
-	//
+	// Initial update
+	container.update();
 
 	signals.transformModeChanged.add( function ( mode ) {
 

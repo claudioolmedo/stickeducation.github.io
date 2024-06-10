@@ -85,25 +85,12 @@ function Toolbar( editor ) {
 	} );
 	container.add( forkButton );
 
-	// Add logic to check if the current user is not the original owner
-	const currentUser = window.currentUser;
-	const originalOwner = window.originalOwner; // Assume this is set somewhere
-
-	if (currentUser && currentUser.uid !== originalOwner) {
-		// Change the style of the FORK button to indicate that it can be forked
-		forkButton.dom.style.backgroundColor = 'green';
-		forkButton.dom.style.color = 'white';
-	} else {
-		forkButton.dom.style.backgroundColor = 'gray';
-		forkButton.dom.style.color = 'black';
-	}
-
 	//
 
 	signals.transformModeChanged.add( function ( mode ) {
 
 		translate.dom.classList.remove( 'selected' );
-		 rotate.dom.classList.remove( 'selected' );
+		rotate.dom.classList.remove( 'selected' );
 		scale.dom.classList.remove( 'selected' );
 
 		switch ( mode ) {

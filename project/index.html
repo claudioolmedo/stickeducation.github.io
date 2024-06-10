@@ -303,7 +303,8 @@
 		</script>
 		<script type="module">
 		  import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-		  import { firebaseAuth, firebaseDB, signInWithGoogle, signOutUser, onAuthStateChanged } from './js/config/firebase.js';
+		  import { firebaseAuth, firebaseDB, signInWithGoogle, signOutUser, pushData, onAuthStateChanged } from './js/config/firebase.js';
+
 
 		  // Monitor the authentication state
 		  onAuthStateChanged(firebaseAuth, (user) => {
@@ -315,11 +316,10 @@
 		      const projectId = new URLSearchParams(window.location.search).get('id');
 		      const projectPath = `projects/${projectId}/data`;
 		      const projectDataRef = ref(firebaseDB, projectPath);
-
 		      get(projectDataRef).then((snapshot) => {
 		        if (snapshot.exists()) {
 		          const data = snapshot.val();
-		          window.originalOwner = data.OriginalOwnerID;
+		          window.originalOwner = data.firebaseId;
 		          console.log('Original Owner:', window.originalOwner);
 		          // Update the Toolbar component
 		          updateToolbar();

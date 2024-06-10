@@ -161,7 +161,6 @@
 			});
 
 			// Monitor the authentication state
-			import { onAuthStateChanged } from './js/config/firebase.js';
 			onAuthStateChanged(firebaseAuth, (user) => {
 				if (user) {
 					console.log('User is signed in:', user);

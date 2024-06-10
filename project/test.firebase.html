@@ -11,14 +11,7 @@
 
         // Function to read data from Firebase
         async function readData(path) {
-            if (!window.currentUser) {
-                console.error("User is not authenticated");
-                document.getElementById('output').innerText = "User is not authenticated";
-                return;
-            }
-
-            const userPath = `/users/${window.currentUser.uid}${path}`;
-            const dataRef = ref(firebaseDB, userPath);
+            const dataRef = ref(firebaseDB, path);
             try {
                 const snapshot = await get(dataRef);
                 if (snapshot.exists()) {
@@ -36,15 +29,8 @@
 
         // Function to write data to Firebase
         async function writeData(path, data) {
-            if (!window.currentUser) {
-                console.error("User is not authenticated");
-                document.getElementById('output').innerText = "User is not authenticated";
-                return;
-            }
-
-            const userPath = `/users/${window.currentUser.uid}${path}`;
             try {
-                await saveData(userPath, data);
+                await saveData(path, data);
                 console.log("Data saved successfully");
                 document.getElementById('output').innerText = "Data saved successfully";
             } catch (error) {

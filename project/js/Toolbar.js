@@ -59,29 +59,6 @@ function Toolbar( editor ) {
 	} );
 	container.add( local );
 
-	// FORK button
-	const forkButton = new UIButton();
-	forkButton.dom.className = 'Button';
-	forkButton.dom.textContent = 'FORK';
-	forkButton.onClick( function () {
-
-		const currentUser = window.currentUser;
-		const originalOwner = window.originalOwner;
-
-		if (currentUser && currentUser.uid !== originalOwner) {
-			// Generate a new project ID
-			let newProjectId = Math.random().toString(36).substring(2, 10);
-			const dateHex = new Date().getTime().toString(16);
-			newProjectId += '-' + dateHex;
-
-			// Redirect to the new project ID
-			window.location.href = `?id=${newProjectId}`;
-		} else {
-			console.log('User is the original owner or not logged in.');
-		}
-
-	} );
-
 	container.update = function () {
 		const currentUser = window.currentUser;
 		const originalOwner = window.originalOwner;
@@ -91,10 +68,9 @@ function Toolbar( editor ) {
 
 		if (currentUser) {
 			if (currentUser.uid !== originalOwner) {
-				// Show the FORK button
-				container.add(forkButton);
+				console.log('User is not the original owner.');
 			} else {
-				console.log('OWNER');
+				console.log('User is the original owner.');
 			}
 		}
 	};

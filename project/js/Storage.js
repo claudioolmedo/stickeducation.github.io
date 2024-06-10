@@ -21,6 +21,38 @@ function Storage() {
     // Variable to store the database instance
 	let database;
 
+    // Check the authentication state when initializing storage
+    onAuthStateChanged(firebaseAuth, user => {
+        if (user) {
+            console.log('User is signed in:', user);
+            window.currentUser = user; // Store the current user
+            console.log('Current user window.currentUser:', window.currentUser);
+            console.log('Project ID:', projectId);
+                    // Define the path to retrieve project data from the current user's directory
+                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
+                    // Define the path to retrieve general project data accessible by all users
+                    const projectPath = `projects/${projectId}`;
+                    // Fetch project data from Firebase and update IndexedDB
+                    const userDataRef = ref(firebaseDB, userPath);
+                    get(userDataRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            console.log('User project data:', data);
+                            updateIndexedDB(data);
+                        } else {
+                            console.log('No user project data found.');
+                        }
+                    }).catch((error) => {
+                        console.error('Error fetching user project data:', error);
+                    });
+
+        } else {
+            console.log('No user is signed in.');
+            window.currentUser = null; // Clear the current user
+        }
+    });
+
+
     // Retrieve project ID from URL parameters to check if it's being received
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
@@ -34,38 +66,6 @@ function Storage() {
             console.log('Data updated in IndexedDB.');
         };
     }
-
-    // Check the authentication state when initializing storage
-    onAuthStateChanged(firebaseAuth, user => {
-        if (user) {
-            console.log('User is signed in:', user);
-            window.currentUser = user; // Store the current user
-            console.log('Current user window.currentUser:', window.currentUser);
-            console.log('Project ID:', projectId);
-
-            // Define the path to retrieve project data from the current user's directory
-            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-            // Define the path to retrieve general project data accessible by all users
-            const projectPath = `projects/${projectId}`;
-            // Fetch project data from Firebase and update IndexedDB
-            const userDataRef = ref(firebaseDB, userPath);
-            get(userDataRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    console.log('User project data:', data);
-                    updateIndexedDB(data);
-                } else {
-                    console.log('No user project data found.');
-                }
-            }).catch((error) => {
-                console.error('Error fetching user project data:', error);
-            });
-
-        } else {
-            console.log('No user is signed in.');
-            window.currentUser = null; // Clear the current user
-        }
-    });
 
     // Return an object containing methods to interact with IndexedDB
     return {

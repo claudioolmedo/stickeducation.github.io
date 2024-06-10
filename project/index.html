@@ -341,8 +341,10 @@
 
 		  function updateToolbar() {
 		    const toolbar = document.getElementById('toolbar');
-		    if (toolbar) {
+		    if (toolbar && typeof toolbar.update === 'function') {
 		      toolbar.update();
+		    } else {
+		      console.error('Toolbar update function is not available.');
 		    }
 		  }
 

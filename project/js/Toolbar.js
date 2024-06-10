@@ -86,13 +86,10 @@ function Toolbar( editor ) {
 	const currentUser = window.currentUser;
 	const originalOwner = window.originalOwner; // Assume this is set somewhere
 
-	console.log('Current User:', currentUser);
-	console.log('Original Owner:', originalOwner);
-
 	if (currentUser) {
 		if (currentUser.uid !== originalOwner) {
 			// Show the FORK button
-			container.add(forkButton);
+			container.add( forkButton );
 		} else {
 			console.log('OWNER');
 		}
@@ -102,17 +99,17 @@ function Toolbar( editor ) {
 
 	signals.transformModeChanged.add( function ( mode ) {
 
-			translate.dom.classList.remove( 'selected' );
-			rotate.dom.classList.remove( 'selected' );
-			scale.dom.classList.remove( 'selected' );
+		translate.dom.classList.remove( 'selected' );
+		rotate.dom.classList.remove( 'selected' );
+		scale.dom.classList.remove( 'selected' );
 
-			switch ( mode ) {
+		switch ( mode ) {
 
-				case 'translate': translate.dom.classList.add( 'selected' ); break;
-				case 'rotate': rotate.dom.classList.add( 'selected' ); break;
-				case 'scale': scale.dom.classList.add( 'selected' ); break;
+			case 'translate': translate.dom.classList.add( 'selected' ); break;
+			case 'rotate': rotate.dom.classList.add( 'selected' ); break;
+			case 'scale': scale.dom.classList.add( 'selected' ); break;
 
-			}
+		}
 
 	} );
 

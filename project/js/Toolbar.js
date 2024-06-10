@@ -61,6 +61,17 @@ function Toolbar( editor ) {
 	} );
 	container.add( local );
 
+	// FORK button
+	const forkButton = new UIButton();
+	forkButton.dom.className = 'Button';
+	forkButton.dom.textContent = 'FORK';
+	forkButton.onClick( function () {
+
+		signals.forkAction.dispatch();
+
+	} );
+	container.add( forkButton );
+
 	//
 
 	signals.transformModeChanged.add( function ( mode ) {

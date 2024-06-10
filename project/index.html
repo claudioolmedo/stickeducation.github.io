@@ -151,86 +151,75 @@
 			const resizer = new Resizer( editor );
 			document.body.appendChild( resizer.dom );
 
-			// Initialize storage
+			//
+
 			editor.storage.init( function () {
+
 				editor.storage.get( function ( state ) {
+
+					if ( isLoadingFromHash ) return;
+
 					if ( state !== undefined ) {
+
 						editor.fromJSON( state );
+
 					}
-				});
-			});
 
-			// Monitor the authentication state
-			onAuthStateChanged(firebaseAuth, (user) => {
-				if (user) {
-					console.log('User is signed in:', user);
-					window.currentUser = user; // Store the current user globally
+					const selected = editor.config.getKey( 'selected' );
 
-					// Fetch the original owner from Firebase
-					const projectId = new URLSearchParams(window.location.search).get('id');
-					const projectPath = `projects/${projectId}/data`;
-					const projectDataRef = ref(firebaseDB, projectPath);
+					if ( selected !== undefined ) {
 
-					get(projectDataRef).then((snapshot) => {
-						if (snapshot.exists()) {
-							const data = snapshot.val();
-							window.originalOwner = data.OriginalOwnerID;
-							console.log('Original Owner:', window.originalOwner);
-							// Update the Toolbar component
-							updateToolbar();
-						} else {
-							console.log('No project data found.');
-						}
-					}).catch((error) => {
-						console.error('Error fetching project data:', error);
-					});
+						editor.selectByUuid( selected );
 
-				} else {
-					console.log('No user is signed in.');
-					window.currentUser = null; // Clear the current user
-					window.originalOwner = null; // Clear the original owner
-					// Update the Toolbar component
-					updateToolbar();
+					}
+
+				} );
+
+				//
+
+				let timeout;
+
+				function saveState() {
+
+					if ( editor.config.getKey( 'autosave' ) === false ) {
+
+						return;
+
+					}
+
+					clearTimeout( timeout );
+
+					timeout = setTimeout( function () {
+
+						editor.signals.savingStarted.dispatch();
+
+						timeout = setTimeout( function () {
+
+							editor.storage.set( editor.toJSON() );
+
+							editor.signals.savingFinished.dispatch();
+
+						}, 100 );
+
+					}, 1000 );
+
 				}
-			});
 
-			function updateToolbar() {
-				const toolbar = document.getElementById('toolbar');
-				if (toolbar && typeof toolbar.update === 'function') {
-					toolbar.update();
-				} else {
-					console.error('Toolbar update function is not available.');
-				}
-			}
+				const signals = editor.signals;
 
-			const googleButton = document.createElement('button');
-			document.body.appendChild(googleButton);
-			googleButton.id = 'google-login';
+				signals.geometryChanged.add( saveState );
+				signals.objectAdded.add( saveState );
+				signals.objectChanged.add( saveState );
+				signals.objectRemoved.add( saveState );
+				signals.materialChanged.add( saveState );
+				signals.sceneBackgroundChanged.add( saveState );
+				signals.sceneEnvironmentChanged.add( saveState );
+				signals.sceneFogChanged.add( saveState );
+				signals.sceneGraphChanged.add( saveState );
+				signals.scriptChanged.add( saveState );
+				signals.historyChanged.add( saveState );
 
-			googleButton.onclick = () => {
-				if (window.currentUser) {
-					signOutUser().then(() => {
-						console.log('User logged out successfully.');
-					}).catch((error) => {
-						console.error('Error logging out:', error);
-					});
-				} else {
-					signInWithGoogle().then((result) => {
-						console.log('User logged in successfully:', result.user);
-					}).catch((error) => {
-						console.error('Error logging in:', error);
-					});
-				}
-			};
-
-			// Update button text based on authentication state
-			onAuthStateChanged(firebaseAuth, (user) => {
-				if (user) {
-					googleButton.textContent = 'Logout';
-				} else {
-					googleButton.textContent = 'Login or Create account';
-				}
-			});
+			} );
 
 			//
 

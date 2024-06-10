@@ -351,6 +351,7 @@
 		    }
 		  });
 
+<<<<<<< HEAD
 		  function updateToolbar() {
 		    const toolbar = document.getElementById('toolbar');
 		    if (toolbar && typeof toolbar.update === 'function') {
@@ -360,6 +361,37 @@
 		    }
 		  }
 
+=======
+		  function checkProjectOwnership(userId, projectId) {
+		    const projectUserPath = `users/${userId}/projects/${projectId}`;
+		    const projectRef = ref(firebaseDB, projectUserPath);
+		    get(projectRef).then((snapshot) => {
+		      if (!snapshot.exists()) {
+		        displayForkButton();
+		      }
+		    });
+		  }
+
+		  function displayForkButton() {
+		    const forkButton = document.createElement('button');
+		    forkButton.textContent = 'FORK';
+		    forkButton.onclick = forkProject;
+		    document.body.appendChild(forkButton);
+		  }
+
+		  function forkProject() {
+		    const newProjectId = generateNewProjectId();
+		    const newProjectPath = `projects/${newProjectId}`;
+		    const originalProjectPath = `projects/${projectId}`;
+
+		    // Fetch original project data
+		    const originalDataRef = ref(firebaseDB, originalProjectPath);
+		    get(originalDataRef).then((snapshot) => {
+		      if (snapshot.exists()) {
+		        const originalData = snapshot.val();
+		        originalData.forkedFrom = projectId; // Add reference to original project
+		        // Save the forked project
+>>>>>>> parent of 219d94e (Forked project)
 		  const googleButton = document.createElement('button');
 		  document.body.appendChild(googleButton);
 		  googleButton.id = 'google-login';

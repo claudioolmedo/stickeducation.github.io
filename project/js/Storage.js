@@ -125,7 +125,7 @@ function Storage() {
             // Handle successful data storage
 			request.onsuccess = function () {
                 // Log the successful storage and the time taken
-                console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
+                console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
                 // Check if there is a logged-in user before saving to Firebase
                 if (window.currentUser) {
                     // Define the path to store project data under the current user's directory
@@ -138,8 +138,8 @@ function Storage() {
                     }).catch(error => {
                         console.error('Failed to save project reference to Firebase:', error);
                     });
-                    // Save to project's path
-                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid }).then(() => {
+                    // Save to project's path with OriginalOwnerID
+                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, OriginalOwnerID: window.currentUser.uid }).then(() => {
                         console.log('Data also saved to Firebase at:', projectPath);
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);

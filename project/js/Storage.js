@@ -45,6 +45,8 @@ function Storage() {
                     // Check if the current user is the owner
                     if (data.ownerId && data.ownerId === window.currentUser.uid) {
                         console.log('OWNER');
+                    } else {
+                        console.log('NO OWNER');
                     }
                 } else {
                     console.log('No user project data found.');

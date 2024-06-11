@@ -175,7 +175,7 @@ function Storage() {
                         console.log('Data also saved to Firebase at:', projectPath);
                         // Check if the current user is the owner
                         if (window.currentUser.uid === window.currentUser.uid) {
-                            console.log('OWNER');
+                            console.log('OWNER request.onsuccess save ');
                         }
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);

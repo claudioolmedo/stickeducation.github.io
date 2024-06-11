@@ -72,8 +72,9 @@ function Toolbar( editor ) {
 	forkButton.dom.className = 'Button';
 	forkButton.dom.textContent = 'FORK';
 	forkButton.onClick( function () {
-		console.log('FORK button clicked');
+
 		signals.forkAction.dispatch();
+
 	} );
 	container.add( forkButton );
 
@@ -81,24 +82,18 @@ function Toolbar( editor ) {
 
 	signals.transformModeChanged.add( function ( mode ) {
 
-			translate.dom.classList.remove( 'selected' );
-			rotate.dom.classList.remove( 'selected' );
-			scale.dom.classList.remove( 'selected' );
+		translate.dom.classList.remove( 'selected' );
+		rotate.dom.classList.remove( 'selected' );
+		scale.dom.classList.remove( 'selected' );
 
-			switch ( mode ) {
+		switch ( mode ) {
 
-				case 'translate': translate.dom.classList.add( 'selected' ); break;
-				case 'rotate': rotate.dom.classList.add( 'selected' ); break;
-				case 'scale': scale.dom.classList.add( 'selected' ); break;
+			case 'translate': translate.dom.classList.add( 'selected' ); break;
+			case 'rotate': rotate.dom.classList.add( 'selected' ); break;
+			case 'scale': scale.dom.classList.add( 'selected' ); break;
 
-			}
+		}
 
-	} );
-
-	// Adicione um listener para o sinal forkAction
-	signals.forkAction.add( function () {
-		console.log('forkAction signal dispatched');
-		// Adicione aqui a lógica que deve ser executada quando o sinal for despachado
 	} );
 
 	return container;

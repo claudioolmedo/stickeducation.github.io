@@ -28,23 +28,30 @@ function Storage() {
             window.currentUser = user; // Store the current user
             console.log('Current user window.currentUser:', window.currentUser);
             console.log('Project ID:', projectId);
-                    // Define the path to retrieve project data from the current user's directory
-                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-                    // Define the path to retrieve general project data accessible by all users
-                    const projectPath = `projects/${projectId}`;
-                    // Fetch project data from Firebase and update IndexedDB
-                    const userDataRef = ref(firebaseDB, userPath);
-                    get(userDataRef).then((snapshot) => {
-                        if (snapshot.exists()) {
-                            const data = snapshot.val();
-                            console.log('User project data:', data);
-                            updateIndexedDB(data);
-                        } else {
-                            console.log('No user project data found.');
-                        }
-                    }).catch((error) => {
-                        console.error('Error fetching user project data:', error);
-                    });
+
+            // Define the path to retrieve project data from the current user's directory
+            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
+            // Define the path to retrieve general project data accessible by all users
+            const projectPath = `projects/${projectId}`;
+            
+            // Fetch project data from Firebase and update IndexedDB
+            const userDataRef = ref(firebaseDB, userPath);
+            get(userDataRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    console.log('User project data:', data);
+                    updateIndexedDB(data);
+
+                    // Check if the current user is the owner
+                    if (data.ownerId && data.ownerId === window.currentUser.uid) {
+                        console.log('OWNER');
+                    }
+                } else {
+                    console.log('No user project data found.');
+                }
+            }).catch((error) => {
+                console.error('Error fetching user project data:', error);
+            });
 
         } else {
             console.log('No user is signed in.');
@@ -141,6 +148,10 @@ function Storage() {
                     // Save to project's path with owner information
                     saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
                         console.log('Data also saved to Firebase at:', projectPath);
+                        // Check if the current user is the owner
+                        if (window.currentUser.uid === window.currentUser.uid) {
+                            console.log('OWNER');
+                        }
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);
                     });
@@ -169,4 +180,3 @@ function Storage() {
 }
 
 export { Storage };
-

@@ -46,20 +46,27 @@ function Storage() {
                     if (data.ownerId) {
                         if (data.ownerId === window.currentUser.uid) {
                             console.log('OWNER');
+                            window.isReadOnly = false; // User can edit
                         } else {
                             console.log('NO OWNER');
+                            window.isReadOnly = true; // User cannot edit
                         }
+                    } else {
+                        window.isReadOnly = true; // Default to read-only if no ownerId
                     }
                 } else {
                     console.log('No user project data found.');
+                    window.isReadOnly = true; // Default to read-only if no data found
                 }
             }).catch((error) => {
                 console.error('Error fetching user project data:', error);
+                window.isReadOnly = true; // Default to read-only on error
             });
 
         } else {
             console.log('No user is signed in.');
             window.currentUser = null; // Clear the current user
+            window.isReadOnly = true; // Default to read-only if no user is signed in
         }
     });
 

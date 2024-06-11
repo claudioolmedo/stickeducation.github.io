@@ -1,11 +1,17 @@
 // To display some hidden items, uncomment the respective item. Example:
 // container.add( scale );
 import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
+import { Signal } from './libs/signals.js'; // Certifique-se de importar a classe Signal
 
 function Toolbar( editor ) {
 
 	const signals = editor.signals;
 	const strings = editor.strings;
+
+	// Defina o sinal forkAction
+	if (!signals.forkAction) {
+		signals.forkAction = new Signal();
+	}
 
 	const container = new UIPanel();
 	container.setId( 'toolbar' );

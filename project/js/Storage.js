@@ -138,12 +138,16 @@ function Storage() {
                     }).catch(error => {
                         console.error('Failed to save project reference to Firebase:', error);
                     });
-                    // Save to project's path with owner information
-                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
+                    // Save to project's path
+                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid }).then(() => {
                         console.log('Data also saved to Firebase at:', projectPath);
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);
                     });
+                    // Check if the ownerId and currentUser.uid are the same
+                    if (window.currentUser.uid === data.ownerId) {
+                        console.log('OWNER');
+                    }
                 }
 			};
 		},
@@ -169,4 +173,5 @@ function Storage() {
 }
 
 export { Storage };
+
 

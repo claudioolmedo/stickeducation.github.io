@@ -7,6 +7,11 @@ function Toolbar( editor ) {
 	const signals = editor.signals;
 	const strings = editor.strings;
 
+	// Ensure forkAction is defined
+	if (!signals.forkAction) {
+		signals.forkAction = { dispatch: function() {} };
+	}
+
 	const container = new UIPanel();
 	container.setId( 'toolbar' );
 
@@ -66,9 +71,8 @@ function Toolbar( editor ) {
 	forkButton.dom.className = 'Button';
 	forkButton.dom.textContent = 'FORK';
 	forkButton.onClick( function () {
-
-		signals.forkAction.dispatch();
-
+		// Redirect to a specific URL
+		window.location.href = 'https://example.com';
 	} );
 	container.add( forkButton );
 

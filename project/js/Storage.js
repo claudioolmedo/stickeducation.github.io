@@ -168,8 +168,8 @@ function Storage() {
                     get(projectDataRef).then((snapshot) => {
                         if (snapshot.exists()) {
                             const projectData = snapshot.val();
-                            if (projectData.ownerId && projectData.ownerId !== window.currentUser.uid) {
-                                console.log('IT ALREADY HAS AN OWNER');
+                            if (projectData.ownerId) {
+                                console.log('JA TEM DONO');
                             } else {
                                 // Save to user's path
                                 saveData(userPath, { projectId: projectId }).then(() => {

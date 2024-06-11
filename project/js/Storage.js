@@ -7,54 +7,19 @@ function Storage() {
     const indexedDB = window.indexedDB;
 
     // Check if IndexedDB is available in the browser
-    if (indexedDB === undefined) {
+    if ( indexedDB === undefined ) {
         // Log a warning if IndexedDB is not available
-        console.warn('Storage: IndexedDB not available.');
+        console.warn( 'Storage: IndexedDB not available.' );
         // Return a dummy object with empty methods to avoid errors when calling these methods
         return { init: function () {}, get: function () {}, set: function () {}, clear: function () {} };
     }
 
     // Define the database name and version for IndexedDB
-    const name = 'threejs-editor';
-    const version = 1;
+	const name = 'threejs-editor';
+	const version = 1;
 
     // Variable to store the database instance
-    let database;
-
-    // Retrieve project ID from URL parameters to check if it's being received
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectId = urlParams.get('id');
-    console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
-
-    function updateIndexedDB(data) {
-        const transaction = database.transaction(['states'], 'readwrite');
-        const objectStore = transaction.objectStore('states');
-        const request = objectStore.put(data, 0);
-        request.onsuccess = function () {
-            console.log('Data updated in IndexedDB.');
-        };
-        request.onerror = function (event) {
-            console.error('Error updating IndexedDB:', event);
-        };
-    }
-
-    // Initialize the database
-    const initDB = function (callback) {
-        const request = indexedDB.open(name, version);
-        request.onupgradeneeded = function (event) {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains('states')) {
-                db.createObjectStore('states');
-            }
-        };
-        request.onsuccess = function (event) {
-            database = event.target.result;
-            callback();
-        };
-        request.onerror = function (event) {
-            console.error('IndexedDB', event);
-        };
-    };
+	let database;
 
     // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {
@@ -119,65 +84,124 @@ function Storage() {
         }
     });
 
-    // Initialize the database and return the storage object
-    initDB(() => {
-        console.log('IndexedDB initialized.');
-    });
+
+    // Retrieve project ID from URL parameters to check if it's being received
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+    console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
+
+    function updateIndexedDB(data) {
+        const transaction = database.transaction(['states'], 'readwrite');
+        const objectStore = transaction.objectStore('states');
+        const request = objectStore.put(data, 0);
+        request.onsuccess = function () {
+            console.log('Data updated in IndexedDB.');
+        };
+    }
 
     // Return an object containing methods to interact with IndexedDB
     return {
-        init: initDB,
-        get: function (callback) {
-            const transaction = database.transaction(['states'], 'readonly');
-            const objectStore = transaction.objectStore('states');
-            const request = objectStore.get(0);
-            request.onsuccess = function (event) {
+        // Initialize the database
+		init: function ( callback ) {
+            // Open a connection to the IndexedDB
+			const request = indexedDB.open( name, version );
+            // Setup the database if it's the first time opening this version
+            request.onupgradeneeded = function ( event ) {
+                // Get the database from the event
+                const db = event.target.result;
+                // Create an object store named 'states' if it doesn't already exist
+				if ( db.objectStoreNames.contains( 'states' ) === false ) {
+					db.createObjectStore( 'states' );
+				}
+			};
+            // Handle successful database opening
+			request.onsuccess = function ( event ) {
+                // Store the database instance
+				database = event.target.result;
+                // Call the callback function if provided
+				callback();
+			};
+            // Log errors during the database opening
+			request.onerror = function ( event ) {
+				console.error( 'IndexedDB', event );
+			};
+		},
+        // Retrieve data from the database
+		get: function ( callback ) {
+            // Start a transaction to read data
+			const transaction = database.transaction( [ 'states' ], 'readwrite' );
+            // Access the 'states' object store
+			const objectStore = transaction.objectStore( 'states' );
+            // Get the data at index 0
+			const request = objectStore.get( 0 );
+            // Handle successful data retrieval
+			request.onsuccess = function ( event ) {
+                // Log the successful data retrieval
                 console.log('Data retrieved from IndexedDB:', event.target.result);
-                callback(event.target.result);
-            };
-            request.onerror = function (event) {
-                console.error('Error retrieving data from IndexedDB:', event);
-            };
-        },
-        set: function (data) {
-            const start = performance.now();
-            const transaction = database.transaction(['states'], 'readwrite');
-            const objectStore = transaction.objectStore('states');
-            const request = objectStore.put(data, 0);
-            request.onsuccess = function () {
-                console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
+
+                // Call the callback function with the result
+				callback( event.target.result );
+			};
+		},
+        
+        // Store data in the database firebase
+		set: function ( data ) {
+            // Record the start time for performance measurement
+			const start = performance.now();
+            // Start a transaction to write data
+			const transaction = database.transaction( [ 'states' ], 'readwrite' );
+            // Access the 'states' object store
+			const objectStore = transaction.objectStore( 'states' );
+            // Put the data at index 0
+			const request = objectStore.put( data, 0 );
+            // Handle successful data storage
+			request.onsuccess = function () {
+                // Log the successful storage and the time taken
+                console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
+                // Check if there is a logged-in user before saving to Firebase
                 if (window.currentUser) {
+                    // Define the path to store project data under the current user's directory
                     const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
+                    // Define the path to store general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
+                    // Save to user's path
                     saveData(userPath, { projectId: projectId }).then(() => {
                         console.log('Reference to project saved to Firebase at:', userPath);
                     }).catch(error => {
                         console.error('Failed to save project reference to Firebase:', error);
                     });
+                    // Save to project's path with owner information
                     saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
                         console.log('Data also saved to Firebase at:', projectPath);
+                        // Check if the current user is the owner
+                        if (window.currentUser.uid === window.currentUser.uid) {
+                            console.log('OWNER');
+                        }
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);
                     });
                 }
-            };
-            request.onerror = function (event) {
-                console.error('Error saving data to IndexedDB:', event);
-            };
-        },
-        clear: function () {
-            if (database === undefined) return;
-            const transaction = database.transaction(['states'], 'readwrite');
-            const objectStore = transaction.objectStore('states');
-            const request = objectStore.clear();
-            request.onsuccess = function () {
-                console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Cleared IndexedDB.');
-            };
-            request.onerror = function (event) {
-                console.error('Error clearing IndexedDB:', event);
-            };
-        }
-    };
+			};
+		},
+
+
+        // Clear all data from the database
+		clear: function () {
+            // Check if the database instance is available
+			if ( database === undefined ) return;
+            // Start a transaction to clear data
+			const transaction = database.transaction( [ 'states' ], 'readwrite' );
+            // Access the 'states' object store
+			const objectStore = transaction.objectStore( 'states' );
+            // Clear all data in the object store
+			const request = objectStore.clear();
+            // Handle successful clearing of the store
+			request.onsuccess = function () {
+                // Log the successful clearing
+				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Cleared IndexedDB.' );
+			};
+		}
+	};
 }
 
 export { Storage };

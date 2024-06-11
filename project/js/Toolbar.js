@@ -68,13 +68,14 @@ function Toolbar( editor ) {
 
 	// FORK button
 	const forkButton = new UIButton();
-	forkButton.dom.className = 'Button';
-	forkButton.dom.textContent = 'FORK';
-	forkButton.onClick( function () {
-		// Redirect to a specific URL
-		window.location.href = 'https://example.com';
-	} );
-	container.add( forkButton );
+	forkButton.setId('forkButton');
+	forkButton.setTextContent('FORK');
+	forkButton.setDisplay('none'); // Initially hidden
+	container.add(forkButton);
+
+	signals.showForkButton.add(() => {
+		forkButton.setDisplay(''); // Show the fork button
+	});
 
 	//
 

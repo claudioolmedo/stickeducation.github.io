@@ -146,9 +146,6 @@ function Storage() {
                     });
                     // Check if the ownerId and currentUser.uid are the same
                     if (window.currentUser.uid === data.ownerId) {
-                        console.log('Current User UID:', window.currentUser.uid);
-                        // Print the ownerId from the data object to the console
-                        console.log('Owner ID:', data.ownerId);
                         console.log('OWNER');
                     }
                 }

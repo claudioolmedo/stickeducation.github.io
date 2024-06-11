@@ -41,6 +41,20 @@ function Storage() {
                     const data = snapshot.val();
                     console.log('User project data:', data);
                     updateIndexedDB(data);
+                } else {
+                    console.log('No user project data found.');
+                }
+            }).catch((error) => {
+                console.error('Error fetching user project data:', error);
+            });
+
+            // Fetch general project data from Firebase and update IndexedDB
+            const projectDataRef = ref(firebaseDB, projectPath);
+            get(projectDataRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    console.log('General project data:', data);
+                    updateIndexedDB(data);
 
                     // Check if the current user is the owner
                     if (data.ownerId) {
@@ -55,11 +69,11 @@ function Storage() {
                         window.isReadOnly = true; // Default to read-only if no ownerId
                     }
                 } else {
-                    console.log('No user project data found.');
+                    console.log('No general project data found.');
                     window.isReadOnly = true; // Default to read-only if no data found
                 }
             }).catch((error) => {
-                console.error('Error fetching user project data:', error);
+                console.error('Error fetching general project data:', error);
                 window.isReadOnly = true; // Default to read-only on error
             });
 

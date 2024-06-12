@@ -1,8 +1,6 @@
 // To display some hidden items, uncomment the respective item. Example:
 // container.add( scale );
 import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
-import React, { useEffect, useState } from 'react';
-import { Storage } from './Storage';
 
 function Toolbar( editor ) {
 
@@ -67,24 +65,9 @@ function Toolbar( editor ) {
 
 	} );
 	container.add( local );
-
-	const [showForkButton, setShowForkButton] = useState(false);
-
-	useEffect(() => {
-		// Initialize storage and check if the project has no owner
-		const storage = Storage();
-		storage.init(() => {
-			// Check if the project has no owner
-			if (window.isReadOnly && window.currentUser) {
-				setShowForkButton(true);
-			} else {
-				setShowForkButton(false);
-			}
-		});
-	}, []);
-
 	// FORK button
-	if (showForkButton) {
+	console.log('window.isReadOnlyProject:', window.isReadOnly);
+	if (window.isReadOnly === false) {
 		const forkButton = new UIButton();
 		forkButton.dom.className = 'Button';
 		forkButton.dom.textContent = 'FORK';

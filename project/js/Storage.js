@@ -60,11 +60,11 @@ function Storage() {
                     if (data.ownerId) {
                         if (data.ownerId === window.currentUser.uid) {
                             console.log('OWNER');
-                            window.isReadOnly = false; // User can edit
+                            window.isReadOnlyProject = false; // User can edit
                         } else {
                             console.log('NO OWNER');
-                            window.isReadOnly = true; // User cannot edit
-                            console.log('window.isReadOnly w/ NO OWNER:', window.isReadOnly);
+                            window.isReadOnlyProject = true; // User cannot edit
+                            console.log('window.isReadOnly w/ NO OWNER:', window.isReadOnlyProject);
 
                         }
                     } else {

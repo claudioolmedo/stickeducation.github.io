@@ -64,7 +64,6 @@ function Storage() {
                         } else {
                             console.log('NO OWNER');
                             window.isReadOnly = true; // User cannot edit
-                            editor.signals.showForkButton.dispatch(); // Dispatch signal to show FORK button
                         }
                     } else {
                         window.isReadOnly = true; // Default to read-only if no ownerId

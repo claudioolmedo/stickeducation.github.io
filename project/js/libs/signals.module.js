@@ -1,8 +1,17 @@
-const signals = {
-    showForkButton: new Signal(),
-    transformModeChanged: new Signal(),
-    spaceChanged: new Signal(),
-    forkAction: new Signal()
-};
+class Signal {
+    constructor() {
+        this.listeners = [];
+    }
 
-export { signals };
+    add(listener) {
+        this.listeners.push(listener);
+    }
+
+    dispatch(...args) {
+        for (const listener of this.listeners) {
+            listener(...args);
+        }
+    }
+}
+
+export { Signal };

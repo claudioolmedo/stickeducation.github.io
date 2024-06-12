@@ -76,6 +76,14 @@ function Toolbar( editor ) {
 	} );
 	container.add( forkButton );
 
+	// Define the signal to show the FORK button
+	signals.showForkButton = new signals.Signal();
+
+	// Listen for the signal and show the FORK button
+	signals.showForkButton.add(function () {
+		forkButton.setDisplay(''); // Show the FORK button
+	});
+
 	//
 
 	signals.transformModeChanged.add( function ( mode ) {

@@ -27,7 +27,12 @@
 				position: absolute;
 				top: 0;
 				right: 0;
-				width: 200px; 
+				width: 200px;
+				height: 50px; /* Ensure the button has a height */
+				background-color: #4285F4; /* Add a background color */
+				color: white; /* Set text color */
+				border: none; /* Remove default border */
+				cursor: pointer; /* Change cursor to pointer */
 			}
 		</style>
 	</head>
@@ -116,6 +121,7 @@
 			const googleButton = document.createElement('button');
 			document.body.appendChild(googleButton);
 			googleButton.id = 'google-login';
+			googleButton.textContent = 'Login or Create account'; // Set initial button text
   
 			googleButton.onclick = () => {
 			  if (window.currentUser) {

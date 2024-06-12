@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import signals from './libs/signals.min.js'; // Correctly import signals
 
 import { Config } from './Config.js';
 import { Loader } from './Loader.js';
@@ -14,7 +15,7 @@ _DEFAULT_CAMERA.lookAt( new THREE.Vector3() );
 
 function Editor() {
 
-	const Signal = signals.Signal; // eslint-disable-line no-undef
+	const Signal = signals.Signal; // Ensure Signal is correctly referenced
 
 	this.signals = {
 

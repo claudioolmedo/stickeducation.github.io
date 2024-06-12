@@ -66,7 +66,7 @@ function Toolbar( editor ) {
 	} );
 	container.add( local );
 	// FORK button
-	console.log('window.isReadOnlyProject in Toolbar:', window.isReadOnly);
+	console.log('window.isReadOnlyProject:', window.isReadOnly);
 	if (window.isReadOnly === false) {
 		const forkButton = new UIButton();
 		forkButton.dom.className = 'Button';

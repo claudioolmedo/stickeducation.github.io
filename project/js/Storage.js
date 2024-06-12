@@ -20,6 +20,27 @@ function Storage() {
 
     // Variable to store the database instance
 	let database;
+    // Open a connection to the IndexedDB
+    const request = indexedDB.open(name, version);
+
+    request.onerror = function(event) {
+        console.error('Database error:', event.target.errorCode);
+    };
+
+    request.onsuccess = function(event) {
+        database = event.target.result;
+        console.log('Database initialized successfully');
+    };
+
+    request.onupgradeneeded = function(event) {
+        const db = event.target.result;
+        // Create an object store named "states" if it doesn't already exist
+        if (!db.objectStoreNames.contains('states')) {
+            db.createObjectStore('states', { keyPath: 'id', autoIncrement: true });
+        }
+        console.log('Database setup completed');
+    };
+
 
     // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {
@@ -28,6 +49,9 @@ function Storage() {
             window.currentUser = user; // Store the current user
             console.log('Current user window.currentUser:', window.currentUser);
             console.log('Project ID:', projectId);
+
+            // Show the "FORK" button
+            showForkButton();
 
             // Define the path to retrieve project data from the current user's directory
             const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
@@ -55,7 +79,6 @@ function Storage() {
                     const data = snapshot.val();
                     console.log('General project data:', data);
                     updateIndexedDB(data);
-
                     // Check if the current user is the owner
                     if (data.ownerId) {
                         if (data.ownerId === window.currentUser.uid) {
@@ -65,7 +88,6 @@ function Storage() {
                             console.log('NO OWNER');
                             window.isReadOnlyProject = true; // User cannot edit
                             console.log('window.isReadOnly w/ NO OWNER:', window.isReadOnlyProject);
-
                         }
                     } else {
                         window.isReadOnly = true; // Default to read-only if no ownerId
@@ -86,6 +108,16 @@ function Storage() {
         }
     });
 
+    // Function to show the "FORK" button
+    function showForkButton() {
+        const forkButton = document.createElement('button');
+        forkButton.innerText = 'FORK';
+        forkButton.onclick = function() {
+            console.log('Fork button clicked');
+            // Add your fork logic here
+        };
+        document.body.appendChild(forkButton);
+    }
 
     // Retrieve project ID from URL parameters to check if it's being received
     const urlParams = new URLSearchParams(window.location.search);
@@ -224,6 +256,7 @@ function Storage() {
 }
 
 export { Storage };
+
 
 
 

@@ -67,14 +67,16 @@ function Toolbar( editor ) {
 	container.add( local );
 
 	// FORK button
-	const forkButton = new UIButton();
-	forkButton.dom.className = 'Button';
-	forkButton.dom.textContent = 'FORK';
-	forkButton.onClick( function () {
-		// Redirect to a specific URL
-		window.location.href = 'https://example.com';
-	} );
-	container.add( forkButton );
+	if (window.isReadOnly === false) {
+		const forkButton = new UIButton();
+		forkButton.dom.className = 'Button';
+		forkButton.dom.textContent = 'FORK';
+		forkButton.onClick( function () {
+			// Redirect to a specific URL
+			window.location.href = 'https://example.com';
+		} );
+		container.add( forkButton );
+	}
 
 	//
 

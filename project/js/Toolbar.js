@@ -1,5 +1,3 @@
-// To display some hidden items, uncomment the respective item. Example:
-// container.add( scale );
 import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
 import { Signal } from './libs/signals.module.js';
 

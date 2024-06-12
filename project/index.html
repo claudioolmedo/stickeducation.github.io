@@ -99,7 +99,6 @@
 		</script>
 
 		<script type="module">
-
 			import * as THREE from 'three';
 			import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -112,6 +111,8 @@
 			import { Menubar } from './js/Menubar.js';
 			import { Resizer } from './js/Resizer.js';
 			import { VRButton } from 'three/addons/webxr/VRButton.js';
+
+			import { firebaseAuth, firebaseDB, onAuthStateChanged, ref, get } from './js/config/firebase.js';
 
 			window.URL = window.URL || window.webkitURL;
 			window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
@@ -133,8 +134,55 @@
 			const viewport = new Viewport( editor );
 			document.body.appendChild( viewport.dom );
 
-			const toolbar = new Toolbar( editor );
-			document.body.appendChild( toolbar.dom );
+			console.log('Received project ID:', projectId); // Log the received project ID for debugging
+
+			// Initialize Toolbar after authentication state is set
+			onAuthStateChanged(firebaseAuth, (user) => {
+				if (user) {
+					console.log('User is signed in:', user);
+					window.currentUser = user; // Store the current user globally
+				} else {
+					console.log('No user is signed in.');
+					window.currentUser = null; // Clear the current user
+				}
+
+				// Fetch project data and set window.isReadOnlyProject
+				const projectPath = `projects/${projectId}`;
+				const projectDataRef = ref(firebaseDB, projectPath);
+				get(projectDataRef).then((snapshot) => {
+					if (snapshot.exists()) {
+						const data = snapshot.val();
+						console.log('General project data:', data);
+
+						// Check if the current user is the owner
+						if (data.ownerId) {
+							if (data.ownerId === window.currentUser?.uid) {
+								console.log('OWNER');
+								window.isReadOnlyProject = false; // User can edit
+							} else {
+								console.log('NO OWNER');
+								window.isReadOnlyProject = true; // User cannot edit
+							}
+						} else {
+							window.isReadOnlyProject = true; // Default to read-only if no ownerId
+						}
+					} else {
+						console.log('No general project data found.');
+						window.isReadOnlyProject = true; // Default to read-only if no data found
+					}
+
+					// Initialize Toolbar after setting window.isReadOnlyProject
+					const toolbar = new Toolbar( editor );
+					document.body.appendChild( toolbar.dom );
+				}).catch((error) => {
+					console.error('Error fetching general project data:', error);
+					window.isReadOnlyProject = true; // Default to read-only on error
+
+					// Initialize Toolbar after setting window.isReadOnlyProject
+					const toolbar = new Toolbar( editor );
+					document.body.appendChild( toolbar.dom );
+				});
+			});
 
 			const script = new Script( editor );
 			document.body.appendChild( script.dom );
@@ -150,8 +198,6 @@
 
 			const resizer = new Resizer( editor );
 			document.body.appendChild( resizer.dom );
-
-			//
 
 			editor.storage.init( function () {
 

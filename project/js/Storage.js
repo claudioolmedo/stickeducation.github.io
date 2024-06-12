@@ -1,5 +1,6 @@
 import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+import { signals } from './signals.js'; // Import signals
 
 function Storage() {
 
@@ -64,6 +65,7 @@ function Storage() {
                         } else {
                             console.log('NO OWNER');
                             window.isReadOnly = true; // User cannot edit
+                            signals.showForkButton.dispatch(); // Dispatch signal to show fork button
                         }
                     } else {
                         window.isReadOnly = true; // Default to read-only if no ownerId
@@ -222,3 +224,5 @@ function Storage() {
 }
 
 export { Storage };
+
+

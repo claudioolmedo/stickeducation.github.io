@@ -81,7 +81,6 @@ function Editor() {
 		scriptRemoved: new Signal(),
 
 		windowResize: new Signal(),
-
 		showGridChanged: new Signal(),
 		showHelpersChanged: new Signal(),
 		refreshSidebarObject3D: new Signal(),

@@ -64,6 +64,8 @@ function Storage() {
                         } else {
                             console.log('NO OWNER');
                             window.isReadOnly = true; // User cannot edit
+                            console.log('window.isReadOnly w/ NO OWNER:', window.isReadOnly);
+
                         }
                     } else {
                         window.isReadOnly = true; // Default to read-only if no ownerId
@@ -222,3 +224,6 @@ function Storage() {
 }
 
 export { Storage };
+
+
+

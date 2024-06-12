@@ -6,7 +6,6 @@ import { History as _History } from './History.js';
 import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
 import { Selector } from './Viewport.Selector.js';
-import { Signal } from './libs/signals.module.js';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera( 50, 1, 0.01, 1000 );
 _DEFAULT_CAMERA.name = 'Camera';
@@ -93,8 +92,6 @@ function Editor() {
 
 		intersectionsDetected: new Signal(),
 
-		showForkButton: new Signal(),
-		forkAction: new Signal(),
 	};
 
 	this.config = new Config();

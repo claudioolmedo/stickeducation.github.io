@@ -1,5 +1,3 @@
-import { Signal } from './libs/signals.module.js';
-
 const signals = {
     showForkButton: new Signal(),
     transformModeChanged: new Signal(),

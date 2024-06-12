@@ -1,6 +1,6 @@
 import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-import { signals } from './signals.js'; // Import signals
+import { Signal } from './libs/signals.module.js';
 
 function Storage() {
 
@@ -21,6 +21,14 @@ function Storage() {
 
     // Variable to store the database instance
 	let database;
+
+    // Define signals if not already defined
+    const signals = {
+        showForkButton: new Signal(),
+        transformModeChanged: new Signal(),
+        spaceChanged: new Signal(),
+        forkAction: new Signal()
+    };
 
     // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {

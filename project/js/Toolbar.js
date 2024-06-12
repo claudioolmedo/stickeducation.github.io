@@ -64,19 +64,8 @@ function Toolbar( editor ) {
 		signals.spaceChanged.dispatch( this.getValue() === true ? 'local' : 'world' );
 
 	} );
-	container.add( local );
-	// FORK button
-	console.log('window.isReadOnlyProject:', window.isReadOnly);
-	if (window.isReadOnly === false) {
-		const forkButton = new UIButton();
-		forkButton.dom.className = 'Button';
-		forkButton.dom.textContent = 'FORK';
-		forkButton.onClick( function () {
-			// Redirect to a specific URL
-			window.location.href = 'https://example.com';
-		} );
-		container.add( forkButton );
-	}
+	//container.add( local );
+
 
 	//
 

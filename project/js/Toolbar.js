@@ -73,7 +73,6 @@ function Toolbar( editor ) {
 	container.add(forkButton);
 
 	signals.showForkButton.add(() => {
-		console.log('showForkButton signal received'); // Debug log
 		forkButton.setDisplay(''); // Show the fork button
 	});
 

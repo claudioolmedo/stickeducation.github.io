@@ -30,9 +30,23 @@
 				width: 200px; 
 				z-index: 9999; /* Added z-index to ensure it appears in front of other elements */
 			}
+			#fork-button {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 200px;
+				z-index: 9999;
+				background-color: #be76d4; /* Green background */
+				color: white; /* White text */
+				border: none; /* Remove borders */
+				padding: 10px 20px; /* Some padding */
+				cursor: pointer; /* Pointer/hand icon */
+				font-size: 16px; /* Increase font size */
+			}
 		</style>
 	</head>
 	<body>
+		<button id="fork-button">Fork this project</button>
 		<link rel="stylesheet" href="css/main.css">
 
 		<script src="../examples/jsm/libs/draco/draco_encoder.js"></script>

@@ -63,9 +63,12 @@ function Storage() {
                             window.isReadOnly = false; // User can edit
                         } else {
                             console.log('NO OWNER');
+                            
                             window.isReadOnly = true; // User cannot edit
                             console.log('window.isReadOnly w/ NO OWNER:', window.isReadOnly);
 
+                            // Show the fork button
+                            document.getElementById('fork-button').style.display = 'block';
                         }
                     } else {
                         window.isReadOnly = true; // Default to read-only if no ownerId

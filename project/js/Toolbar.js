@@ -1,6 +1,7 @@
 // To display some hidden items, uncomment the respective item. Example:
 // container.add( scale );
 import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
+import signals from './libs/signals.min.js'; // Correctly import signals
 
 function Toolbar( editor ) {
 

@@ -104,6 +104,55 @@ function Storage() {
         };
     }
 
+    // Function to generate a new project ID
+    function generateNewProjectId() {
+        let newProjectId = Math.random().toString(36).substring(2, 10); // Generate a random alphanumeric string
+        const dateHex = new Date().getTime().toString(16); // Get current date and time in hexadecimal
+        newProjectId += '-' + dateHex; // Append the hexadecimal date to the project ID
+        return newProjectId;
+    }
+
+    // Function to copy project data to a new project ID
+    function forkProject() {
+        const newProjectId = generateNewProjectId();
+        console.log('Forking project to new ID:', newProjectId);
+
+        // Retrieve current project data from IndexedDB
+        const transaction = database.transaction(['states'], 'readonly');
+        const objectStore = transaction.objectStore('states');
+        const request = objectStore.get(0);
+
+        request.onsuccess = function (event) {
+            const data = event.target.result;
+            if (data) {
+                // Save the copied data to the new project ID in Firebase
+                const newProjectPath = `projects/${newProjectId}`;
+                saveData(newProjectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
+                    console.log('Data saved to new project ID in Firebase:', newProjectPath);
+
+                    // Save the copied data to the new project ID in IndexedDB
+                    const newTransaction = database.transaction(['states'], 'readwrite');
+                    const newObjectStore = newTransaction.objectStore('states');
+                    const newRequest = newObjectStore.put(data, 0);
+                    newRequest.onsuccess = function () {
+                        console.log('Data saved to new project ID in IndexedDB.');
+                    };
+                }).catch(error => {
+                    console.error('Failed to save data to new project ID in Firebase:', error);
+                });
+            } else {
+                console.log('No data found to fork.');
+            }
+        };
+
+        request.onerror = function (event) {
+            console.error('Error retrieving data for forking:', event);
+        };
+    }
+
+    // Add event listener to the fork button
+    document.getElementById('fork-button').addEventListener('click', forkProject);
+
     // Return an object containing methods to interact with IndexedDB
     return {
         // Initialize the database
@@ -227,6 +276,3 @@ function Storage() {
 }
 
 export { Storage };
-
-
-

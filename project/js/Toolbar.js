@@ -1,10 +1,10 @@
 // To display some hidden items, uncomment the respective item. Example:
 // container.add( scale );
 import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
+import { signals } from './signals.js'; // Import signals
 
 function Toolbar( editor ) {
 
-	const signals = editor.signals;
 	const strings = editor.strings;
 
 	// Ensure forkAction is defined
@@ -76,8 +76,6 @@ function Toolbar( editor ) {
 	signals.showForkButton.add(() => {
 		forkButton.setDisplay(''); // Show the fork button
 	});
-
-	//
 
 	signals.transformModeChanged.add( function ( mode ) {
 

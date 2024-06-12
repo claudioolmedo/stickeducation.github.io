@@ -1,6 +1,6 @@
 import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-import signals from './libs/signals.min.js'; // Import the signals library
+import signals from 'path/to/signals.min.js'; // Import the signals library
 
 function Storage() {
 
@@ -224,6 +224,3 @@ function Storage() {
 }
 
 export { Storage };
-
-
-

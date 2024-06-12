@@ -55,7 +55,7 @@ function Toolbar( editor ) {
 		signals.transformModeChanged.dispatch( 'scale' );
 
 	} );
-	//container.add( scale );
+	container.add( scale );
 
 	const local = new UICheckbox( false );
 	local.dom.title = strings.getKey( 'toolbar/local' );
@@ -70,21 +70,17 @@ function Toolbar( editor ) {
 	const forkButton = new UIButton();
 	forkButton.dom.className = 'Button';
 	forkButton.dom.textContent = 'FORK';
+	forkButton.setDisplay('none'); // Initially hide the button
 	forkButton.onClick( function () {
 		// Redirect to a specific URL
 		window.location.href = 'https://example.com';
 	} );
 	container.add( forkButton );
 
-	// Define the signal to show the FORK button
-	signals.showForkButton = new signals.Signal();
-
-	// Listen for the signal and show the FORK button
+	// Listen for the showForkButton signal
 	signals.showForkButton.add(function () {
 		forkButton.setDisplay(''); // Show the FORK button
 	});
-
-	//
 
 	signals.transformModeChanged.add( function ( mode ) {
 

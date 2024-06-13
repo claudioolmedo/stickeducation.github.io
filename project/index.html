@@ -87,7 +87,7 @@
 	</head>
 	<body>
 		<script type="module">
-			import { firebaseAuth, signInWithGoogle, signOutUser, onAuthStateChanged } from './js/config/firebase.js';
+			import { firebaseAuth, signInWithGoogle, signOutUser, pushData, onAuthStateChanged } from './js/config/firebase.js';
   
   
 			// Monitor the authentication state
@@ -131,16 +131,6 @@
 				googleButton.textContent = 'Login or Create account';
 			  }
 			});
-  
-			// Modal login button
-			const modalLoginButton = document.getElementById('modal-login-button');
-			modalLoginButton.onclick = () => {
-				signInWithGoogle().then((result) => {
-					console.log('User logged in successfully:', result.user);
-				}).catch((error) => {
-					console.error('Error logging in:', error);
-				});
-			};
 		  </script>
 		<button id="fork-button">Fork this project</button>
 		<link rel="stylesheet" href="css/main.css">

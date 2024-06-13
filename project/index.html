@@ -44,10 +44,27 @@
 				font-size: 16px; /* Increase font size */
 				display: none; /* Initially hidden */
 			}
+			#login-message {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				font-size: 24px;
+				text-align: center;
+				background-color: #f0f0f0; /* Example background color */
+				padding: 20px;
+				border-radius: 10px;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			}
 		</style>
 	</head>
 	<body>
+		<div id="login-message" style="display: none;">
+			Please log in to access the editor.
+			<button id="center-google-login">Login or Create account</button>
+		</div>
 		<button id="fork-button">Fork this project</button>
+		<button id="google-login">Login or Create account</button>
 		<link rel="stylesheet" href="css/main.css">
 
 		<script src="../examples/jsm/libs/draco/draco_encoder.js"></script>
@@ -123,22 +140,25 @@
 			  if (user) {
 				console.log('User is signed in:', user);
 				window.currentUser = user; // Store the current user globally
+				document.getElementById('login-message').style.display = 'none';
+				loadEditor();
 			  } else {
 				console.log('No user is signed in.');
 				window.currentUser = null; // Clear the current user
+				document.getElementById('login-message').style.display = 'block';
 			  }
 			});
   
-			const googleButton = document.createElement('button');
-			document.body.appendChild(googleButton);
-			googleButton.id = 'google-login';
-  
-			googleButton.onclick = () => {
+			const googleButton = document.getElementById('google-login');
+			const centerGoogleButton = document.getElementById('center-google-login');
+
+			googleButton.onclick = centerGoogleButton.onclick = () => {
 			  if (window.currentUser) {
 				signOutUser().then(() => {
 				  console.log('User logged out successfully.');
 				}).catch((error) => {
 				  console.error('Error logging out:', error);
+				  
 				});
 			  } else {
 				signInWithGoogle().then((result) => {
@@ -153,8 +173,10 @@
 			onAuthStateChanged(firebaseAuth, (user) => {
 			  if (user) {
 				googleButton.textContent = 'Logout';
+				centerGoogleButton.textContent = 'Logout';
 			  } else {
 				googleButton.textContent = 'Login or Create account';
+				centerGoogleButton.textContent = 'Login or Create account';
 			  }
 			});
 		  </script>

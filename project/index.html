@@ -50,8 +50,9 @@
 		</style>
 	</head>
 	<body>
-		<button id="fork-button">Fork this project</button>
+		<button id="google-login">Login or Create account</button>
 		<div id="site-content" class="hidden-content">
+			<button id="fork-button">Fork this project</button>
 			<link rel="stylesheet" href="css/main.css">
 
 			<script src="../examples/jsm/libs/draco/draco_encoder.js"></script>
@@ -136,10 +137,8 @@
 				  }
 				});
 			
-				const googleButton = document.createElement('button');
-				document.body.appendChild(googleButton);
-				googleButton.id = 'google-login';
-			
+				const googleButton = document.getElementById('google-login');
+
 				googleButton.onclick = () => {
 				  if (window.currentUser) {
 					signOutUser().then(() => {

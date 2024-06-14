@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login - Stick.Education</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        #google-login {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <button id="google-login">Login or Create account</button>
+
+    <script type="module">
+        import { firebaseAuth, signInWithGoogle, onAuthStateChanged } from '../js/config/firebase.js';
+
+        const googleButton = document.getElementById('google-login');
+
+        googleButton.onclick = () => {
+            signInWithGoogle().then((result) => {
+                console.log('User logged in successfully:', result.user);
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectId = urlParams.get('id');
+                window.location.href = `../index.html?id=${projectId}`; // Redirect to the main page with project ID
+            }).catch((error) => {
+                console.error('Error logging in:', error);
+            });
+        };
+
+        // Monitor the authentication state
+        onAuthStateChanged(firebaseAuth, (user) => {
+            if (user) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectId = urlParams.get('id');
+                window.location.href = `../index.html?id=${projectId}`; // Redirect to the main page with project ID
+            }
+        });
+    </script>
+</body>
+</html>

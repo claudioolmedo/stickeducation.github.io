@@ -26,9 +26,17 @@
         #content-container {
             display: none; /* Hide content initially */
         }
+        #google-login {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 200px;
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
+    <button id="google-login">Login or Create account</button>
     <div id="content-container">
         <!-- All your existing content goes here -->
         <div id="site-content" class="hidden-content">

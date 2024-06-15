@@ -78,24 +78,24 @@ function Storage() {
                         }
                     } else {
                         window.isReadOnly = true; // Default to read-only if no ownerId
-                        document.getElementById('fork-button').style.display = 'block'; // Show the fork button
+                        //document.getElementById('fork-button').style.display = 'block'; // Show the fork button
                     }
                 } else {
                     console.log('No general project data found.');
                     window.isReadOnly = true; // Default to read-only if no data found
-                    document.getElementById('fork-button').style.display = 'block'; // Show the fork button
+                    //document.getElementById('fork-button').style.display = 'block'; // Show the fork button
                 }
             }).catch((error) => {
                 console.error('Error fetching general project data:', error);
                 window.isReadOnly = true; // Default to read-only on error
-                document.getElementById('fork-button').style.display = 'block'; // Show the fork button
+                //document.getElementById('fork-button').style.display = 'block'; // Show the fork button
             });
 
         } else {
             console.log('No user is signed in.');
             window.currentUser = null; // Clear the current user
             window.isReadOnly = true; // Default to read-only if no user is signed in
-            document.getElementById('fork-button').style.display = 'block'; // Show the fork button
+            //document.getElementById('fork-button').style.display = 'block'; // Show the fork button
         }
     });
 

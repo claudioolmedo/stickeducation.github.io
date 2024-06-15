@@ -185,9 +185,9 @@ function Storage() {
             // Start a transaction to read data
 			const transaction = database.transaction( [ 'states' ], 'readwrite' );
             // Access the 'states' object store
-			const objectStore = transaction.objectStore('states');
+			const objectStore = transaction.objectStore( 'states' );
             // Get the data at index 0
-			const request = objectStore.get(0);
+			const request = objectStore.get( 0 );
             // Handle successful data retrieval
 			request.onsuccess = function ( event ) {
                 // Log the successful data retrieval
@@ -205,7 +205,7 @@ function Storage() {
             // Start a transaction to write data
 			const transaction = database.transaction( [ 'states' ], 'readwrite' );
             // Access the 'states' object store
-			const objectStore = transaction.objectStore('states');
+			const objectStore = transaction.objectStore( 'states' );
             // Put the data at index 0
 			const request = objectStore.put( data, 0 );
             // Handle successful data storage
@@ -263,7 +263,7 @@ function Storage() {
             // Start a transaction to clear data
 			const transaction = database.transaction( [ 'states' ], 'readwrite' );
             // Access the 'states' object store
-			const objectStore = transaction.objectStore('states');
+			const objectStore = transaction.objectStore( 'states' );
             // Clear all data in the object store
 			const request = objectStore.clear();
             // Handle successful clearing of the store

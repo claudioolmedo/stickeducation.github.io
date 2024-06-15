@@ -141,6 +141,9 @@ function Storage() {
                     const newRequest = newObjectStore.put(data, 0);
                     newRequest.onsuccess = function () {
                         console.log('Data saved to new project ID in IndexedDB.');
+
+                        // Redirect to the new project URL
+                        window.location.href = `./?id=${newProjectId}`;
                     };
                 }).catch(error => {
                     console.error('Failed to save data to new project ID in Firebase:', error);

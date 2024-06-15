@@ -14,17 +14,17 @@ function Storage() {
         return { init: function () {}, get: function () {}, set: function () {}, clear: function () {} };
     }
 
-    // Define the database name and version for IndexedDB
-	const name = 'threejs-editor';
-	const version = 1;
-
-    // Variable to store the database instance
-	let database;
-
     // Retrieve project ID from URL parameters to check if it's being received
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
     console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
+
+    // Define the database name using the project ID and version for IndexedDB
+    const name = `threejs-editor-${projectId}`;
+    const version = 1;
+
+    // Variable to store the database instance
+	let database;
 
     // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {

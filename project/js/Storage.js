@@ -21,6 +21,11 @@ function Storage() {
     // Variable to store the database instance
 	let database;
 
+    // Retrieve project ID from URL parameters to check if it's being received
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+    console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
+
     // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {
         if (user) {
@@ -93,12 +98,6 @@ function Storage() {
             document.getElementById('fork-button').style.display = 'block'; // Show the fork button
         }
     });
-
-
-    // Retrieve project ID from URL parameters to check if it's being received
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectId = urlParams.get('id');
-    console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
 
     function updateIndexedDB(data) {
         const transaction = database.transaction(['states'], 'readwrite');
@@ -284,3 +283,4 @@ function Storage() {
 }
 
 export { Storage };
+

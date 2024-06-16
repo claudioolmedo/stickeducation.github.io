@@ -34,9 +34,25 @@ function Storage() {
             console.log('Current user window.currentUser:', window.currentUser);
             console.log('Project ID:', projectId);
 
+            // Define the path to retrieve project data from the current user's directory
+            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
             // Define the path to retrieve general project data accessible by all users
             const projectPath = `projects/${projectId}`;
             
+            // Fetch project data from Firebase and update IndexedDB
+            const userDataRef = ref(firebaseDB, userPath);
+            get(userDataRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    console.log('User project data:', data);
+                    updateIndexedDB(data);
+                } else {
+                    console.log('No user project data found.');
+                }
+            }).catch((error) => {
+                console.error('Error fetching user project data:', error);
+            });
+
             // Fetch general project data from Firebase and update IndexedDB
             const projectDataRef = ref(firebaseDB, projectPath);
             get(projectDataRef).then((snapshot) => {

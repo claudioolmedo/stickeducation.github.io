@@ -212,44 +212,32 @@ function Storage() {
 			};
 		},
         
-        // Store data in the database firebase
+        // Store data in the database and Firebase
 		set: function ( data ) {
             if (!database) {
                 console.error('Database is not initialized.');
                 return;
             }
-            // Record the start time for performance measurement
-			const start = performance.now();
-            // Start a transaction to write data
-			const transaction = database.transaction( [ 'states' ], 'readwrite' );
-            // Access the 'states' object store
-			const objectStore = transaction.objectStore( 'states' );
-            // Put the data at index 0
-			const request = objectStore.put( data, 0 );
-            // Handle successful data storage
-			request.onsuccess = function () {
-                // Log the successful storage and the time taken
-                console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
-                // Check if there is a logged-in user before saving to Firebase
+            const start = performance.now();
+            const transaction = database.transaction(['states'], 'readwrite');
+            const objectStore = transaction.objectStore('states');
+            const request = objectStore.put(data, 0);
+            request.onsuccess = function () {
+                console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
                 if (window.currentUser) {
-                    // Define the path to store project data under the current user's directory
                     const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-                    // Define the path to store general project data accessible by all users
                     const projectPath = `projects/${projectId}`;
-                    // Save to user's path
-                    saveData(userPath, { projectId: projectId }).then(() => {
+                    saveData(userPath, { projectId: projectId, data: data }).then(() => {
                         console.log('Reference to project saved to Firebase at:', userPath);
                     }).catch(error => {
                         console.error('Failed to save project reference to Firebase:', error);
                     });
 
-                    // Check if the project already has an owner
                     const projectDataRef = ref(firebaseDB, projectPath);
                     get(projectDataRef).then((snapshot) => {
                         if (snapshot.exists()) {
                             const existingData = snapshot.val();
                             if (!existingData.ownerId) {
-                                // If no ownerId, save the data with the current user as the owner
                                 saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
                                     console.log('Data also saved to Firebase at:', projectPath);
                                 }).catch(error => {
@@ -259,7 +247,6 @@ function Storage() {
                                 console.log('Project already has an owner:', existingData.ownerId);
                             }
                         } else {
-                            // If no data exists, save the data with the current user as the owner
                             saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
                                 console.log('Data also saved to Firebase at:', projectPath);
                             }).catch(error => {

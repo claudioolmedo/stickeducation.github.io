@@ -20,7 +20,7 @@ function Storage() {
     console.log('Received project ID in Storage:', projectId); // Log the received project ID for debugging
 
     // Define the database name using the project ID and version for IndexedDB
-    const name = `threejs-editor-${projectId}`;
+    const name = `threejs-editor`;
     const version = 1;
 
     // Variable to store the database instance

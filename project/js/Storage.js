@@ -172,29 +172,22 @@ function Storage() {
 			};
 		},
         // Retrieve data from the database
-		get: function (callback) {
+		get: function ( callback ) {
             // Start a transaction to read data
-            const transaction = database.transaction(['states'], 'readwrite');
+			const transaction = database.transaction( [ 'states' ], 'readwrite' );
             // Access the 'states' object store
-            const objectStore = transaction.objectStore('states');
+			const objectStore = transaction.objectStore( 'states' );
             // Get the data at index 0
-            const request = objectStore.get(0);
+			const request = objectStore.get( 0 );
             // Handle successful data retrieval
-            request.onsuccess = function (event) {
-                const result = event.target.result;
-                if (result && result.data) {
-                    console.log('Data retrieved from IndexedDB:', result);
-                    // Call the callback function with the result
-                    callback(result.data);
-                } else {
-                    console.error('No valid data found in IndexedDB.');
-                }
-            };
-            // Handle errors during data retrieval
-            request.onerror = function (event) {
-                console.error('Error retrieving data from IndexedDB:', event);
-            };
-        },
+			request.onsuccess = function ( event ) {
+                // Log the successful data retrieval
+                console.log('Data retrieved from IndexedDB:', event.target.result);
+
+                // Call the callback function with the result
+				callback( event.target.result );
+			};
+		},
         
         // Store data in the database firebase
 		set: function ( data ) {

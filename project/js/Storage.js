@@ -78,33 +78,36 @@ function Storage() {
                         }
                     } else {
                         window.isReadOnly = true; // Default to read-only if no ownerId
-                        //document.getElementById('fork-button').style.display = 'block'; // Show the fork button
                     }
                 } else {
                     console.log('No general project data found.');
                     window.isReadOnly = true; // Default to read-only if no data found
-                    //document.getElementById('fork-button').style.display = 'block'; // Show the fork button
                 }
             }).catch((error) => {
                 console.error('Error fetching general project data:', error);
                 window.isReadOnly = true; // Default to read-only on error
-                //document.getElementById('fork-button').style.display = 'block'; // Show the fork button
             });
 
         } else {
             console.log('No user is signed in.');
             window.currentUser = null; // Clear the current user
             window.isReadOnly = true; // Default to read-only if no user is signed in
-            //document.getElementById('fork-button').style.display = 'block'; // Show the fork button
         }
     });
 
     function updateIndexedDB(data) {
+        if (!database) {
+            console.error('Database is not initialized.');
+            return;
+        }
         const transaction = database.transaction(['states'], 'readwrite');
         const objectStore = transaction.objectStore('states');
         const request = objectStore.put(data, 0);
         request.onsuccess = function () {
             console.log('Data updated in IndexedDB.');
+        };
+        request.onerror = function (event) {
+            console.error('Error updating IndexedDB:', event);
         };
     }
 
@@ -189,8 +192,12 @@ function Storage() {
 		},
         // Retrieve data from the database
 		get: function ( callback ) {
+            if (!database) {
+                console.error('Database is not initialized.');
+                return;
+            }
             // Start a transaction to read data
-			const transaction = database.transaction( [ 'states' ], 'readwrite' );
+			const transaction = database.transaction( [ 'states' ], 'readonly' );
             // Access the 'states' object store
 			const objectStore = transaction.objectStore( 'states' );
             // Get the data at index 0
@@ -207,6 +214,10 @@ function Storage() {
         
         // Store data in the database firebase
 		set: function ( data ) {
+            if (!database) {
+                console.error('Database is not initialized.');
+                return;
+            }
             // Record the start time for performance measurement
 			const start = performance.now();
             // Start a transaction to write data
@@ -283,4 +294,3 @@ function Storage() {
 }
 
 export { Storage };
-

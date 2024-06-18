@@ -8,9 +8,7 @@ function Storage() {
 
     // Check if IndexedDB is available in the browser
     if ( indexedDB === undefined ) {
-        // Log a warning if IndexedDB is not available
         console.warn( 'Storage: IndexedDB not available.' );
-        // Return a dummy object with empty methods to avoid errors when calling these methods
         return { init: function () {}, get: function () {}, set: function () {}, clear: function () {} };
     }
 
@@ -43,9 +41,9 @@ function Storage() {
             const userDataRef = ref(firebaseDB, userPath);
             get(userDataRef).then((snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    console.log('User project data:', data);
-                    updateIndexedDB(data);
+                    const firebaseData = snapshot.val();
+                    console.log('User project data from Firebase:', firebaseData);
+                    compareWithIndexedDB(firebaseData);
                 } else {
                     console.log('No user project data found.');
                 }
@@ -57,13 +55,13 @@ function Storage() {
             const projectDataRef = ref(firebaseDB, projectPath);
             get(projectDataRef).then((snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    console.log('General project data:', data);
-                    updateIndexedDB(data);
+                    const firebaseData = snapshot.val();
+                    console.log('General project data from Firebase:', firebaseData);
+                    compareWithIndexedDB(firebaseData);
 
                     // Check if the current user is the owner
-                    if (data.ownerId) {
-                        if (data.ownerId === window.currentUser.uid) {
+                    if (firebaseData.ownerId) {
+                        if (firebaseData.ownerId === window.currentUser.uid) {
                             console.log('OWNER');
                             window.isReadOnly = false; // User can edit
                             document.getElementById('fork-button').style.display = 'none'; // Hide the fork button
@@ -94,6 +92,33 @@ function Storage() {
             window.isReadOnly = true; // Default to read-only if no user is signed in
         }
     });
+
+    function compareWithIndexedDB(firebaseData) {
+        if (!database) {
+            console.error('Database is not initialized.');
+            return;
+        }
+        const transaction = database.transaction(['states'], 'readonly');
+        const objectStore = transaction.objectStore('states');
+        const request = objectStore.get(0);
+
+        request.onsuccess = function (event) {
+            const indexedDBData = event.target.result;
+            console.log('Data from IndexedDB:', indexedDBData);
+
+            if (JSON.stringify(firebaseData) === JSON.stringify(indexedDBData)) {
+                console.log('Data from Firebase and IndexedDB are identical.');
+            } else {
+                console.log('Data from Firebase and IndexedDB are different.');
+                console.log('Firebase Data:', firebaseData);
+                console.log('IndexedDB Data:', indexedDBData);
+            }
+        };
+
+        request.onerror = function (event) {
+            console.error('Error retrieving data from IndexedDB for comparison:', event);
+        };
+    }
 
     function updateIndexedDB(data) {
         if (!database) {

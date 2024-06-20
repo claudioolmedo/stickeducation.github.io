@@ -20,24 +20,8 @@
     </div>
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script> <!-- Added Firebase Database SDK -->
-
-    <script>
-      // Your web app's Firebase configuration
-      var firebaseConfig = {
-        apiKey: "AIzaSyBaATlo1GuJw7s7Vb0jT7Hf7J7l9sbsaOY",
-        authDomain: "auth.stick.education",
-        databaseURL: "https://editor-1946b-default-rtdb.firebaseio.com",
-        projectId: "editor-1946b",
-        storageBucket: "editor-1946b.appspot.com",
-        messagingSenderId: "462487638341",
-        appId: "1:462487638341:web:7e56e691d9c12daa8eee2c",
-        measurementId: "G-K15B7WVP0J"
-      };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
+    <script type="module">
+      import { firebaseAuth, firebaseDB, signInWithGoogle, signOutUser, saveData as saveDataToDB, onAuthStateChanged } from './project/js/config/firebase.js';
 
       document.getElementById('dashboard').style.display="none"
 
@@ -45,22 +29,14 @@
       document.getElementById('logout').addEventListener('click', LogoutUser)
       document.getElementById('saveData').addEventListener('click', saveData) // Added event listener for saveData button
 
-      let provider = new firebase.auth.GoogleAuthProvider()
-
       function GoogleLogin(){
         console.log('Login Btn Call')
-        firebase.auth().signInWithRedirect(provider) // Changed from signInWithPopup to signInWithRedirect
-      }
-
-      function handleRedirectResult(){
-        firebase.auth().getRedirectResult().then(function(result) {
-          if (result.user) {
-            console.log(result.user)
-            document.getElementById('LoginScreen').style.display="none"
-            document.getElementById('dashboard').style.display="block"
-            showUserDetails(result.user)
-          }
-        }).catch(function(error) {
+        signInWithGoogle().then(result => {
+          console.log(result.user)
+          document.getElementById('LoginScreen').style.display="none"
+          document.getElementById('dashboard').style.display="block"
+          showUserDetails(result.user)
+        }).catch(error => {
           console.log(error)
         });
       }
@@ -74,7 +50,7 @@
       }
 
       function checkAuthState(){
-        firebase.auth().onAuthStateChanged(user=>{
+        onAuthStateChanged(firebaseAuth, user => {
           if(user){
             document.getElementById('LoginScreen').style.display="none"
             document.getElementById('dashboard').style.display="block"
@@ -89,7 +65,7 @@
 
       function LogoutUser(){
         console.log('Logout Btn Call')
-        firebase.auth().signOut().then(()=>{
+        signOutUser().then(()=>{
           document.getElementById('LoginScreen').style.display="block"
           document.getElementById('dashboard').style.display="none"
         }).catch(e=>{
@@ -99,15 +75,14 @@
 
       function saveData() {
         // Get the current user
-        firebase.auth().currentUser().then(function(user) {
+        firebaseAuth.currentUser().then(function(user) {
           if (user) {
             // Save data to the Realtime Database
-            var database = firebase.database();
             var data = {
               name: user.displayName,
               email: user.email
             };
-            database.ref('users/' + user.uid).set(data);
+            saveDataToDB(firebaseDB, 'users/' + user.uid, data);
             console.log('Data saved to the Realtime Database');
           } else {
             console.log('No user logged in');
@@ -116,7 +91,6 @@
       }
 
       checkAuthState()
-      handleRedirectResult() // Chama a função para lidar com o resultado do redirecionamento após o login
     </script>
   </body>
 </html>

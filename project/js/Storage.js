@@ -22,7 +22,7 @@ function Storage() {
     const version = 1;
 
     // Variable to store the database instance
-	let database;
+    let database;
 
     // Check the authentication state when initializing storage
     onAuthStateChanged(firebaseAuth, user => {
@@ -310,9 +310,12 @@ function Storage() {
 
                 if (window.currentUser) {
                     const projectPath = `projects/${projectId}`;
-                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
+                    // Sanitize data before saving to Firebase
+                    const sanitizedData = sanitizeData(data);
+                    // Save the sanitized data to Firebase
+                    saveData(projectPath, sanitizedData).then(() => {
                         console.log('Data saved to Firebase at:', projectPath);
-                        console.log('Data saved to Firebase:', { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }); // Log the data saved to Firebase
+                        console.log('Data saved to Firebase:', sanitizedData); // Log the data saved to Firebase
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);
                     });

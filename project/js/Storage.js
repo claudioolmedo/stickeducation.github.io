@@ -244,10 +244,9 @@ function Storage() {
 
                 if (window.currentUser) {
                     const projectPath = `projects/${projectId}`;
-                    // Save the data to Firebase in the same format as IndexedDB
-                    saveData(projectPath, data).then(() => {
+                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
                         console.log('Data saved to Firebase at:', projectPath);
-                        console.log('Data saved to Firebase:', data); // Log the data saved to Firebase
+                        console.log('Data saved to Firebase:', { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }); // Log the data saved to Firebase
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);
                     });

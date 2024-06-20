@@ -1,5 +1,5 @@
 import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
-import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
 function Storage() {
 
@@ -42,6 +42,16 @@ function Storage() {
                     const firebaseData = snapshot.val();
                     console.log('General project data from Firebase:', firebaseData);
                     compareWithIndexedDB(firebaseData);
+
+                    // Save the retrieved data to IndexedDB
+                    updateIndexedDB(firebaseData);
+
+                    // Listen for changes in Firebase and update visualization
+                    onValue(projectDataRef, (snapshot) => {
+                        const updatedData = snapshot.val();
+                        console.log('Updated project data from Firebase:', updatedData);
+                        updateVisualization(updatedData);
+                    });
 
                     // Check if the current user is the owner
                     if (firebaseData.ownerId) {
@@ -126,6 +136,28 @@ function Storage() {
         };
     }
 
+    // Function to sanitize data by removing undefined values
+    function sanitizeData(data) {
+        if (Array.isArray(data)) {
+            return data.map(sanitizeData);
+        } else if (data !== null && typeof data === 'object') {
+            return Object.keys(data).reduce((acc, key) => {
+                if (data[key] !== undefined) {
+                    acc[key] = sanitizeData(data[key]);
+                }
+                return acc;
+            }, {});
+        }
+        return data;
+    }
+
+    // Function to update the visualization
+    function updateVisualization(data) {
+        // Implement the logic to update the visualization with the new data
+        console.log('Updating visualization with data:', data);
+        // Example: updateObjectPositions(data.scene.objects);
+    }
+
     // Function to generate a new project ID
     function generateNewProjectId() {
         let newProjectId = Math.random().toString(36).substring(2, 10); // Generate a random alphanumeric string
@@ -177,6 +209,40 @@ function Storage() {
 
     // Add event listener to the fork button
     document.getElementById('fork-button').addEventListener('click', forkProject);
+
+    // Store data in the database and Firebase
+    set: function (data) {
+        if (!database) {
+            console.error('Database is not initialized.');
+            return;
+        }
+        const start = performance.now();
+        const transaction = database.transaction(['states'], 'readwrite');
+        const objectStore = transaction.objectStore('states');
+        const request = objectStore.put(data, 0);
+
+        request.onsuccess = function () {
+            console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
+            console.log('Data saved to IndexedDB:', data); // Log the data saved to IndexedDB
+
+            if (window.currentUser) {
+                const projectPath = `projects/${projectId}`;
+                // Sanitize data before saving to Firebase
+                const sanitizedData = sanitizeData(data);
+                // Save the sanitized data to Firebase
+                saveData(projectPath, sanitizedData).then(() => {
+                    console.log('Data saved to Firebase at:', projectPath);
+                    console.log('Data saved to Firebase:', sanitizedData); // Log the data saved to Firebase
+                }).catch(error => {
+                    console.error('Failed to save data to Firebase:', error);
+                });
+            }
+        };
+
+        request.onerror = function (event) {
+            console.error('Error saving data to IndexedDB:', event);
+        };
+    },
 
     // Return an object containing methods to interact with IndexedDB
     return {

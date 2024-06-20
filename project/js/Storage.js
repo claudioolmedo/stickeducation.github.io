@@ -1,5 +1,5 @@
 import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
-import { ref, get, onValue } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
 function Storage() {
 
@@ -44,14 +44,7 @@ function Storage() {
                     compareWithIndexedDB(firebaseData);
 
                     // Save the retrieved data to IndexedDB
-                    updateIndexedDB(firebaseData);
-
-                    // Listen for changes in Firebase and update visualization
-                    onValue(projectDataRef, (snapshot) => {
-                        const updatedData = snapshot.val();
-                        console.log('Updated project data from Firebase:', updatedData);
-                        updateVisualization(updatedData);
-                    });
+                    updateIndexedDB(firebaseData.data);
 
                     // Check if the current user is the owner
                     if (firebaseData.ownerId) {
@@ -87,13 +80,6 @@ function Storage() {
         }
     });
 
-    // Function to update the visualization
-    function updateVisualization(data) {
-        // Implement the logic to update the visualization with the new data
-        console.log('Updating visualization with data:', data);
-        // Example: updateObjectPositions(data.scene.objects);
-    }
-
     function compareWithIndexedDB(firebaseData) {
         if (!database) {
             console.error('Database is not initialized.');
@@ -107,14 +93,17 @@ function Storage() {
             const indexedDBData = event.target.result;
             console.log('Data from IndexedDB:', indexedDBData);
 
-            if (JSON.stringify(firebaseData) === JSON.stringify(indexedDBData)) {
+            // Extract the relevant part of the Firebase data
+            const firebaseRelevantData = firebaseData.data;
+
+            if (JSON.stringify(firebaseRelevantData) === JSON.stringify(indexedDBData)) {
                 console.log('Data from Firebase and IndexedDB are identical.');
             } else {
                 console.log('Data from Firebase and IndexedDB are different.');
-                console.log('Firebase Data:', firebaseData);
+                console.log('Firebase Data:', firebaseRelevantData);
                 console.log('IndexedDB Data:', indexedDBData);
                 // Update IndexedDB with Firebase data if they are different
-                updateIndexedDB(firebaseData);
+                updateIndexedDB(firebaseRelevantData);
             }
         };
 

@@ -259,46 +259,12 @@ function Storage() {
                 console.log('Data saved to IndexedDB:', data); // Log the data saved to IndexedDB
 
                 if (window.currentUser) {
-                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
                     const projectPath = `projects/${projectId}`;
-                    saveData(userPath, { projectId: projectId, data: data }).then(() => {
-                        console.log('Reference to project saved to Firebase at:', userPath);
-                        console.log('Data saved to Firebase (user path):', { projectId: projectId}); // Log the data saved to Firebase (user path)
+                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
+                        console.log('Data saved to Firebase at:', projectPath);
+                        console.log('Data saved to Firebase:', { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }); // Log the data saved to Firebase
                     }).catch(error => {
-                        console.error('Failed to save project reference to Firebase:', error);
-                    });
-
-                    // Reference to the Firebase database for the current project
-                    const projectDataRef = ref(firebaseDB, projectPath);
-                    // Attempt to fetch the project data from Firebase
-                    get(projectDataRef).then((snapshot) => {
-                        // Check if the project data exists in Firebase
-                        if (snapshot.exists()) {
-                            const existingData = snapshot.val();
-                            // Check if the existing data has an owner ID
-                            if (!existingData.ownerId) {
-                                // Save new data with owner details if no owner ID is present
-                                saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
-                                    console.log('Save new data with owner: Data saved to Firebase at:', projectPath);
-                                    console.log('Save new data with owner: Owner details added to Firebase:', { data: data, firebaseId: window.currentUser.uid, ownerId: window. currentUser.uid });
-                                }).catch(error => {
-                                    console.error('Save new data with owner : Error saving data with owner to Firebase:', error);
-                                });
-                            } else {
-                                // Log if the project already has an owner
-                                console.log('Project already has an owner with ID:', existingData.ownerId);
-                            }
-                        } else {
-                            // Save data if no existing data is found in Firebase
-                            saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
-                                console.log('Save data if no existing data is found in Firebase: Data saved to Firebase at:', projectPath);
-                                console.log('Save data if no existing data is found in Firebase: Owner details added to Firebase:', { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid });
-                            }).catch(error => {
-                                console.error('Save data if no existing data is found in Firebase: Error saving new data to Firebase:', error);
-                            });
-                        }
-                    }).catch(error => {
-                        console.error('Error fetching project data:', error);
+                        console.error('Failed to save data to Firebase:', error);
                     });
                 }
             };

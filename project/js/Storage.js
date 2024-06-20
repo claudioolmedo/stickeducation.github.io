@@ -44,7 +44,7 @@ function Storage() {
                     compareWithIndexedDB(firebaseData);
 
                     // Save the retrieved data to IndexedDB
-                    updateIndexedDB(firebaseData);
+                    updateIndexedDB(firebaseData.data);
 
                     // Check if the current user is the owner
                     if (firebaseData.ownerId) {
@@ -93,14 +93,17 @@ function Storage() {
             const indexedDBData = event.target.result;
             console.log('Data from IndexedDB:', indexedDBData);
 
-            if (JSON.stringify(firebaseData) === JSON.stringify(indexedDBData)) {
+            // Extract the relevant part of the Firebase data
+            const firebaseRelevantData = firebaseData.data;
+
+            if (JSON.stringify(firebaseRelevantData) === JSON.stringify(indexedDBData)) {
                 console.log('Data from Firebase and IndexedDB are identical.');
             } else {
                 console.log('Data from Firebase and IndexedDB are different.');
-                console.log('Firebase Data:', firebaseData);
+                console.log('Firebase Data:', firebaseRelevantData);
                 console.log('IndexedDB Data:', indexedDBData);
                 // Update IndexedDB with Firebase data if they are different
-                updateIndexedDB(firebaseData);
+                updateIndexedDB(firebaseRelevantData);
             }
         };
 

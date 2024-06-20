@@ -84,11 +84,21 @@
             document.getElementById('writeButton').addEventListener('click', () => {
                 const path = document.getElementById('pathInput').value;
                 const data = document.getElementById('dataInput').value;
-                writeData(path, JSON.parse(data));
+                if (window.currentUser) {
+                    writeData(path, JSON.parse(data));
+                } else {
+                    console.error('User must be logged in to write data.');
+                    document.getElementById('output').innerText = "User must be logged in to write data.";
+                }
             });
 
             // Read data from a specific path when the page loads
-            readData('/path/to/data'); // Change this to the path you want to read from
+            if (window.currentUser) {
+                readData(`/users/${window.currentUser.uid}`); // Change this to the path you want to read from
+            } else {
+                console.error('User must be logged in to read data.');
+                document.getElementById('output').innerText = "User must be logged in to read data.";
+            }
         });
     </script>
 </head>

@@ -59,6 +59,12 @@ function Storage() {
                     console.log('General project data from Firebase:', firebaseData);
                     compareWithIndexedDB(firebaseData);
 
+<<<<<<< HEAD
+=======
+                    // Save the retrieved data to IndexedDB
+                    updateIndexedDB(firebaseData.data);
+
+>>>>>>> parent of 74ddd60 (compare data)
                     // Check if the current user is the owner
                     if (firebaseData.ownerId) {
                         if (firebaseData.ownerId === window.currentUser.uid) {

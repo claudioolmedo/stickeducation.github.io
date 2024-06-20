@@ -263,7 +263,7 @@ function Storage() {
                     const projectPath = `projects/${projectId}`;
                     saveData(userPath, { projectId: projectId, data: data }).then(() => {
                         console.log('Reference to project saved to Firebase at:', userPath);
-                        console.log('Data saved to Firebase (user path):', { projectId: projectId, data: data }); // Log the data saved to Firebase (user path)
+                        console.log('Data saved to Firebase (user path):', { projectId: projectId}); // Log the data saved to Firebase (user path)
                     }).catch(error => {
                         console.error('Failed to save project reference to Firebase:', error);
                     });

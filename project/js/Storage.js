@@ -32,9 +32,25 @@ function Storage() {
             console.log('Current user window.currentUser:', window.currentUser);
             console.log('Project ID:', projectId);
 
+            // Define the path to retrieve project data from the current user's directory
+            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
             // Define the path to retrieve general project data accessible by all users
             const projectPath = `projects/${projectId}`;
             
+            // Fetch project data from Firebase and update IndexedDB
+            const userDataRef = ref(firebaseDB, userPath);
+            get(userDataRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const firebaseData = snapshot.val();
+                    console.log('User project data from Firebase:', firebaseData);
+                    compareWithIndexedDB(firebaseData);
+                } else {
+                    console.log('No user project data found.');
+                }
+            }).catch((error) => {
+                console.error('Error fetching user project data:', error);
+            });
+
             // Fetch general project data from Firebase and update IndexedDB
             const projectDataRef = ref(firebaseDB, projectPath);
             get(projectDataRef).then((snapshot) => {
@@ -206,26 +222,26 @@ function Storage() {
 			};
 		},
         // Retrieve data from the database
-		get: function (callback) {
+		get: function ( callback ) {
             if (!database) {
                 console.error('Database is not initialized.');
                 return;
             }
             // Start a transaction to read data
-            const transaction = database.transaction(['states'], 'readonly');
+			const transaction = database.transaction( [ 'states' ], 'readonly' );
             // Access the 'states' object store
-            const objectStore = transaction.objectStore('states');
+			const objectStore = transaction.objectStore( 'states' );
             // Get the data at index 0
-            const request = objectStore.get(0);
+			const request = objectStore.get( 0 );
             // Handle successful data retrieval
-            request.onsuccess = function (event) {
+			request.onsuccess = function ( event ) {
                 // Log the successful data retrieval
                 console.log('Data retrieved from IndexedDB:', event.target.result);
 
                 // Call the callback function with the result
-                callback(event.target.result);
-            };
-        },
+				callback( event.target.result );
+			};
+		},
         
         // Store data in the database and Firebase
 		set: function (data) {

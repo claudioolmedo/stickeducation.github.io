@@ -75,19 +75,18 @@
 
       function saveData() {
         // Get the current user
-        firebaseAuth.currentUser().then(function(user) {
-          if (user) {
-            // Save data to the Realtime Database
-            var data = {
-              name: user.displayName,
-              email: user.email
-            };
-            saveDataToDB(firebaseDB, 'users/' + user.uid, data);
-            console.log('Data saved to the Realtime Database');
-          } else {
-            console.log('No user logged in');
-          }
-        });
+        const user = firebaseAuth.currentUser;
+        if (user) {
+          // Save data to the Realtime Database
+          var data = {
+            name: user.displayName,
+            email: user.email
+          };
+          saveDataToDB('users/' + user.uid, data);
+          console.log('Data saved to the Realtime Database');
+        } else {
+          console.log('No user logged in');
+        }
       }
 
       checkAuthState()

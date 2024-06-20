@@ -258,22 +258,15 @@ function Storage() {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
                 console.log('Data saved to IndexedDB:', data); // Log the data saved to IndexedDB
 
-                // Check if the current user is available
                 if (window.currentUser) {
-                    // Define the user path in Firebase
                     const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-                    // Define the project path in Firebase
                     const projectPath = `projects/${projectId}`;
-                    // Save the project data to the user's path in Firebase
                     saveData(userPath, { projectId: projectId, data: data }).then(() => {
-                        // Log the successful save to Firebase
                         console.log('Reference to project saved to Firebase at:', userPath);
-                        console.log('Log the successful save to Firebase: Data saved to Firebase (user path):', { projectId: projectId, data: data }); // Log the data saved to Firebase (user path)
+                        console.log('Data saved to Firebase (user path):', { projectId: projectId}); // Log the data saved to Firebase (user path)
                     }).catch(error => {
-                        // Log any errors that occur during the save
                         console.error('Failed to save project reference to Firebase:', error);
                     });
-                }
 
                     // Reference to the Firebase database for the current project
                     const projectDataRef = ref(firebaseDB, projectPath);

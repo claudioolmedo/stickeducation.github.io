@@ -16,15 +16,13 @@
     <div id="dashboard">
       <div id="userDetails"></div>
       <button id="logout">Logout</button>
+      <button id="saveData">Save Data</button> <!-- New button to save data -->
     </div>
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.0.1/firebase-app.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
-
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script> <!-- Added Firebase Database SDK -->
 
     <script>
       // Your web app's Firebase configuration
@@ -45,12 +43,13 @@
 
       document.getElementById('login').addEventListener('click', GoogleLogin)
       document.getElementById('logout').addEventListener('click', LogoutUser)
+      document.getElementById('saveData').addEventListener('click', saveData) // Added event listener for saveData button
 
       let provider = new firebase.auth.GoogleAuthProvider()
 
       function GoogleLogin(){
         console.log('Login Btn Call')
-        firebase.auth().signInWithRedirect(provider) // Alterado de signInWithPopup para signInWithRedirect
+        firebase.auth().signInWithRedirect(provider) // Changed from signInWithPopup to signInWithRedirect
       }
 
       function handleRedirectResult(){
@@ -98,9 +97,26 @@
         })
       }
 
+      function saveData() {
+        // Get the current user
+        firebase.auth().currentUser().then(function(user) {
+          if (user) {
+            // Save data to the Realtime Database
+            var database = firebase.database();
+            var data = {
+              name: user.displayName,
+              email: user.email
+            };
+            database.ref('users/' + user.uid).set(data);
+            console.log('Data saved to the Realtime Database');
+          } else {
+            console.log('No user logged in');
+          }
+        });
+      }
+
       checkAuthState()
       handleRedirectResult() // Chama a função para lidar com o resultado do redirecionamento após o login
     </script>
   </body>
-</html>
 </html>

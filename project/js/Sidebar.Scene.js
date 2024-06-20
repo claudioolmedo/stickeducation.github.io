@@ -113,22 +113,22 @@ function SidebarScene( editor ) {
 
 		}
 
-		html += getScript( object.uuid );
+		const script = getScript(object.uuid);
+		if (script) {
+			html += ` <span class="type Script"></span>`;
+		}
 
 		return html;
 
 	}
 
-	function getScript( uuid ) {
-
-		if ( editor.scripts[ uuid ] !== undefined ) {
-
-			return ' <span class="type Script"></span>';
-
+	function getScript(id) {
+		// Verifique se 'scripts' e 'id' existem antes de acessar suas propriedades
+		if (!editor.scripts || !editor.scripts[id]) {
+			console.error(`Script with ID ${id} not found.`);
+			return null;
 		}
-
-		return '';
-
+		return editor.scripts[id];
 	}
 
 	let ignoreObjectSelectedSignal = false;

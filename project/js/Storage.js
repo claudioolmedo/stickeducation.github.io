@@ -32,25 +32,9 @@ function Storage() {
             console.log('Current user window.currentUser:', window.currentUser);
             console.log('Project ID:', projectId);
 
-            // Define the path to retrieve project data from the current user's directory
-            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
             // Define the path to retrieve general project data accessible by all users
             const projectPath = `projects/${projectId}`;
             
-            // Fetch project data from Firebase and update IndexedDB
-            const userDataRef = ref(firebaseDB, userPath);
-            get(userDataRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const firebaseData = snapshot.val();
-                    console.log('User project data from Firebase:', firebaseData);
-                    compareWithIndexedDB(firebaseData);
-                } else {
-                    console.log('No user project data found.');
-                }
-            }).catch((error) => {
-                console.error('Error fetching user project data:', error);
-            });
-
             // Fetch general project data from Firebase and update IndexedDB
             const projectDataRef = ref(firebaseDB, projectPath);
             get(projectDataRef).then((snapshot) => {
@@ -271,36 +255,11 @@ function Storage() {
             request.onsuccess = function () {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
                 if (window.currentUser) {
-                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
                     const projectPath = `projects/${projectId}`;
-                    saveData(userPath, { projectId: projectId, data: cleanedData }).then(() => {
-                        console.log('Reference to project saved to Firebase at:', userPath);
+                    saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
+                        console.log('Data also saved to Firebase at:', projectPath);
                     }).catch(error => {
-                        console.error('Failed to save project reference to Firebase:', error);
-                    });
-
-                    const projectDataRef = ref(firebaseDB, projectPath);
-                    get(projectDataRef).then((snapshot) => {
-                        if (snapshot.exists()) {
-                            const existingData = snapshot.val();
-                            if (!existingData.ownerId) {
-                                saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
-                                    console.log('Data also saved to Firebase at:', projectPath);
-                                }).catch(error => {
-                                    console.error('Failed to save data to Firebase:', error);
-                                });
-                            } else {
-                                console.log('Project already has an owner:', existingData.ownerId);
-                            }
-                        } else {
-                            saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
-                                console.log('Data also saved to Firebase at:', projectPath);
-                            }).catch(error => {
-                                console.error('Failed to save data to Firebase:', error);
-                            });
-                        }
-                    }).catch(error => {
-                        console.error('Error fetching project data:', error);
+                        console.error('Failed to save data to Firebase:', error);
                     });
                 }
 			};

@@ -257,7 +257,8 @@ function Storage() {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
                 if (window.currentUser) {
                     const projectPath = `projects/${projectId}`;
-                    saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
+                    const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
+                    saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
                         console.log('Data also saved to Firebase at:', projectPath);
                     }).catch(error => {
                         console.error('Failed to save data to Firebase:', error);

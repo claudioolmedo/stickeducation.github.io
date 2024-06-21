@@ -85,9 +85,7 @@
                 const path = document.getElementById('pathInput').value;
                 const data = document.getElementById('dataInput').value;
                 if (window.currentUser) {
-                    // Ensure the path is within the user's allowed scope
-                    const userPath = `/users/${window.currentUser.uid}${path}`;
-                    writeData(userPath, JSON.parse(data));
+                    writeData(path, JSON.parse(data));
                 } else {
                     console.error('User must be logged in to write data.');
                     document.getElementById('output').innerText = "User must be logged in to write data.";
@@ -108,7 +106,7 @@
     <h1>Firebase Read and Write Test</h1>
     <div>
         <label for="pathInput">Path:</label>
-        <input type="text" id="pathInput" value="">
+        <input type="text" id="pathInput" value="/path/to/data">
     </div>
     <div>
         <label for="dataInput">Data (JSON format):</label>

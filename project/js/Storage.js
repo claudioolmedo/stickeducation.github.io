@@ -149,7 +149,8 @@ function Storage() {
             if (data) {
                 // Save the copied data to the new project ID in Firebase
                 const newProjectPath = `projects/${newProjectId}`;
-                saveData(newProjectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
+                const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
+                saveData(newProjectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, forkFrom: projectId, createdAt: creationDate }).then(() => {
                     console.log('Data saved to new project ID in Firebase:', newProjectPath);
 
                     // Save the copied data to the new project ID in IndexedDB

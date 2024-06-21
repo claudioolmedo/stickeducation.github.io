@@ -32,25 +32,9 @@ function Storage() {
             console.log('Current user window.currentUser:', window.currentUser);
             console.log('Project ID:', projectId);
 
-            // Define the path to retrieve project data from the current user's directory
-            const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
             // Define the path to retrieve general project data accessible by all users
             const projectPath = `projects/${projectId}`;
             
-            // Fetch project data from Firebase and update IndexedDB
-            const userDataRef = ref(firebaseDB, userPath);
-            get(userDataRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const firebaseData = snapshot.val();
-                    console.log('User project data from Firebase:', firebaseData);
-                    compareWithIndexedDB(firebaseData);
-                } else {
-                    console.log('No user project data found.');
-                }
-            }).catch((error) => {
-                console.error('Error fetching user project data:', error);
-            });
-
             // Fetch general project data from Firebase and update IndexedDB
             const projectDataRef = ref(firebaseDB, projectPath);
             get(projectDataRef).then((snapshot) => {
@@ -194,20 +178,6 @@ function Storage() {
     // Add event listener to the fork button
     document.getElementById('fork-button').addEventListener('click', forkProject);
 
-    function cleanData(data) {
-        if (Array.isArray(data)) {
-            return data.map(cleanData);
-        } else if (data !== null && typeof data === 'object') {
-            return Object.keys(data).reduce((acc, key) => {
-                if (data[key] !== undefined) {
-                    acc[key] = cleanData(data[key]);
-                }
-                return acc;
-            }, {});
-        }
-        return data;
-    }
-
     // Return an object containing methods to interact with IndexedDB
     return {
         // Initialize the database
@@ -236,74 +206,56 @@ function Storage() {
 			};
 		},
         // Retrieve data from the database
-		get: function ( callback ) {
+		get: function (callback) {
             if (!database) {
                 console.error('Database is not initialized.');
                 return;
             }
             // Start a transaction to read data
-			const transaction = database.transaction( [ 'states' ], 'readonly' );
+            const transaction = database.transaction(['states'], 'readonly');
             // Access the 'states' object store
-			const objectStore = transaction.objectStore( 'states' );
+            const objectStore = transaction.objectStore('states');
             // Get the data at index 0
-			const request = objectStore.get( 0 );
+            const request = objectStore.get(0);
             // Handle successful data retrieval
-			request.onsuccess = function ( event ) {
+            request.onsuccess = function (event) {
                 // Log the successful data retrieval
                 console.log('Data retrieved from IndexedDB:', event.target.result);
 
                 // Call the callback function with the result
-				callback( event.target.result );
-			};
-		},
+                callback(event.target.result);
+            };
+        },
         
         // Store data in the database and Firebase
-		set: function ( data ) {
+		set: function (data) {
             if (!database) {
                 console.error('Database is not initialized.');
                 return;
             }
-            const cleanedData = cleanData(data); // Clean the data before saving
             const start = performance.now();
             const transaction = database.transaction(['states'], 'readwrite');
             const objectStore = transaction.objectStore('states');
-            const request = objectStore.put(cleanedData, 0);
+            const request = objectStore.put(data, 0);
+
             request.onsuccess = function () {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
-                if (window.currentUser) {
-                    const userPath = `users/${window.currentUser.uid}/projects/${projectId}`;
-                    const projectPath = `projects/${projectId}`;
-                    saveData(userPath, { projectId: projectId, data: cleanedData }).then(() => {
-                        console.log('Reference to project saved to Firebase at:', userPath);
-                    }).catch(error => {
-                        console.error('Failed to save project reference to Firebase:', error);
-                    });
+                console.log('Data saved to IndexedDB:', data); // Log the data saved to IndexedDB
 
-                    const projectDataRef = ref(firebaseDB, projectPath);
-                    get(projectDataRef).then((snapshot) => {
-                        if (snapshot.exists()) {
-                            const existingData = snapshot.val();
-                            if (!existingData.ownerId) {
-                                saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
-                                    console.log('Data also saved to Firebase at:', projectPath);
-                                }).catch(error => {
-                                    console.error('Failed to save data to Firebase:', error);
-                                });
-                            } else {
-                                console.log('Project already has an owner:', existingData.ownerId);
-                            }
-                        } else {
-                            saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
-                                console.log('Data also saved to Firebase at:', projectPath);
-                            }).catch(error => {
-                                console.error('Failed to save data to Firebase:', error);
-                            });
-                        }
+                if (window.currentUser) {
+                    const projectPath = `projects/${projectId}`;
+                    saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }).then(() => {
+                        console.log('Data saved to Firebase at:', projectPath);
+                        console.log('Data saved to Firebase:', { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid }); // Log the data saved to Firebase
                     }).catch(error => {
-                        console.error('Error fetching project data:', error);
+                        console.error('Failed to save data to Firebase:', error);
                     });
                 }
-			};
+            };
+
+            request.onerror = function (event) {
+                console.error('Error saving data to IndexedDB:', event);
+            };
 		},
 
 

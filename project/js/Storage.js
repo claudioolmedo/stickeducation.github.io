@@ -183,7 +183,9 @@ function Storage() {
         if (window.currentUser && (data.ownerId === window.currentUser.uid || !data.ownerId)) {
             const projectPath = `projects/${projectId}`;
             const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
-            saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
+            // Maintain the original owner if it exists
+            const ownerId = data.ownerId ? data.ownerId : window.currentUser.uid;
+            saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
                 console.log('Data saved to Firebase at:', projectPath);
             }).catch(error => {
                 console.error('Failed to save data to Firebase:', error);

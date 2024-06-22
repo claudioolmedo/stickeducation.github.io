@@ -178,9 +178,9 @@ function Storage() {
         };
     }
 
-    // Check if the current user is the owner before saving data to Firebase
+    // Check if the current user is the owner or the creator before saving data to Firebase
     function saveDataToFirebase(data) {
-        if (window.currentUser && data.ownerId === window.currentUser.uid) {
+        if (window.currentUser && (data.ownerId === window.currentUser.uid || !data.ownerId)) {
             const projectPath = `projects/${projectId}`;
             const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
             saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
@@ -189,7 +189,7 @@ function Storage() {
                 console.error('Failed to save data to Firebase:', error);
             });
         } else {
-            console.log('User is not the owner. Data can only be modified by the owner.');
+            console.log('User is not authorized to modify the data.');
         }
     }
 

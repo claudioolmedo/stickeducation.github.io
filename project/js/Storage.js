@@ -178,6 +178,21 @@ function Storage() {
         };
     }
 
+    // Check if the current user is the owner before saving data to Firebase
+    function saveDataToFirebase(data) {
+        if (window.currentUser && data.ownerId === window.currentUser.uid) {
+            const projectPath = `projects/${projectId}`;
+            const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
+            saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
+                console.log('Data saved to Firebase at:', projectPath);
+            }).catch(error => {
+                console.error('Failed to save data to Firebase:', error);
+            });
+        } else {
+            console.log('User is not the owner. Data can only be modified by the owner.');
+        }
+    }
+
     // Add event listener to the fork button
     document.getElementById('fork-button').addEventListener('click', forkProject);
 
@@ -257,15 +272,7 @@ function Storage() {
             const request = objectStore.put(cleanedData, 0);
             request.onsuccess = function () {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
-                if (window.currentUser) {
-                    const projectPath = `projects/${projectId}`;
-                    const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
-                    saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
-                        console.log('Data also saved to Firebase at:', projectPath);
-                    }).catch(error => {
-                        console.error('Failed to save data to Firebase:', error);
-                    });
-                }
+                saveDataToFirebase(cleanedData); // Save data to Firebase with ownership check
 			};
 		},
 
@@ -290,5 +297,3 @@ function Storage() {
 }
 
 export { Storage };
-
-

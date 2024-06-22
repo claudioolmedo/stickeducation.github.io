@@ -61,6 +61,11 @@ function Storage() {
                     } else {
                         window.isReadOnly = true; // Default to read-only if no ownerId
                     }
+
+                    // Display forkFrom if it exists
+                    if (firebaseData.forkFrom) {
+                        console.log('This project was forked from:', firebaseData.forkFrom);
+                    }
                 } else {
                     console.log('No general project data found.');
                     window.isReadOnly = true; // Default to read-only if no data found
@@ -158,7 +163,7 @@ function Storage() {
                     // Save the copied data to the new project ID in IndexedDB
                     const newTransaction = database.transaction(['states'], 'readwrite');
                     const newObjectStore = newTransaction.objectStore('states');
-                    const newRequest = newObjectStore.put(data, 0);
+                    const newRequest = newObjectStore.put(newData, 0);
                     newRequest.onsuccess = function () {
                         console.log('Data saved to new project ID in IndexedDB.');
 

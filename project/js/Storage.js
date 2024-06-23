@@ -191,7 +191,7 @@ function Storage() {
             return data.map(cleanData);
         } else if (data !== null && typeof data === 'object') {
             return Object.keys(data).reduce((acc, key) => {
-                if (data[key] !== undefined) {
+                if (data[key] !== undefined || key === 'forkFrom') { // Preserve forkFrom field
                     acc[key] = cleanData(data[key]);
                 }
                 return acc;

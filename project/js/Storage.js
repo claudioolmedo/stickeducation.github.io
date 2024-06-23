@@ -274,7 +274,8 @@ function Storage() {
                             console.log('Project does not exist or does not have an owner. Allowing data modification.');
                             const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
                             const ownerId = firebaseData.ownerId ? firebaseData.ownerId : window.currentUser.uid;
-                            saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
+                            const updatedData = { ...cleanedData, forkFrom: firebaseData.forkFrom }; // Preserve forkFrom field
+                            saveData(projectPath, { data: updatedData, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
                                 console.log('Data saved to Firebase at:', projectPath);
                             }).catch(error => {
                                 console.error('Failed to save data to Firebase:', error);

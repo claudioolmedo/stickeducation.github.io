@@ -155,8 +155,7 @@ function Storage() {
                 // Save the copied data to the new project ID in Firebase
                 const newProjectPath = `projects/${newProjectId}`;
                 const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
-                // Include the forkFrom field in the data being saved
-                const newData = { ...data, forkFrom: projectId };
+                const newData = { ...data, forkFrom: projectId }; // Include the forkFrom field in the data being saved
                 saveData(newProjectPath, { data: newData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, forkFrom: projectId, createdAt: creationDate }).then(() => {
                     console.log('Data saved to new project ID in Firebase:', newProjectPath);
 
@@ -167,8 +166,26 @@ function Storage() {
                     newRequest.onsuccess = function () {
                         console.log('Data saved to new project ID in IndexedDB.');
 
-                        // Redirect to the new project URL
-                        window.location.href = `./?id=${newProjectId}`;
+                        // Update the original project with the new forkedID
+                        const originalProjectPath = `projects/${projectId}`;
+                        get(ref(firebaseDB, originalProjectPath)).then((snapshot) => {
+                            if (snapshot.exists()) {
+                                const originalData = snapshot.val();
+                                const updatedOriginalData = { ...originalData, forkedID: newProjectId };
+                                saveData(originalProjectPath, updatedOriginalData).then(() => {
+                                    console.log('Original project updated with new forkedID:', newProjectId);
+
+                                    // Redirect to the new project URL
+                                    window.location.href = `./?id=${newProjectId}`;
+                                }).catch(error => {
+                                    console.error('Failed to update original project with new forkedID:', error);
+                                });
+                            } else {
+                                console.error('Original project data not found.');
+                            }
+                        }).catch(error => {
+                            console.error('Error retrieving original project data:', error);
+                        });
                     };
                 }).catch(error => {
                     console.error('Failed to save data to new project ID in Firebase:', error);

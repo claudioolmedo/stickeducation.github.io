@@ -252,7 +252,7 @@ function Storage() {
 		},
         
         // Store data in the database and Firebase
-		set: function ( data ) {
+		set: function (data) {
             if (!database) {
                 console.error('Database is not initialized.');
                 return;
@@ -260,7 +260,23 @@ function Storage() {
             const start = performance.now();
             const transaction = database.transaction(['states'], 'readwrite');
             const objectStore = transaction.objectStore('states');
-            const request = objectStore.put(data, 0);
+
+            // Function to remove undefined values
+            const removeUndefined = (obj) => {
+                Object.keys(obj).forEach(key => {
+                    if (obj[key] && typeof obj[key] === 'object') {
+                        removeUndefined(obj[key]);
+                    } else if (obj[key] === undefined) {
+                        delete obj[key];
+                    }
+                });
+                return obj;
+            };
+
+            // Clean the data before saving
+            const cleanedData = removeUndefined(JSON.parse(JSON.stringify(data)));
+
+            const request = objectStore.put(cleanedData, 0);
             request.onsuccess = function () {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
                 // Check if the project already exists and has an owner before saving data to Firebase
@@ -275,7 +291,7 @@ function Storage() {
                             console.log('Project does not exist or does not have an owner. Allowing data modification.');
                             const creationDate = new Date().toISOString();
                             const ownerId = firebaseData.ownerId ? firebaseData.ownerId : window.currentUser.uid;
-                            saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
+                            saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
                                 console.log('Data saved to Firebase at:', projectPath);
                             }).catch(error => {
                                 console.error('Failed to save data to Firebase:', error);
@@ -284,7 +300,7 @@ function Storage() {
                     } else {
                         console.log('Project does not exist. Allowing data modification.');
                         const creationDate = new Date().toISOString();
-                        saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
+                        saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
                             console.log('Data saved to Firebase at:', projectPath);
                         }).catch(error => {
                             console.error('Failed to save data to Firebase:', error);

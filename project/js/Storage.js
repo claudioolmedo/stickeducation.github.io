@@ -171,7 +171,10 @@ function Storage() {
                         get(ref(firebaseDB, originalProjectPath)).then((snapshot) => {
                             if (snapshot.exists()) {
                                 const originalData = snapshot.val();
-                                const updatedOriginalData = { ...originalData, forkedID: newProjectId };
+                                const updatedOriginalData = {
+                                    ...originalData,
+                                    forkedIDs: originalData.forkedIDs ? [...originalData.forkedIDs, newProjectId] : [newProjectId]
+                                };
                                 saveData(originalProjectPath, updatedOriginalData).then(() => {
                                     console.log('Original project updated with new forkedID:', newProjectId);
 

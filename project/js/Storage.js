@@ -290,8 +290,15 @@ function Storage() {
                         } else {
                             console.log('Project does not exist or does not have an owner. Allowing data modification.');
                             const creationDate = new Date().toISOString();
+                            const uniqueId = generateUniqueId();
                             const ownerId = firebaseData.ownerId ? firebaseData.ownerId : window.currentUser.uid;
-                            saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
+                            saveData(projectPath, { 
+                                data: cleanedData, 
+                                firebaseId: window.currentUser.uid, 
+                                ownerId: ownerId, 
+                                createdAt: creationDate,
+                                uniqueId: uniqueId
+                            }).then(() => {
                                 console.log('Data saved to Firebase at:', projectPath);
                             }).catch(error => {
                                 console.error('Failed to save data to Firebase:', error);
@@ -300,7 +307,14 @@ function Storage() {
                     } else {
                         console.log('Project does not exist. Allowing data modification.');
                         const creationDate = new Date().toISOString();
-                        saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
+                        const uniqueId = generateUniqueId();
+                        saveData(projectPath, { 
+                            data: cleanedData, 
+                            firebaseId: window.currentUser.uid, 
+                            ownerId: window.currentUser.uid, 
+                            createdAt: creationDate,
+                            uniqueId: uniqueId
+                        }).then(() => {
                             console.log('Data saved to Firebase at:', projectPath);
                         }).catch(error => {
                             console.error('Failed to save data to Firebase:', error);

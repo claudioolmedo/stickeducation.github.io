@@ -62,10 +62,6 @@ function Storage() {
                         window.isReadOnly = true; // Default to read-only if no ownerId
                     }
 
-                    // Display forkFrom if it exists
-                    if (firebaseData.forkFrom) {
-                        console.log('This project was forked from:', firebaseData.forkFrom);
-                    }
                 } else {
                     console.log('No general project data found.');
                     window.isReadOnly = true; // Default to read-only if no data found
@@ -154,8 +150,8 @@ function Storage() {
             if (data) {
                 // Save the copied data to the new project ID in Firebase
                 const newProjectPath = `projects/${newProjectId}`;
-                const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
-                const newData = { ...data }; // No need to include forkFrom field
+                const creationDate = new Date().toISOString();
+                const newData = { ...data };
                 saveData(newProjectPath, { data: newData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
                     console.log('Data saved to new project ID in Firebase:', newProjectPath);
 
@@ -205,20 +201,6 @@ function Storage() {
 
     // Add event listener to the fork button
     document.getElementById('fork-button').addEventListener('click', forkProject);
-
-    function cleanData(data) {
-        if (Array.isArray(data)) {
-            return data.map(cleanData);
-        } else if (data !== null && typeof data === 'object') {
-            return Object.keys(data).reduce((acc, key) => {
-                if (data[key] !== undefined || key === 'forkFrom') { // Preserve forkFrom field
-                    acc[key] = cleanData(data[key]);
-                }
-                return acc;
-            }, {});
-        }
-        return data;
-    }
 
     // Return an object containing methods to interact with IndexedDB
     return {
@@ -275,11 +257,10 @@ function Storage() {
                 console.error('Database is not initialized.');
                 return;
             }
-            const cleanedData = cleanData(data); // Clean the data before saving
             const start = performance.now();
             const transaction = database.transaction(['states'], 'readwrite');
             const objectStore = transaction.objectStore('states');
-            const request = objectStore.put(cleanedData, 0);
+            const request = objectStore.put(data, 0);
             request.onsuccess = function () {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
                 // Check if the project already exists and has an owner before saving data to Firebase
@@ -292,10 +273,9 @@ function Storage() {
                             console.log('Project already exists and has an owner. Data cannot be modified directly.');
                         } else {
                             console.log('Project does not exist or does not have an owner. Allowing data modification.');
-                            const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
+                            const creationDate = new Date().toISOString();
                             const ownerId = firebaseData.ownerId ? firebaseData.ownerId : window.currentUser.uid;
-                            const updatedData = { ...cleanedData, forkFrom: firebaseData.forkFrom }; // Preserve forkFrom field
-                            saveData(projectPath, { data: updatedData, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
+                            saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
                                 console.log('Data saved to Firebase at:', projectPath);
                             }).catch(error => {
                                 console.error('Failed to save data to Firebase:', error);
@@ -303,8 +283,8 @@ function Storage() {
                         }
                     } else {
                         console.log('Project does not exist. Allowing data modification.');
-                        const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
-                        saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
+                        const creationDate = new Date().toISOString();
+                        saveData(projectPath, { data: data, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
                             console.log('Data saved to Firebase at:', projectPath);
                         }).catch(error => {
                             console.error('Failed to save data to Firebase:', error);

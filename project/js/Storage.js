@@ -255,45 +255,69 @@ function Storage() {
                 console.error('Database is not initialized.');
                 return;
             }
-            const cleanedData = cleanData(data); // Clean the data before saving
-            const start = performance.now();
-            const transaction = database.transaction(['states'], 'readwrite');
-            const objectStore = transaction.objectStore('states');
-            const request = objectStore.put(cleanedData, 0);
-            request.onsuccess = function () {
-                console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
-                // Check if the project already exists and has an owner before saving data to Firebase
-                const projectPath = `projects/${projectId}`;
-                const projectDataRef = ref(firebaseDB, projectPath);
-                get(projectDataRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const firebaseData = snapshot.val();
-                        if (firebaseData.ownerId && firebaseData.ownerId !== window.currentUser.uid) {
-                            console.log('Project already exists and has an owner. Data cannot be modified directly.');
+            const projectPath = `projects/${projectId}`;
+            const projectDataRef = ref(firebaseDB, projectPath);
+            get(projectDataRef).then((snapshot) => {
+                let existingForkFrom = null;
+                if (snapshot.exists()) {
+                    const firebaseData = snapshot.val();
+                    existingForkFrom = firebaseData.forkFrom;
+                }
+                
+                const start = performance.now();
+                const transaction = database.transaction(['states'], 'readwrite');
+                const objectStore = transaction.objectStore('states');
+                const request = objectStore.put(data, 0);
+                request.onsuccess = function () {
+                    console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
+                    
+                    get(projectDataRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const firebaseData = snapshot.val();
+                            if (firebaseData.ownerId && firebaseData.ownerId !== window.currentUser.uid) {
+                                console.log('Project already exists and has an owner. Data cannot be modified directly.');
+                            } else {
+                                console.log('Project does not exist or does not have an owner. Allowing data modification.');
+                                const creationDate = new Date().toISOString();
+                                const ownerId = firebaseData.ownerId ? firebaseData.ownerId : window.currentUser.uid;
+                                const updatedData = { 
+                                    ...data, 
+                                    forkFrom: existingForkFrom || firebaseData.forkFrom 
+                                };
+                                saveData(projectPath, { 
+                                    data: updatedData, 
+                                    firebaseId: window.currentUser.uid, 
+                                    ownerId: ownerId, 
+                                    forkFrom: existingForkFrom || firebaseData.forkFrom,
+                                    createdAt: creationDate 
+                                }).then(() => {
+                                    console.log('Data saved to Firebase at:', projectPath);
+                                }).catch(error => {
+                                    console.error('Failed to save data to Firebase:', error);
+                                });
+                            }
                         } else {
-                            console.log('Project does not exist or does not have an owner. Allowing data modification.');
-                            const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
-                            const ownerId = firebaseData.ownerId ? firebaseData.ownerId : window.currentUser.uid;
-                            const updatedData = { ...cleanedData, forkFrom: firebaseData.forkFrom }; // Preserve forkFrom field
-                            saveData(projectPath, { data: updatedData, firebaseId: window.currentUser.uid, ownerId: ownerId, createdAt: creationDate }).then(() => {
+                            console.log('Project does not exist. Allowing data modification.');
+                            const creationDate = new Date().toISOString();
+                            saveData(projectPath, { 
+                                data: data, 
+                                firebaseId: window.currentUser.uid, 
+                                ownerId: window.currentUser.uid, 
+                                forkFrom: existingForkFrom,
+                                createdAt: creationDate 
+                            }).then(() => {
                                 console.log('Data saved to Firebase at:', projectPath);
                             }).catch(error => {
                                 console.error('Failed to save data to Firebase:', error);
                             });
                         }
-                    } else {
-                        console.log('Project does not exist. Allowing data modification.');
-                        const creationDate = new Date().toISOString(); // Get the current date and time in ISO format
-                        saveData(projectPath, { data: cleanedData, firebaseId: window.currentUser.uid, ownerId: window.currentUser.uid, createdAt: creationDate }).then(() => {
-                            console.log('Data saved to Firebase at:', projectPath);
-                        }).catch(error => {
-                            console.error('Failed to save data to Firebase:', error);
-                        });
-                    }
-                }).catch((error) => {
-                    console.error('Error checking project existence and owner:', error);
-                });
-            };
+                    }).catch((error) => {
+                        console.error('Error checking project existence and owner:', error);
+                    });
+                };
+            }).catch((error) => {
+                console.error('Error retrieving project data:', error);
+            });
         },
         // Clear all data from the database
 		clear: function () {

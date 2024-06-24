@@ -113,7 +113,7 @@ function SidebarScene( editor ) {
 
 		}
 
-		// Add this check
+		 // Adicione esta verificação
 		if (editor && editor.scripts) {
 			html += getScript(object.uuid);
 		}
@@ -126,12 +126,6 @@ function SidebarScene( editor ) {
 		// Check if the editor and editor.scripts exist
 		if (!editor || !editor.scripts) {
 			console.warn('editor or editor.scripts is undefined');
-			return '';
-		}
-
-		// Check if the UUID is valid
-		if (!uuid) {
-			console.warn('UUID is undefined or invalid');
 			return '';
 		}
 

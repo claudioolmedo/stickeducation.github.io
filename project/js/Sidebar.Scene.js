@@ -123,14 +123,20 @@ function SidebarScene( editor ) {
 		// Verifique se o scriptId está definido
 		if (!uuid) {
 			console.error('Script ID is undefined');
-			return;
+			return '';
+		}
+
+		// Verifique se editor.scripts existe
+		if (!editor.scripts) {
+			console.error('editor.scripts is undefined');
+			return '';
 		}
 
 		// Verifique se o script existe no objeto scripts
 		const script = editor.scripts[uuid];
 		if (!script) {
 			console.error(`Script with ID ${uuid} not found`);
-			return;
+			return '';
 		}
 
 		if ( script !== undefined ) {

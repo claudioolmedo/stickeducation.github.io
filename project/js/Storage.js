@@ -1,6 +1,13 @@
 import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
+// Adicione esta função no início do arquivo ou onde for apropriado
+function generateUniqueId() {
+    const timestamp = new Date().getTime().toString(36);
+    const randomStr = Math.random().toString(36).substring(2, 5);
+    return `${timestamp}-${randomStr}`;
+}
+
 function Storage() {
 
     // Access the IndexedDB API from the window object

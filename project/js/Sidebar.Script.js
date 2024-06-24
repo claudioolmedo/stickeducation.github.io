@@ -4,36 +4,11 @@ import { AddScriptCommand } from './commands/AddScriptCommand.js';
 import { SetScriptValueCommand } from './commands/SetScriptValueCommand.js';
 import { RemoveScriptCommand } from './commands/RemoveScriptCommand.js';
 
-const isElectron = () => {
-    // Verifica se está rodando em Electron (renderer process)
-    if (typeof window !== 'undefined' && window.process && window.process.type === 'renderer') {
-        return true;
-    }
-
-    // Main process
-    if (typeof process !== 'undefined' && process.versions && process.versions.electron) {
-        return true;
-    }
-
-    // Detect the user agent when the `nodeIntegration` is set to true
-    if (typeof navigator === 'object' && navigator.userAgent && navigator.userAgent.includes('Electron')) {
-        return true;
-    }
-
-    return false;
-};
-
-let fs, os, exec, path, __dirname;
-
-if (isElectron()) {
-    fs = window.nodeAPI.fs;
-    os = window.nodeAPI.os;
-    exec = window.nodeAPI.exec;
-    path = window.nodeAPI.path;
-    __dirname = window.nodeAPI.__dirname;
-} else {
-    console.log("Running in a standard web browser.");
-}
+const fs = window.nodeAPI.fs;
+const os = window.nodeAPI.os;
+const exec = window.nodeAPI.exec;
+const path = window.nodeAPI.path;
+const __dirname = window.nodeAPI.__dirname;
 
 function SidebarScript( editor ) {
 
@@ -77,146 +52,114 @@ function SidebarScript( editor ) {
 	container.add( newScript );
 
 	// Compile button
-	if (isElectron()) {
-		const compileScript = new UIButton( 'Compile' );
-		compileScript.setMarginLeft( '4px' );
-		compileScript.onClick( function () {
-			const editorContent = editor.codemirror.getValue();
-			createAndCompileSketch(editorContent);
-			console.log('Compile script clicked: ' + editorContent);
-		});
-		container.add( compileScript );
-	}
+	const compileScript = new UIButton( 'Compile' );
+	compileScript.setMarginLeft( '4px' );
+	compileScript.onClick( function () {
+		const editorContent = editor.codemirror.getValue();
+    	createAndCompileSketch(editorContent);
+		console.log('Compile script clicked: ' + editorContent);
+		// You might want to dispatch a signal or call a function to handle the compilation.
+	});
+	container.add( compileScript );
 
 	function setupArduinoCliIfNeeded() {
-		if (isElectron()) {
-			const setupFlagPath = path.join(__dirname, 'arduinoCliSetupDone.flag');
+		const setupFlagPath = path.join(__dirname, 'arduinoCliSetupDone.flag');
 
-			fs.access(setupFlagPath, (exists) => {
-				if (!exists) {
-					setupArduinoCli(() => {
-						console.log('Arduino CLI setup completed.');
-						// Create a flag file to mark the setup as done
-						fs.closeSync(fs.openSync(setupFlagPath, 'w'));
-					});
-				} else {
-					console.log('Arduino CLI setup already completed.');
-				}
-			});
-		} else {
-			console.log("Compiler is not available in a standard web browser.");
-		}
+		fs.access(setupFlagPath, (exists) => {
+			if (!exists) {
+				setupArduinoCli(() => {
+					console.log('Arduino CLI setup completed.');
+					// Create a flag file to mark the setup as done
+					fs.closeSync(fs.openSync(setupFlagPath, 'w'));
+				});
+			} else {
+				console.log('Arduino CLI setup already completed.');
+			}
+		});
 	}
 
 	setupArduinoCliIfNeeded();
 
 	function setupArduinoCli() {
-	    // Detectar o sistema operacional
-	    const osType = os.platform(); // 'darwin', 'win32', 'linux'
-	    console.log('Detected OS:', osType); // Imprime o sistema operacional detectado
-	    let relativeArduinoCliPath;
+		const relativeArduinoCliPath = '/arduino-cli_0.35.2_macOS_ARM64/arduino-cli';
+		const arduinoCliPath = window.nodeAPI.path.join(__dirname, relativeArduinoCliPath);
+		// Command to initialize Arduino CLI configuration
+		const initCommand = `"${arduinoCliPath}" config init --overwrite`; // todo change later
 
-	    if (osType === 'darwin') {
-	        relativeArduinoCliPath = '/arduino-cli_0.35.2_macOS_ARM64/arduino-cli';
-	    } else if (osType === 'win32') {
-	        relativeArduinoCliPath = '/arduino-cli_0.35.2_Windows_64bit/arduino-cli.exe';
-	    } else if (osType === 'linux') {
-	        relativeArduinoCliPath = '/arduino-cli_0.35.2_Linux_ARM64/arduino-cli';
-	    } else {
-	        console.error('Unsupported OS');
-	        return;
-	    }
+		// Command to add the board manager URL
+		const addUrlCommand = `"${arduinoCliPath}" config add board_manager.additional_urls https://alexandermandera.github.io/arduino-wch32v003/package_ch32v003_index.json`;
 
-	    const arduinoCliPath = path.join(__dirname, relativeArduinoCliPath);
+		// Command to update the core index
+		const updateIndexCommand = `"${arduinoCliPath}" core update-index`;
 
-	    // Comandos para configurar o Arduino CLI
-	    const initCommand = `"${arduinoCliPath}" config init --overwrite`;
-	    const addUrlCommand = `"${arduinoCliPath}" config add board_manager.additional_urls https://alexandermandera.github.io/arduino-wch32v003/package_ch32v003_index.json`;
-	    const updateIndexCommand = `"${arduinoCliPath}" core update-index`;
-	    const installCoreCommand = `"${arduinoCliPath}" core install alexandermandera:wch`;
+		// Command to install the WCH core
+		const installCoreCommand = `"${arduinoCliPath}" core install alexandermandera:wch`;
 
-	    // Executar cada comando em sequência
-	    exec(initCommand, (initError, initStdout, initStderr) => {
-	        if (initError || initStderr) {
-	            console.error(`Arduino CLI Config Init Error: ${initError?.message || initStderr}`);
-	            return;
-	        }
-	        console.log(`Arduino CLI Config Init Output: ${initStdout}`);
+		// Execute each command in sequence
+		exec(initCommand, (initError, initStdout, initStderr) => {
+			if (initError || initStderr) {
+				console.error(`Arduino CLI Config Init Error: ${initError?.message || initStderr}`);
+				return;
+			}
+			console.log(`Arduino CLI Config Init Output: ${initStdout}`);
 
-	        exec(addUrlCommand, (addUrlError, addUrlStdout, addUrlStderr) => {
-	            if (addUrlError || addUrlStderr) {
-	                console.error(`Arduino CLI Add URL Error: ${addUrlError?.message || addUrlStderr}`);
-	                return;
-	            }
-	            console.log(`Arduino CLI Add URL Output: ${addUrlStdout}`);
+			exec(addUrlCommand, (addUrlError, addUrlStdout, addUrlStderr) => {
+				if (addUrlError || addUrlStderr) {
+					console.error(`Arduino CLI Add URL Error: ${addUrlError?.message || addUrlStderr}`);
+					return;
+				}
+				console.log(`Arduino CLI Add URL Output: ${addUrlStdout}`);
 
-	            exec(updateIndexCommand, (updateIndexError, updateIndexStdout, updateIndexStderr) => {
-	                if (updateIndexError || updateIndexStderr) {
-	                    console.error(`Arduino CLI Update Index Error: ${updateIndexError?.message || updateIndexStderr}`);
-	                    return;
-	                }
-	                console.log(`Arduino CLI Update Index Output: ${updateIndexStdout}`);
+				exec(updateIndexCommand, (updateIndexError, updateIndexStdout, updateIndexStderr) => {
+					if (updateIndexError || updateIndexStderr) {
+						console.error(`Arduino CLI Update Index Error: ${updateIndexError?.message || updateIndexStderr}`);
+						return;
+					}
+					console.log(`Arduino CLI Update Index Output: ${updateIndexStdout}`);
 
-	                exec(installCoreCommand, (installCoreError, installCoreStdout, installCoreStderr) => {
-	                    if (installCoreError || installCoreStderr) {
-	                        console.error(`Arduino CLI Install Core Error: ${installCoreError?.message || installCoreStderr}`);
-	                        return;
-	                    }
-	                    console.log(`Arduino CLI Install Core Output: ${installCoreStdout}`);
-	                    // Now that the prerequisites are set up, you can call other functions like createAndCompileSketch
-	                });
-	            });
-	        });
-	    });
+					exec(installCoreCommand, (installCoreError, installCoreStdout, installCoreStderr) => {
+						if (installCoreError || installCoreStderr) {
+							console.error(`Arduino CLI Install Core Error: ${installCoreError?.message || installCoreStderr}`);
+							return;
+						}
+						console.log(`Arduino CLI Install Core Output: ${installCoreStdout}`);
+						// Now that the prerequisites are set up, you can call other functions like createAndCompileSketch
+					});
+				});
+			});
+		});
 	}
 	
 	function createAndCompileSketch(editorContent) {
-		if (isElectron()) {
-			// Create a temporary directory for the sketch with a 'sketch' prefix
-			const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sketch'));
+		// Create a temporary directory for the sketch with a 'sketch' prefix
+		const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sketch'));
 
-			// Extract the unique part of the temporary directory name
-			const dirName = path.basename(tempDir);
+		// Extract the unique part of the temporary directory name
+		const dirName = path.basename(tempDir);
 
-			// Use the unique part to create a .ino file with the same name as the directory
-			const sketchFileName = dirName + '.ino';
-			const sketchPath = path.join(tempDir, sketchFileName);
+		// Use the unique part to create a .ino file with the same name as the directory
+		const sketchFileName = dirName + '.ino';
+		const sketchPath = path.join(tempDir, sketchFileName);
 
-			// Write the editor content to the .ino file
-			fs.writeFileSync(sketchPath, editorContent);
-			console.log('Sketch file created at:', sketchPath);
+		// Write the editor content to the .ino file
+		fs.writeFileSync(sketchPath, editorContent);
+		console.log('Sketch file created at:', sketchPath);
 
-			// Compile the sketch using the Arduino CLI
-			compileSketch(tempDir); // Pass only the directory, as the file name is now the same as the directory
-		} else {
-			console.log("Compiling sketches is not supported in a standard web browser.");
-		}
+		// Compile the sketch using the Arduino CLI
+		compileSketch(tempDir); // Pass only the directory, as the file name is now the same as the directory
 	}
 
-	// Function to compile an Arduino sketch using the local Arduino CLI
-	function compileSketch(sketchPath) {
-		if (isElectron()) {
-			const osType = os.platform(); // Detectar o sistema operacional novamente
-			console.log('Detected OS:', osType); // Imprime o sistema operacional detectado
-			let relativeArduinoCliPath;
-
-			if (osType === 'darwin') {
-				relativeArduinoCliPath = '/arduino-cli_0.35.2_macOS_ARM64/arduino-cli';
-			} else if (osType === 'win32') {
-				relativeArduinoCliPath = '/arduino-cli_0.35.2_Windows_64bit/arduino-cli.exe';
-			} else if (osType === 'linux') {
-				relativeArduinoCliPath = '/arduino-cli_0.35.2_Linux_ARM64/arduino-cli';
-			} else {
-				console.error('Unsupported OS');
-				return;
-			}
-
-			const arduinoCliPath = path.join(__dirname, relativeArduinoCliPath);
+		// Function to compile an Arduino sketch using the local Arduino CLI
+		function compileSketch(sketchPath) {
 			const fqbn = 'alexandermandera:wch:wch32v003'; // Set the correct FQBN for the WCH CH32V003 board
-
+			const relativeArduinoCliPath = '/arduino-cli_0.35.2_macOS_ARM64/arduino-cli';
+			const arduinoCliPath = window.nodeAPI.path.join(__dirname, relativeArduinoCliPath);
+			console.log(__dirname);
+			console.log(arduinoCliPath);
+		
 			// Compile command
 			const compileCommand = `"${arduinoCliPath}" compile --fqbn ${fqbn} "${sketchPath}"`;
-
+		
 			exec(compileCommand, (compileError, compileStdout, compileStderr) => {
 				if (compileError) {
 					console.error(`Compile Error: ${compileError.message}`);
@@ -227,20 +170,16 @@ function SidebarScript( editor ) {
 					return;
 				}
 				console.log(`Compile Output: ${compileStdout}`);
-
+		
 				// If compilation succeeds, proceed with uploading the sketch
 				uploadSketch(sketchPath, arduinoCliPath);
 			});
-		} else {
-			console.log("Compiling sketches is not supported in a standard web browser.");
 		}
-	}
-
-	function uploadSketch(sketchPath, arduinoCliPath) {
-		if (isElectron()) {
+	
+		function uploadSketch(sketchPath, arduinoCliPath) {
 			// Command to list all connected boards
 			const listBoardsCommand = `"${arduinoCliPath}" board list`;
-
+		
 			exec(listBoardsCommand, (error, stdout, stderr) => {
 				if (error) {
 					console.error(`Error listing boards: ${error.message}`);
@@ -250,7 +189,7 @@ function SidebarScript( editor ) {
 					console.error(`Error listing boards: ${stderr}`);
 					return;
 				}
-
+		
 				// Parse the stdout to find the port
 				// This is a basic example and might need adjustments based on your output
 				const lines = stdout.split('\n');
@@ -262,7 +201,7 @@ function SidebarScript( editor ) {
 						break;
 					}
 				}
-
+		
 				if (port) {
 					// If a port is found, proceed with the upload
 					const fqbn = 'alexandermandera:wch:wch32v003'; // Set the correct FQBN for the WCH CH32V003 board
@@ -283,10 +222,7 @@ function SidebarScript( editor ) {
 					console.error('No Arduino Uno found on any port.');
 				}
 			});
-		} else {
-			console.log("Uploading sketches is not supported in a standard web browser.");
 		}
-	}
 
 	/*
 	let loadScript = new UI.Button( 'Load' );
@@ -380,12 +316,6 @@ function SidebarScript( editor ) {
 	signals.scriptAdded.add( update );
 	signals.scriptRemoved.add( update );
 	signals.scriptChanged.add( update );
-
-	editor.codemirror.on('change', function() {
-		console.log('O código foi modificado.');
-		window.editorContent = editor.codemirror.getValue(); // Armazena o conteúdo atual do editor em uma variável global
-		//console.log(window.editorContent); // Imprime o conteúdo atual do editor armazenado globalmente
-	});
 
 	return container;
 

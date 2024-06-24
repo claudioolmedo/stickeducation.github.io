@@ -113,22 +113,39 @@ function SidebarScene( editor ) {
 
 		}
 
-		html += getScript( object.uuid );
+		// Add this check
+		if (editor && editor.scripts) {
+			html += getScript(object.uuid);
+		}
 
 		return html;
 
 	}
 
 	function getScript( uuid ) {
-
-		if ( editor.scripts[ uuid ] !== undefined ) {
-
-			return ' <span class="type Script"></span>';
-
+		// Check if the editor and editor.scripts exist
+		if (!editor || !editor.scripts) {
+			console.warn('editor or editor.scripts is undefined');
+			return '';
 		}
 
-		return '';
+		// Check if the UUID is valid
+		if (!uuid) {
+			console.warn('UUID is undefined or invalid');
+			return '';
+		}
 
+		// Retrieve the script by UUID
+		const script = editor.scripts[uuid];
+
+		// If the script is not found, log a warning and return an empty string
+		if (!script) {
+			console.warn(`Script with ID ${uuid} not found`);
+			return '';
+		}
+
+		// Return the script's HTML representation
+		return `<span class="script">${escapeHTML(script.name)}</span>`;
 	}
 
 	let ignoreObjectSelectedSignal = false;

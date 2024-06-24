@@ -113,29 +113,32 @@ function SidebarScene( editor ) {
 
 		}
 
-		html += getScript( object.uuid );
+		 // Adicione esta verificação
+		if (editor && editor.scripts) {
+			html += getScript(object.uuid);
+		}
 
 		return html;
 
 	}
 
 	function getScript( uuid ) {
-		// Verifique se o scriptId está definido
-		if (!uuid) {
-			console.error('Script ID is undefined');
+		// Verifique se o editor e editor.scripts existem
+		if (!editor || !editor.scripts) {
+			console.warn('editor or editor.scripts is undefined');
 			return '';
 		}
 
-		// Verifique se editor.scripts existe
-		if (!editor.scripts) {
-			console.error('editor.scripts is undefined');
+		// Verifique se o scriptId está definido
+		if (!uuid) {
+			console.warn('Script ID is undefined');
 			return '';
 		}
 
 		// Verifique se o script existe no objeto scripts
 		const script = editor.scripts[uuid];
 		if (!script) {
-			console.error(`Script with ID ${uuid} not found`);
+			console.warn(`Script with ID ${uuid} not found`);
 			return '';
 		}
 

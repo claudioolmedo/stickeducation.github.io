@@ -297,76 +297,89 @@ function SidebarScript( editor ) {
 	//
 
 	function update() {
+
 		scriptsContainer.clear();
-		scriptsContainer.setDisplay('none');
+		scriptsContainer.setDisplay( 'none' );
 
 		const object = editor.selected;
 
-		if (object === null || object === undefined) {
+		if ( object === null ) {
+
 			return;
+
 		}
 
-		if (!editor.scripts) {
-			console.warn('editor.scripts is undefined');
-			return;
-		}
+		const scripts = editor.scripts[ object.uuid ];
 
-		const scripts = editor.scripts[object.uuid];
+		if ( scripts !== undefined && scripts.length > 0 ) {
 
-		if (scripts !== undefined && Array.isArray(scripts) && scripts.length > 0) {
-			scriptsContainer.setDisplay('block');
+			scriptsContainer.setDisplay( 'block' );
 
-			for (let i = 0; i < scripts.length; i++) {
-				(function (object, script) {
-					const name = new UIInput(script.name).setWidth('130px').setFontSize('12px');
-					name.onChange(function () {
-						editor.execute(new SetScriptValueCommand(editor, editor.selected, script, 'name', this.getValue()));
-					});
-					scriptsContainer.add(name);
+			for ( let i = 0; i < scripts.length; i ++ ) {
 
-					const edit = new UIButton(strings.getKey('sidebar/script/edit'));
-					edit.setMarginLeft('4px');
-					edit.onClick(function () {
-						signals.editScript.dispatch(object, script);
-					});
-					scriptsContainer.add(edit);
+				( function ( object, script ) {
 
-					const remove = new UIButton(strings.getKey('sidebar/script/remove'));
-					remove.setMarginLeft('4px');
-					remove.onClick(function () {
-						if (confirm('Are you sure?')) {
-							editor.execute(new RemoveScriptCommand(editor, editor.selected, script));
+					const name = new UIInput( script.name ).setWidth( '130px' ).setFontSize( '12px' );
+					name.onChange( function () {
+
+						editor.execute( new SetScriptValueCommand( editor, editor.selected, script, 'name', this.getValue() ) );
+
+					} );
+					scriptsContainer.add( name );
+
+					const edit = new UIButton( strings.getKey( 'sidebar/script/edit' ) );
+					edit.setMarginLeft( '4px' );
+					edit.onClick( function () {
+
+						signals.editScript.dispatch( object, script );
+
+					} );
+					scriptsContainer.add( edit );
+
+					const remove = new UIButton( strings.getKey( 'sidebar/script/remove' ) );
+					remove.setMarginLeft( '4px' );
+					remove.onClick( function () {
+
+						if ( confirm( 'Are you sure?' ) ) {
+
+							editor.execute( new RemoveScriptCommand( editor, editor.selected, script ) );
+
 						}
-					});
-					scriptsContainer.add(remove);
 
-					scriptsContainer.add(new UIBreak());
-				})(object, scripts[i]);
+					} );
+					scriptsContainer.add( remove );
+
+					scriptsContainer.add( new UIBreak() );
+
+				} )( object, scripts[ i ] );
+
 			}
+
 		}
+
 	}
 
 	// signals
 
-	signals.objectSelected.add(function (object) {
+	signals.objectSelected.add( function ( object ) {
 
-		if (object !== null && editor.camera !== object) {
+		if ( object !== null && editor.camera !== object ) {
 
-			container.setDisplay('block');
+			container.setDisplay( 'block' );
 
 			update();
 
 		} else {
 
-			container.setDisplay('none');
+			container.setDisplay( 'none' );
 
 		}
 
-	});
+	} );
 
-	signals.scriptAdded.add(update);
-	signals.scriptRemoved.add(update);
-	signals.scriptChanged.add(update);
+	signals.scriptAdded.add( update );
+	signals.scriptRemoved.add( update );
+	signals.scriptChanged.add( update );
 
 	editor.codemirror.on('change', function() {
 		console.log('O código foi modificado.');

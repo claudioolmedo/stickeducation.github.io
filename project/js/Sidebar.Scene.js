@@ -119,34 +119,34 @@ function SidebarScene( editor ) {
 
 	}
 
-	function getScript( uuid ) {
-		// Verifique se o scriptId está definido
-		if (!uuid) {
-			console.error('Script ID is undefined');
-			return '';
-		}
+	function getScript(uuid) {
+    // Check if the scriptId is defined
+    if (!uuid) {
+        console.error('Script ID is undefined');
+        return '';
+    }
 
-		// Verifique se editor.scripts existe
-		if (!editor.scripts) {
-			console.error('editor.scripts is undefined');
-			return '';
-		}
+    // Check if editor.scripts exists
+    if (!editor.scripts) {
+        console.error('editor.scripts is undefined');
+        return '';
+    }
 
-		// Verifique se o script existe no objeto scripts
-		const script = editor.scripts[uuid];
-		if (!script) {
-			console.error(`Script with ID ${uuid} not found`);
-			return '';
-		}
+    // Log the current state of editor.scripts
+    console.log('Current editor.scripts:', editor.scripts);
 
-		if ( script !== undefined ) {
+    // Check if the script exists in the scripts object
+    const script = editor.scripts[uuid];
+    if (!script) {
+        console.error(`Script with ID ${uuid} not found`);
+        return '';
+    }
 
-			return ' <span class="type Script"></span>';
+    if (script !== undefined) {
+        return ' <span class="type Script"></span>';
+    }
 
-		}
-
-		return '';
-
+    return '';
 	}
 
 	let ignoreObjectSelectedSignal = false;

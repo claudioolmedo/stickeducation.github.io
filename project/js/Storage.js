@@ -251,10 +251,10 @@ function Storage() {
             // Handle successful data retrieval
 			request.onsuccess = function ( event ) {
                 // Log the successful data retrieval
-                console.log('Data retrieved from IndexedDB:', event.target.result);
-
+                console.log('Data retrieved from IndexedDB:', event.target.result); // Log the data retrieved from IndexedDB
                 // Call the callback function with the result
 				callback( event.target.result );
+				console.log('Data retrieved from IndexedDB:', event.target.result); // Log the data retrieved from IndexedDB
 			};
 		},
         
@@ -286,6 +286,7 @@ function Storage() {
             const request = objectStore.put(cleanedData, 0);
             request.onsuccess = function () {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
+                console.log('Data saved to IndexedDB:', cleanedData); // Log the data saved to IndexedDB
                 // Check if the project already exists and has an owner before saving data to Firebase
                 const projectPath = `projects/${projectId}`;
                 const projectDataRef = ref(firebaseDB, projectPath);
@@ -331,6 +332,9 @@ function Storage() {
                     console.error('Error checking project existence and owner:', error);
                 });
             };
+            request.onerror = function (event) {
+                console.error('Error saving data to IndexedDB:', event);
+            };
         },
         // Clear all data from the database
 		clear: function () {
@@ -347,6 +351,9 @@ function Storage() {
                 // Log the successful clearing
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Cleared IndexedDB.' );
 			};
+			request.onerror = function (event) {
+                console.error('Error clearing IndexedDB:', event);
+            };
 		}
 	};
 }

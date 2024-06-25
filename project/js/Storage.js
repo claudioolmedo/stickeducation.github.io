@@ -78,6 +78,10 @@ function Storage() {
                 window.isReadOnly = true; // Default to read-only on error
             });
 
+            // Fetch data from Firebase
+            const projectDataRef = ref(firebaseDB, `projects/${projectId}`);
+            get(projectDataRef).then((snapshot) => {
+                if (snapshot.exists()) {
         } else {
             console.log('No user is signed in.');
             window.currentUser = null; // Clear the current user

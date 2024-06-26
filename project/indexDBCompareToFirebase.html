@@ -24,6 +24,16 @@
             border: 1px solid #ddd;
             overflow-x: auto;
         }
+        .column {
+            float: left;
+            width: 45%;
+            margin: 2.5%;
+        }
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
     </style>
 </head>
 <body>
@@ -31,13 +41,19 @@
     <div id="content-container">
         <h1>Firebase vs IndexedDB Test</h1>
         <button id="compare-button">Compare Data</button>
-        <div class="data-container">
-            <h2>Firebase Data</h2>
-            <pre id="firebase-data"></pre>
-        </div>
-        <div class="data-container">
-            <h2>IndexedDB Data</h2>
-            <pre id="indexeddb-data"></pre>
+        <div class="row">
+            <div class="column">
+                <div class="data-container">
+                    <h2>Firebase Data</h2>
+                    <pre id="firebase-data"></pre>
+                </div>
+            </div>
+            <div class="column">
+                <div class="data-container">
+                    <h2>IndexedDB Data</h2>
+                    <pre id="indexeddb-data"></pre>
+                </div>
+            </div>
         </div>
         <div class="data-container">
             <h2>Comparison Result</h2>

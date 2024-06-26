@@ -49,6 +49,7 @@ function Storage() {
                     const firebaseData = snapshot.val();
                     console.log('General project data from Firebase:', firebaseData);
                     compareWithIndexedDB(firebaseData);
+                    updateSceneFromFirebase(firebaseData);
 
                     // Check if the current user is the owner
                     if (firebaseData.ownerId) {
@@ -132,6 +133,16 @@ function Storage() {
         request.onerror = function (event) {
             console.error('Error updating IndexedDB:', event);
         };
+    }
+
+    function updateSceneFromFirebase(firebaseData) {
+        const sceneData = firebaseData.data.scene;
+        if (sceneData) {
+            editor.fromJSON(sceneData);
+            console.log('Scene updated from Firebase data.');
+        } else {
+            console.log('No scene data found in Firebase.');
+        }
     }
 
     // Function to generate a new project ID
@@ -359,3 +370,5 @@ function Storage() {
 }
 
 export { Storage };
+
+

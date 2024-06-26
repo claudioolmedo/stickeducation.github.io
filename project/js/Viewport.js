@@ -796,6 +796,18 @@ function Viewport( editor ) {
 
 	}
 
+	// Listen for scene update signal
+	signals.sceneUpdatedFromFirebase.add(function (firebaseData) {
+		const sceneData = firebaseData.data.scene;
+		if (sceneData) {
+			editor.fromJSON(sceneData);
+			console.log('Scene updated from Firebase data.');
+			render();
+		} else {
+			console.log('No scene data found in Firebase.');
+		}
+	});
+
 	return container;
 
 }
@@ -808,3 +820,5 @@ function updateGridColors( grid1, grid2, colors ) {
 }
 
 export { Viewport };
+
+

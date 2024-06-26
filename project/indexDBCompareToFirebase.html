@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase vs IndexedDB Test</title>
+</head>
+<body>
+    <h1>Firebase vs IndexedDB Test</h1>
+    <button id="compare-button">Compare Data</button>
+
+    <script type="module">
+        import { firebaseAuth, firebaseDB, onAuthStateChanged } from './js/config/firebase.js';
+        import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+
+        // Read URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        let projectId = urlParams.get('id'); // Attempt to get 'id' parameter
+        console.log('Received project ID:', projectId); // Log the received project ID for debugging
+
+        // Check if projectId is null and generate a random ID if true
+        if (!projectId) {
+            projectId = Math.random().toString(36).substring(2, 10); // Generate a random alphanumeric string
+            const dateHex = new Date().getTime().toString(16); // Get current date and time in hexadecimal
+            projectId += '-' + dateHex; // Append the hexadecimal date to the project ID
+            console.log('Generated new project ID with timestamp:', projectId); // Log the new generated project ID with timestamp
+            window.location.search = `?id=${projectId}`; // Reload the page with the new project ID
+        }
+
+        document.getElementById('compare-button').addEventListener('click', async () => {
+            try {
+                const db = await openDatabase();
+                console.log('Database opened successfully');
+
+                const firebaseData = await getFirebaseData(projectId);
+                console.log('Data from Firebase:', firebaseData);
+
+                const indexedDBData = await getIndexedDBData(db);
+                console.log('Data from IndexedDB:', indexedDBData);
+
+                compareData(firebaseData, indexedDBData);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        function openDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('threejs-editor', 1);
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('states')) {
+                        db.createObjectStore('states', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function getFirebaseData(projectId) {
+            return new Promise((resolve, reject) => {
+                const projectPath = `projects/${projectId}`;
+                const projectDataRef = ref(firebaseDB, projectPath);
+
+                get(projectDataRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        resolve(snapshot.val());
+                    } else {
+                        reject('No data available in Firebase');
+                    }
+                }).catch((error) => {
+                    reject(error);
+                });
+            });
+        }
+
+        function getIndexedDBData(db) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['states'], 'readonly');
+                const objectStore = transaction.objectStore('states');
+                const request = objectStore.get(0);
+
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function compareData(firebaseData, indexedDBData) {
+            console.log('Data from IndexedDB:', indexedDBData);
+
+            // Extract the relevant part of the Firebase data
+            const firebaseRelevantData = firebaseData.data;
+
+            if (JSON.stringify(firebaseRelevantData) === JSON.stringify(indexedDBData)) {
+                console.log('Data from Firebase and IndexedDB are identical.');
+            } else {
+                console.log('Data from Firebase and IndexedDB are different.');
+                console.log('Firebase Data:', firebaseRelevantData);
+                console.log('IndexedDB Data:', indexedDBData);
+            }
+        }
+    </script>
+</body>
+</html>

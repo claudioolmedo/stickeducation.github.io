@@ -109,7 +109,7 @@ function Storage(editor) {
                 console.log('Firebase Data:', firebaseRelevantData);
                 console.log('IndexedDB Data:', indexedDBData);
                 // Update IndexedDB with Firebase data if they are different
-                updateIndexedDB(firebaseRelevantData);
+                updateIndexedDB({ ...firebaseRelevantData, createdAt: firebaseData.createdAt });
             }
         };
 

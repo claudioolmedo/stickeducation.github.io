@@ -4,13 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firebase vs IndexedDB Test</title>
+    <style>
+        #content-container {
+            display: none; /* Hide content initially */
+        }
+        #google-login {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 200px;
+            z-index: 9999;
+        }
+        .data-container {
+            margin: 20px 0;
+        }
+        .data-container pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Firebase vs IndexedDB Test</h1>
-    <button id="compare-button">Compare Data</button>
+    <button id="google-login">Login or Create account</button>
+    <div id="content-container">
+        <h1>Firebase vs IndexedDB Test</h1>
+        <button id="compare-button">Compare Data</button>
+        <div class="data-container">
+            <h2>Firebase Data</h2>
+            <pre id="firebase-data"></pre>
+        </div>
+        <div class="data-container">
+            <h2>IndexedDB Data</h2>
+            <pre id="indexeddb-data"></pre>
+        </div>
+        <div class="data-container">
+            <h2>Comparison Result</h2>
+            <pre id="comparison-result"></pre>
+        </div>
+    </div>
 
     <script type="module">
-        import { firebaseAuth, firebaseDB, onAuthStateChanged } from './js/config/firebase.js';
+        import { firebaseAuth, firebaseDB, signInWithGoogle, signOutUser, onAuthStateChanged } from './js/config/firebase.js';
         import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
         // Read URL parameter
@@ -99,19 +135,64 @@
         }
 
         function compareData(firebaseData, indexedDBData) {
-            console.log('Data from IndexedDB:', indexedDBData);
+            const firebaseDataContainer = document.getElementById('firebase-data');
+            const indexedDBDataContainer = document.getElementById('indexeddb-data');
+            const comparisonResultContainer = document.getElementById('comparison-result');
+
+            firebaseDataContainer.textContent = JSON.stringify(firebaseData, null, 2);
+            indexedDBDataContainer.textContent = JSON.stringify(indexedDBData, null, 2);
 
             // Extract the relevant part of the Firebase data
             const firebaseRelevantData = firebaseData.data;
 
             if (JSON.stringify(firebaseRelevantData) === JSON.stringify(indexedDBData)) {
-                console.log('Data from Firebase and IndexedDB are identical.');
+                comparisonResultContainer.textContent = 'Data from Firebase and IndexedDB are identical.';
             } else {
-                console.log('Data from Firebase and IndexedDB are different.');
-                console.log('Firebase Data:', firebaseRelevantData);
-                console.log('IndexedDB Data:', indexedDBData);
+                comparisonResultContainer.textContent = 'Data from Firebase and IndexedDB are different.';
             }
         }
+
+        // Monitor the authentication state
+        onAuthStateChanged(firebaseAuth, (user) => {
+            const contentContainer = document.getElementById('content-container');
+            if (user) {
+                console.log('User is signed in:', user);
+                window.currentUser = user; // Store the current user globally
+                contentContainer.style.display = 'block'; // Show the content container
+            } else {
+                console.log('No user is signed in.');
+                window.currentUser = null; // Clear the current user
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectId = urlParams.get('id');
+                window.location.href = `./login/index.html?id=${projectId}`; // Redirect to the login page with project ID
+            }
+        });
+
+        const googleButton = document.getElementById('google-login');
+        googleButton.onclick = () => {
+            if (window.currentUser) {
+                signOutUser().then(() => {
+                    console.log('User logged out successfully.');
+                }).catch((error) => {
+                    console.error('Error logging out:', error);
+                });
+            } else {
+                signInWithGoogle().then((result) => {
+                    console.log('User logged in successfully:', result.user);
+                }).catch((error) => {
+                    console.error('Error logging in:', error);
+                });
+            }
+        };
+
+        // Update button text based on authentication state
+        onAuthStateChanged(firebaseAuth, (user) => {
+            if (user) {
+                googleButton.textContent = 'Logout';
+            } else {
+                googleButton.textContent = 'Login or Create account';
+            }
+        });
     </script>
 </body>
 </html>

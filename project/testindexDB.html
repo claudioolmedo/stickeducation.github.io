@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB Test</title>
+</head>
+<body>
+    <h1>IndexedDB Test</h1>
+    <button id="modify-button">Modify IndexedDB</button>
+
+    <script>
+        document.getElementById('modify-button').addEventListener('click', async () => {
+            try {
+                const db = await openDatabase();
+                console.log('Database opened successfully');
+
+                const data = await getData(db);
+                console.log('Original data:', data);
+
+                if (data && data.scene && data.scene.object && data.scene.object.children) {
+                    // Find the object with the name "Wooden Stick"
+                    const object = data.scene.object.children.find(child => child.name === 'Wooden Stick');
+
+                    if (object && object.matrix) {
+                        // Modify the value at index 12
+                        object.matrix[12] = 100; // Novo valor para a posição X
+
+                        // Save the modified data back to IndexedDB
+                        await saveData(db, data);
+                        console.log('Data modified and saved:', data);
+                    } else {
+                        console.log('Object "Wooden Stick" not found or matrix not found');
+                    }
+                } else {
+                    console.log('Invalid data structure');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        function openDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('threejs-editor', 1);
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('states')) {
+                        db.createObjectStore('states', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function getData(db) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['states'], 'readonly');
+                const objectStore = transaction.objectStore('states');
+                const request = objectStore.get(0);
+
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function saveData(db, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['states'], 'readwrite');
+                const objectStore = transaction.objectStore('states');
+                const request = objectStore.put(data, 0);
+
+                request.onsuccess = () => {
+                    resolve(request.result);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+    </script>
+</body>
+</html>

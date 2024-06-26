@@ -92,6 +92,8 @@ function Editor() {
 
 		intersectionsDetected: new Signal(),
 
+		sceneUpdatedFromFirebase: new Signal(), // Added this line to define the sceneUpdatedFromFirebase signal
+
 	};
 
 	this.config = new Config();

@@ -8,7 +8,7 @@ function generateUniqueId() {
     return `${timestamp}-${randomStr}`;
 }
 
-function Storage() {
+function Storage(editor) {
 
     // Access the IndexedDB API from the window object
     const indexedDB = window.indexedDB;
@@ -137,11 +137,12 @@ function Storage() {
 
     function updateSceneFromFirebase(firebaseData) {
         const sceneData = firebaseData.data.scene;
-        if (sceneData) {
+        if (sceneData && editor && typeof editor.fromJSON === 'function') {
             editor.fromJSON(sceneData);
+            editor.signals.sceneUpdatedFromFirebase.dispatch(firebaseData);
             console.log('Scene updated from Firebase data.');
         } else {
-            console.log('No scene data found in Firebase.');
+            console.log('No scene data found in Firebase or editor is not properly configured.');
         }
     }
 
@@ -370,5 +371,3 @@ function Storage() {
 }
 
 export { Storage };
-
-

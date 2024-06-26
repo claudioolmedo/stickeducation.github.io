@@ -34,6 +34,12 @@
             display: table;
             clear: both;
         }
+        .similar {
+            color: green;
+        }
+        .different {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -155,8 +161,8 @@
             const indexedDBDataContainer = document.getElementById('indexeddb-data');
             const comparisonResultContainer = document.getElementById('comparison-result');
 
-            firebaseDataContainer.textContent = JSON.stringify(firebaseData, null, 2);
-            indexedDBDataContainer.textContent = JSON.stringify(indexedDBData, null, 2);
+            firebaseDataContainer.innerHTML = formatData(firebaseData, indexedDBData);
+            indexedDBDataContainer.innerHTML = formatData(indexedDBData, firebaseData);
 
             // Extract the relevant part of the Firebase data
             const firebaseRelevantData = firebaseData.data;
@@ -166,6 +172,20 @@
             } else {
                 comparisonResultContainer.textContent = 'Data from Firebase and IndexedDB are different.';
             }
+        }
+
+        function formatData(data, comparisonData) {
+            const formattedData = JSON.stringify(data, null, 2);
+            const comparisonString = JSON.stringify(comparisonData, null, 2);
+
+            return formattedData.replace(/"([^"]+)":\s*("[^"]+"|\d+|true|false|null)/g, (match, key, value) => {
+                const comparisonMatch = new RegExp(`"${key}":\\s*${value.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}`);
+                if (comparisonString.match(comparisonMatch)) {
+                    return `<span class="similar">${match}</span>`;
+                } else {
+                    return `<span class="different">${match}</span>`;
+                }
+            });
         }
 
         // Monitor the authentication state

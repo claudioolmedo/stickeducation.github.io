@@ -240,16 +240,19 @@
         });
 
         // Add event listener to the form
-        const addDataForm = document.getElementById('add-data-form');
-        addDataForm.addEventListener('submit', async (event) => {
+        document.getElementById('add-data-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const createdAt = event.target.createdAt.value;
-            try {
-                const db = await openDatabase();
-                await addDataToIndexedDB(db, { createdAt });
-                console.log('Data added to IndexedDB successfully.');
-            } catch (error) {
-                console.error('Error adding data to IndexedDB:', error);
+            const createdAt = document.getElementById('createdAt').value;
+            if (createdAt) {
+                try {
+                    const db = await openDatabase();
+                    await addDataToIndexedDB(db, { createdAt });
+                    console.log('Data added to IndexedDB:', { createdAt });
+                } catch (error) {
+                    console.error('Error adding data to IndexedDB:', error);
+                }
+            } else {
+                console.error('Created At field is required.');
             }
         });
     </script>

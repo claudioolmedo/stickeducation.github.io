@@ -65,11 +65,20 @@
             <h2>Comparison Result</h2>
             <pre id="comparison-result"></pre>
         </div>
+        <div class="data-container">
+            <h2>Add Data to IndexedDB</h2>
+            <form id="add-data-form">
+                <label for="createdAt">Created At:</label>
+                <input type="datetime-local" id="createdAt" name="createdAt">
+                <button type="submit">Add Data</button>
+            </form>
+        </div>
     </div>
 
     <script type="module">
         import { firebaseAuth, firebaseDB, signInWithGoogle, signOutUser, onAuthStateChanged } from './js/config/firebase.js';
         import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+        import { addDataToIndexedDB } from './js/StorageTest.js';
 
         // Read URL parameter
         const urlParams = new URLSearchParams(window.location.search);
@@ -227,6 +236,20 @@
                 googleButton.textContent = 'Logout';
             } else {
                 googleButton.textContent = 'Login or Create account';
+            }
+        });
+
+        // Add event listener to the form
+        const addDataForm = document.getElementById('add-data-form');
+        addDataForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const createdAt = event.target.createdAt.value;
+            try {
+                const db = await openDatabase();
+                await addDataToIndexedDB(db, { createdAt });
+                console.log('Data added to IndexedDB successfully.');
+            } catch (error) {
+                console.error('Error adding data to IndexedDB:', error);
             }
         });
     </script>

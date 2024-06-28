@@ -23,19 +23,28 @@ function openTestDatabase() {
 }
 
 // Function to save data to IndexedDB
-function addDataToIndexedDB(db, data) {
+export async function addDataToIndexedDB(db, keyValuePairs) {
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(['states'], 'readwrite');
         const objectStore = transaction.objectStore('states');
-        const request = objectStore.put(data);
 
-        request.onsuccess = () => {
-            console.log('Data saved to IndexedDB:', data);
+        keyValuePairs.forEach((pair) => {
+            const request = objectStore.put({ id: pair.key, value: pair.value }); // Ensure the key is provided
+
+            request.onsuccess = () => {
+                console.log('Data added successfully:', pair);
+            };
+
+            request.onerror = (event) => {
+                reject(event.target.error);
+            };
+        });
+
+        transaction.oncomplete = () => {
             resolve();
         };
 
-        request.onerror = (event) => {
-            console.error('Error saving data to IndexedDB:', event);
+        transaction.onerror = (event) => {
             reject(event.target.error);
         };
     });

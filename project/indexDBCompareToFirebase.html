@@ -66,13 +66,12 @@
             <div class="column">
                 <div class="data-container">
                     <h2>Firebase Data</h2>
-                    <button id="clone-button">Clone to IndexedDB</button>
                     <pre id="firebase-data"></pre>
                 </div>
             </div>
             <div class="column">
                 <div class="data-container">
-                    <h2>IndexedDB Data (Database: <span id="indexeddb-name"></span>)</h2>
+                    <h2>IndexedDB Data</h2>
                     <pre id="indexeddb-data"></pre>
                 </div>
             </div>
@@ -86,7 +85,7 @@
     <script type="module">
         import { firebaseAuth, firebaseDB, signInWithGoogle, signOutUser, onAuthStateChanged } from './js/config/firebase.js';
         import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-        import { openTestDatabase, addDataToIndexedDB, getDatabaseName } from './js/StorageTest.js';
+        import { openTestDatabase, addDataToIndexedDB } from './js/StorageTest.js';
 
         // Read URL parameter
         const urlParams = new URLSearchParams(window.location.search);
@@ -268,40 +267,6 @@
             `;
             document.getElementById('key-value-pairs').appendChild(newKeyValuePair);
         });
-
-        // Add this function to clone Firebase data to IndexedDB
-        async function cloneFirebaseToIndexedDB(projectId) {
-            try {
-                const firebaseData = await getFirebaseData(projectId);
-                const db = await openTestDatabase();
-                
-                // Add Firebase data to IndexedDB
-                const dataToAdd = Object.entries(firebaseData.data).map(([key, value]) => ({ key, value }));
-                await addDataToIndexedDB(db, dataToAdd);
-                
-                console.log('Data cloned from Firebase to IndexedDB');
-                
-                // Refresh the comparison
-                const indexedDBData = await getIndexedDBData(db);
-                compareData(firebaseData, indexedDBData);
-            } catch (error) {
-                console.error('Error cloning data:', error);
-            }
-        }
-
-        // Add event listener for the clone button
-        document.getElementById('clone-button').addEventListener('click', () => {
-            cloneFirebaseToIndexedDB(projectId);
-        });
-
-        // Add this function to update the IndexedDB name in the HTML
-        async function updateIndexedDBName() {
-            const dbName = await getDatabaseName();
-            document.getElementById('indexeddb-name').textContent = dbName;
-        }
-
-        // Call this function when the page loads
-        updateIndexedDBName();
     </script>
 </body>
 </html>

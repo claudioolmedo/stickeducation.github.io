@@ -1,22 +1,13 @@
-// Add this constant at the top of the file
-const DB_NAME = 'threejs-editor';
-
-// Add this new function to get the database name
-export function getDatabaseName() {
-    return DB_NAME;
-}
-
-// Update the openTestDatabase function to use the DB_NAME constant
-export function openTestDatabase() {
+// Function to open the IndexedDB
+function openTestDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 2); // Incrementamos a versão para forçar uma atualização
+        const request = indexedDB.open('test-database', 1);
 
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            if (db.objectStoreNames.contains('states')) {
-                db.deleteObjectStore('states');
+            if (!db.objectStoreNames.contains('states')) {
+                db.createObjectStore('states', { keyPath: 'id', autoIncrement: true }); // Ensure keyPath is set
             }
-            db.createObjectStore('states', { keyPath: 'id', autoIncrement: true });
         };
 
         request.onsuccess = (event) => {
@@ -31,14 +22,14 @@ export function openTestDatabase() {
     });
 }
 
-// Function to add data to IndexedDB
-export function addDataToIndexedDB(db, keyValuePairs) {
+// Function to save data to IndexedDB
+export async function addDataToIndexedDB(db, keyValuePairs) {
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(['states'], 'readwrite');
         const objectStore = transaction.objectStore('states');
 
-        keyValuePairs.forEach((pair) => {
-            const request = objectStore.add({ key: pair.key, value: pair.value });
+        keyValuePairs.forEach((pair, index) => {
+            const request = objectStore.put({ id: index, key: pair.key, value: pair.value });
             request.onsuccess = () => {
                 console.log('Data added to IndexedDB:', pair);
             };
@@ -57,18 +48,4 @@ export function addDataToIndexedDB(db, keyValuePairs) {
     });
 }
 
-export function clearIndexedDB(db) {
-    return new Promise((resolve, reject) => {
-        const transaction = db.transaction(['states'], 'readwrite');
-        const objectStore = transaction.objectStore('states');
-        const request = objectStore.clear();
-
-        request.onsuccess = () => {
-            resolve();
-        };
-
-        request.onerror = (event) => {
-            reject(event.target.error);
-        };
-    });
-}
+export { openTestDatabase };

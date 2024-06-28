@@ -145,10 +145,12 @@
                 const request = objectStore.getAll();
 
                 request.onsuccess = (event) => {
+                    console.log('IndexedDB data retrieved:', event.target.result); // Log the retrieved data
                     resolve(event.target.result);
                 };
 
                 request.onerror = (event) => {
+                    console.error('Error retrieving data from IndexedDB:', event.target.error); // Log the error
                     reject(event.target.error);
                 };
             });

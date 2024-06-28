@@ -50,4 +50,4 @@ export async function addDataToIndexedDB(db, keyValuePairs) {
     });
 }
 
-export { openTestDatabase, addDataToIndexedDB };
+export { openTestDatabase };

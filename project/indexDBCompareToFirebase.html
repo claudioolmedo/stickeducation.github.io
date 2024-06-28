@@ -85,7 +85,7 @@
     <script type="module">
         import { firebaseAuth, firebaseDB, signInWithGoogle, signOutUser, onAuthStateChanged } from './js/config/firebase.js';
         import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-        import { openTestDatabase, addDataToIndexedDB } from './js/StorageTest.js';
+        import { addDataToIndexedDB } from './js/StorageTest.js';
 
         // Read URL parameter
         const urlParams = new URLSearchParams(window.location.search);
@@ -104,7 +104,7 @@
         // Event listener for the compare button
         document.getElementById('compare-button').addEventListener('click', async () => {
             try {
-                const db = await openTestDatabase();
+                const db = await openDatabase();
                 console.log('Database opened successfully');
 
                 const firebaseData = await getFirebaseData(projectId);
@@ -118,6 +118,28 @@
                 console.error('Error:', error);
             }
         });
+
+        // Function to open the IndexedDB
+        function openDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('threejs-editor', 1);
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('states')) {
+                        db.createObjectStore('states', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
 
         // Function to get data from Firebase
         function getFirebaseData(projectId) {
@@ -142,7 +164,7 @@
             return new Promise((resolve, reject) => {
                 const transaction = db.transaction(['states'], 'readonly');
                 const objectStore = transaction.objectStore('states');
-                const request = objectStore.getAll();
+                const request = objectStore.get(0);
 
                 request.onsuccess = (event) => {
                     resolve(event.target.result);
@@ -243,7 +265,7 @@
             });
             if (keyValuePairs.length > 0) {
                 try {
-                    const db = await openTestDatabase();
+                    const db = await openDatabase();
                     await addDataToIndexedDB(db, keyValuePairs);
                     console.log('Data added to IndexedDB:', keyValuePairs);
                 } catch (error) {

@@ -48,3 +48,19 @@ export function addDataToIndexedDB(db, keyValuePairs) {
         };
     });
 }
+
+export function clearIndexedDB(db) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['states'], 'readwrite');
+        const objectStore = transaction.objectStore('states');
+        const request = objectStore.clear();
+
+        request.onsuccess = () => {
+            resolve();
+        };
+
+        request.onerror = (event) => {
+            reject(event.target.error);
+        };
+    });
+}

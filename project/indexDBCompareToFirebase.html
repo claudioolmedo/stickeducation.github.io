@@ -68,8 +68,15 @@
         <div class="data-container">
             <h2>Add Data to IndexedDB</h2>
             <form id="add-data-form">
-                <label for="createdAt">Created At:</label>
-                <input type="datetime-local" id="createdAt" name="createdAt">
+                <div id="key-value-pairs">
+                    <div class="key-value-pair">
+                        <label for="key">Key:</label>
+                        <input type="text" name="key" required>
+                        <label for="value">Value:</label>
+                        <input type="text" name="value" required>
+                    </div>
+                </div>
+                <button type="button" id="add-pair-button">Add Another Pair</button>
                 <button type="submit">Add Data</button>
             </form>
         </div>
@@ -242,18 +249,37 @@
         // Add event listener to the form
         document.getElementById('add-data-form').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const createdAt = document.getElementById('createdAt').value;
-            if (createdAt) {
+            const keyValuePairs = [];
+            const keyValuePairElements = document.querySelectorAll('#key-value-pairs .key-value-pair');
+            keyValuePairElements.forEach((element) => {
+                const key = element.querySelector('input[name="key"]').value;
+                const value = element.querySelector('input[name="value"]').value;
+                keyValuePairs.push({ key, value });
+            });
+            if (keyValuePairs.length > 0) {
                 try {
                     const db = await openDatabase();
-                    await addDataToIndexedDB(db, { createdAt });
-                    console.log('Data added to IndexedDB:', { createdAt });
+                    await addDataToIndexedDB(db, keyValuePairs);
+                    console.log('Data added to IndexedDB:', keyValuePairs);
                 } catch (error) {
                     console.error('Error adding data to IndexedDB:', error);
                 }
             } else {
-                console.error('Created At field is required.');
+                console.error('No key-value pairs provided.');
             }
+        });
+
+        // Add event listener to the "Add Another Pair" button
+        document.getElementById('add-pair-button').addEventListener('click', () => {
+            const newKeyValuePair = document.createElement('div');
+            newKeyValuePair.className = 'key-value-pair';
+            newKeyValuePair.innerHTML = `
+                <label for="key">Key:</label>
+                <input type="text" name="key" required>
+                <label for="value">Value:</label>
+                <input type="text" name="value" required>
+            `;
+            document.getElementById('key-value-pairs').appendChild(newKeyValuePair);
         });
     </script>
 </body>

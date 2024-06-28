@@ -1,14 +1,13 @@
 // Function to open the IndexedDB
 export function openTestDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('threejs-editor', 2); // Incrementamos a versão para forçar uma atualização
+        const request = indexedDB.open('threejs-editor', 1);
 
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            if (db.objectStoreNames.contains('states')) {
-                db.deleteObjectStore('states');
+            if (!db.objectStoreNames.contains('states')) {
+                db.createObjectStore('states', { keyPath: 'id', autoIncrement: true }); // Ensure keyPath is set
             }
-            db.createObjectStore('states', { keyPath: 'id', autoIncrement: true });
         };
 
         request.onsuccess = (event) => {
@@ -23,14 +22,15 @@ export function openTestDatabase() {
     });
 }
 
-// Function to add data to IndexedDB
+// Function to save data to IndexedDB
 export function addDataToIndexedDB(db, keyValuePairs) {
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(['states'], 'readwrite');
         const objectStore = transaction.objectStore('states');
 
         keyValuePairs.forEach((pair) => {
-            const request = objectStore.add({ key: pair.key, value: pair.value });
+            // Adiciona a chave explicitamente ao objeto
+            const request = objectStore.put({ id: pair.key, key: pair.key, value: pair.value });
             request.onsuccess = () => {
                 console.log('Data added to IndexedDB:', pair);
             };

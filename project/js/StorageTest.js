@@ -1,7 +1,15 @@
-// Function to open the IndexedDB
+// Add this constant at the top of the file
+const DB_NAME = 'threejs-editor';
+
+// Add this new function to get the database name
+export function getDatabaseName() {
+    return DB_NAME;
+}
+
+// Update the openTestDatabase function to use the DB_NAME constant
 export function openTestDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('threejs-editor', 2); // Incrementamos a versão para forçar uma atualização
+        const request = indexedDB.open(DB_NAME, 2); // Incrementamos a versão para forçar uma atualização
 
         request.onupgradeneeded = (event) => {
             const db = event.target.result;

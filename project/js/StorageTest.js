@@ -28,13 +28,11 @@ export async function addDataToIndexedDB(db, keyValuePairs) {
         const transaction = db.transaction(['states'], 'readwrite');
         const objectStore = transaction.objectStore('states');
 
-        keyValuePairs.forEach((pair) => {
-            const request = objectStore.put({ id: pair.key, value: pair.value }); // Ensure the key is provided
-
+        keyValuePairs.forEach((pair, index) => {
+            const request = objectStore.put({ id: index, key: pair.key, value: pair.value });
             request.onsuccess = () => {
-                console.log('Data added successfully:', pair);
+                console.log('Data added to IndexedDB:', pair);
             };
-
             request.onerror = (event) => {
                 reject(event.target.error);
             };

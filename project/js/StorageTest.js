@@ -1,7 +1,7 @@
 // Function to open the IndexedDB
-function openTestDatabase() {
+export function openTestDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('test-database', 1);
+        const request = indexedDB.open('threejs-editor', 1);
 
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
@@ -23,14 +23,14 @@ function openTestDatabase() {
 }
 
 // Function to save data to IndexedDB
-export async function addDataToIndexedDB(db, keyValuePairs) {
+export function addDataToIndexedDB(db, keyValuePairs) {
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(['states'], 'readwrite');
         const objectStore = transaction.objectStore('states');
 
         keyValuePairs.forEach((pair) => {
-            // Adiciona a chave explicitamente ao objeto
-            const request = objectStore.put({ key: pair.key, value: pair.value }, pair.key);
+            // Remove explicit key parameter
+            const request = objectStore.put({ key: pair.key, value: pair.value });
             request.onsuccess = () => {
                 console.log('Data added to IndexedDB:', pair);
             };
@@ -48,5 +48,3 @@ export async function addDataToIndexedDB(db, keyValuePairs) {
         };
     });
 }
-
-export { openTestDatabase };

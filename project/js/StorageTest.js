@@ -6,7 +6,7 @@ function openTestDatabase() {
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains('states')) {
-                db.createObjectStore('states', { keyPath: 'id', autoIncrement: true });
+                db.createObjectStore('states', { keyPath: 'id', autoIncrement: true }); // Ensure keyPath is set
             }
         };
 

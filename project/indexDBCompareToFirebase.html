@@ -101,6 +101,7 @@
             window.location.search = `?id=${projectId}`; // Reload the page with the new project ID
         }
 
+        // Event listener for the compare button
         document.getElementById('compare-button').addEventListener('click', async () => {
             try {
                 const db = await openDatabase();
@@ -118,6 +119,7 @@
             }
         });
 
+        // Function to open the IndexedDB
         function openDatabase() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open('threejs-editor', 1);
@@ -139,6 +141,7 @@
             });
         }
 
+        // Function to get data from Firebase
         function getFirebaseData(projectId) {
             return new Promise((resolve, reject) => {
                 const projectPath = `projects/${projectId}`;
@@ -156,6 +159,7 @@
             });
         }
 
+        // Function to get data from IndexedDB
         function getIndexedDBData(db) {
             return new Promise((resolve, reject) => {
                 const transaction = db.transaction(['states'], 'readonly');
@@ -172,6 +176,7 @@
             });
         }
 
+        // Function to compare data from Firebase and IndexedDB
         function compareData(firebaseData, indexedDBData) {
             const firebaseDataContainer = document.getElementById('firebase-data');
             const indexedDBDataContainer = document.getElementById('indexeddb-data');
@@ -190,6 +195,7 @@
             }
         }
 
+        // Function to format data for display
         function formatData(data, comparisonData) {
             const formattedData = JSON.stringify(data, null, 2);
             const comparisonString = JSON.stringify(comparisonData, null, 2);
@@ -220,6 +226,7 @@
             }
         });
 
+        // Event listener for the Google login button
         const googleButton = document.getElementById('google-login');
         googleButton.onclick = () => {
             if (window.currentUser) {
@@ -246,7 +253,7 @@
             }
         });
 
-        // Add event listener to the form
+        // Add event listener to the form for adding data to IndexedDB
         document.getElementById('add-data-form').addEventListener('submit', async (event) => {
             event.preventDefault();
             const keyValuePairs = [];

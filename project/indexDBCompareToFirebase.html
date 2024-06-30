@@ -82,10 +82,7 @@
         <div class="data-container">
             <label for="indexeddb-select">Select IndexedDB:</label>
             <select id="indexeddb-select" class="form-control">
-                <option value="threejs-editor" selected>threejs-editor</option>
-                <option value="firebase-heartbeat-database">firebase-heartbeat-database</option>
-                <option value="firebaseLocalStorageDb">firebaseLocalStorageDb</option>
-                <option value="test-database">test-database</option>
+                <!-- Options will be populated dynamically -->
             </select>
         </div>
         <button id="compare-button" class="btn btn-primary mt-3">Compare Data</button>
@@ -134,6 +131,38 @@
             console.log('Generated new project ID with timestamp:', projectId);
             window.location.search = `?id=${projectId}`;
         }
+
+        // Function to list all IndexedDB databases
+        async function listAllDatabases() {
+            if (!indexedDB.databases) {
+                console.warn('indexedDB.databases() is not supported in this browser.');
+                return [];
+            }
+            return indexedDB.databases();
+        }
+
+        // Function to populate the IndexedDB select dropdown
+        async function populateIndexedDBSelect() {
+            const databases = await listAllDatabases();
+            const selectElement = document.getElementById('indexeddb-select');
+            selectElement.innerHTML = ''; // Clear existing options
+
+            databases.forEach(db => {
+                const option = document.createElement('option');
+                option.value = db.name;
+                option.textContent = db.name;
+                selectElement.appendChild(option);
+            });
+
+            // Set default selection to 'threejs-editor' if it exists
+            const defaultOption = Array.from(selectElement.options).find(option => option.value === 'threejs-editor');
+            if (defaultOption) {
+                selectElement.value = 'threejs-editor';
+            }
+        }
+
+        // Call populateIndexedDBSelect on page load
+        document.addEventListener('DOMContentLoaded', populateIndexedDBSelect);
 
         // Function to open the selected IndexedDB
         async function openSelectedDatabase() {

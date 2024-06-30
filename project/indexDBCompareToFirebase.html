@@ -118,7 +118,7 @@
 
                 // Update the database names in the HTML
                 document.getElementById('firebase-db-name').textContent = `Database: Firebase (Project ID: ${projectId})`;
-                document.getElementById('indexeddb-db-name').textContent = 'Database: IndexedDB (states)';
+                document.getElementById('indexeddb-db-name').textContent = `Database: ${db.name}`; // Display the IndexedDB name
 
                 compareData(firebaseData, indexedDBData);
             } catch (error) {

@@ -111,10 +111,44 @@ function Storage(editor) {
                 // Update IndexedDB with Firebase data if they are different
                 updateIndexedDB({ ...firebaseRelevantData, createdAt: firebaseData.createdAt });
             }
+
+            // Save data to a new IndexedDB with the project ID as the database name
+            saveToNewIndexedDB(firebaseData, projectId);
         };
 
         request.onerror = function (event) {
             console.error('Error retrieving data from IndexedDB for comparison:', event);
+        };
+    }
+
+    function saveToNewIndexedDB(data, projectId) {
+        const newDbName = projectId;
+        const request = indexedDB.open(newDbName, 1);
+
+        request.onupgradeneeded = function (event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('states')) {
+                db.createObjectStore('states');
+            }
+        };
+
+        request.onsuccess = function (event) {
+            const newDatabase = event.target.result;
+            const transaction = newDatabase.transaction(['states'], 'readwrite');
+            const objectStore = transaction.objectStore('states');
+            const putRequest = objectStore.put(data, 0);
+
+            putRequest.onsuccess = function () {
+                console.log('Data saved to new IndexedDB with project ID:', projectId);
+            };
+
+            putRequest.onerror = function (event) {
+                console.error('Error saving data to new IndexedDB:', event);
+            };
+        };
+
+        request.onerror = function (event) {
+            console.error('Error opening new IndexedDB:', event);
         };
     }
 

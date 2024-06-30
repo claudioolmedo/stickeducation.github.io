@@ -129,7 +129,7 @@
             return new Promise((resolve, reject) => {
                 const transaction = db.transaction(['states'], 'readonly');
                 const objectStore = transaction.objectStore('states');
-                const request = objectStore.getAll();
+                const request = objectStore.getAllKeys();
 
                 request.onsuccess = (event) => {
                     resolve(event.target.result);
@@ -145,8 +145,8 @@
         async function visualizeDatabase() {
             try {
                 const db = await openSelectedDatabase();
-                const indexedDBData = await getIndexedDBStructure(db);
-                document.getElementById('db-structure-content').textContent = JSON.stringify(indexedDBData, null, 2);
+                const indexedDBKeys = await getIndexedDBStructure(db);
+                document.getElementById('db-structure-content').textContent = JSON.stringify(indexedDBKeys, null, 2);
                 document.getElementById('db-structure').style.display = 'block';
             } catch (error) {
                 console.error('Error visualizing database:', error);
@@ -167,7 +167,7 @@
 
                 // Update the database names in the HTML
                 document.getElementById('firebase-db-name').textContent = `Database: Firebase (Project ID: ${projectId})`;
-                document.getElementById('indexeddb-db-name').textContent = `Database: ${db.name}`;
+                document.getElementById('indexeddb-db-name').textContent = `Database: ${db.name}`; // Display the IndexedDB name
 
                 compareData(firebaseData, indexedDBData);
             } catch (error) {

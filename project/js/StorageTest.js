@@ -1,7 +1,7 @@
 // Function to open the IndexedDB
-function openTestDatabase() {
+function openTestDatabase(dbName = 'threejs-editor') {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('threejs-editor', 1); // Change database name to 'threejs-editor'
+        const request = indexedDB.open(dbName, 1); // Use the provided database name
 
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
@@ -11,7 +11,7 @@ function openTestDatabase() {
         };
 
         request.onsuccess = (event) => {
-            console.log('IndexedDB opened successfully');
+            console.log('IndexedDB opened successfully:', dbName);
             resolve(event.target.result);
         };
 

@@ -72,18 +72,23 @@
             </select>
         </div>
         <button id="compare-button">Compare Data</button>
+        <button id="view-db-button">Visualize Database</button>
+        <div id="db-structure" style="display: none;">
+            <h2>Database Structure</h2>
+            <pre id="db-structure-content"></pre>
+        </div>
         <div class="row">
             <div class="column">
                 <div class="data-container">
                     <h2>Firebase Data</h2>
-                    <p id="firebase-db-name"></p> <!-- Added element to display Firebase DB name -->
+                    <p id="firebase-db-name"></p>
                     <pre id="firebase-data"></pre>
                 </div>
             </div>
             <div class="column">
                 <div class="data-container">
                     <h2>IndexedDB Data</h2>
-                    <p id="indexeddb-db-name"></p> <!-- Added element to display IndexedDB name -->
+                    <p id="indexeddb-db-name"></p>
                     <pre id="indexeddb-data"></pre>
                 </div>
             </div>
@@ -101,22 +106,51 @@
 
         // Read URL parameter
         const urlParams = new URLSearchParams(window.location.search);
-        let projectId = urlParams.get('id'); // Attempt to get 'id' parameter
-        console.log('Received project ID:', projectId); // Log the received project ID for debugging
+        let projectId = urlParams.get('id');
+        console.log('Received project ID:', projectId);
 
         // Check if projectId is null and generate a random ID if true
         if (!projectId) {
-            projectId = Math.random().toString(36).substring(2, 10); // Generate a random alphanumeric string
-            const dateHex = new Date().getTime().toString(16); // Get current date and time in hexadecimal
-            projectId += '-' + dateHex; // Append the hexadecimal date to the project ID
-            console.log('Generated new project ID with timestamp:', projectId); // Log the new generated project ID with timestamp
-            window.location.search = `?id=${projectId}`; // Reload the page with the new project ID
+            projectId = Math.random().toString(36).substring(2, 10);
+            const dateHex = new Date().getTime().toString(16);
+            projectId += '-' + dateHex;
+            console.log('Generated new project ID with timestamp:', projectId);
+            window.location.search = `?id=${projectId}`;
         }
 
         // Function to open the selected IndexedDB
         async function openSelectedDatabase() {
             const selectedDbName = document.getElementById('indexeddb-select').value;
             return openTestDatabase(selectedDbName);
+        }
+
+        // Function to get the structure of the selected IndexedDB
+        async function getIndexedDBStructure(db) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['states'], 'readonly');
+                const objectStore = transaction.objectStore('states');
+                const request = objectStore.getAll();
+
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        // Function to visualize the database structure
+        async function visualizeDatabase() {
+            try {
+                const db = await openSelectedDatabase();
+                const indexedDBData = await getIndexedDBStructure(db);
+                document.getElementById('db-structure-content').textContent = JSON.stringify(indexedDBData, null, 2);
+                document.getElementById('db-structure').style.display = 'block';
+            } catch (error) {
+                console.error('Error visualizing database:', error);
+            }
         }
 
         // Event listener for the compare button
@@ -133,7 +167,7 @@
 
                 // Update the database names in the HTML
                 document.getElementById('firebase-db-name').textContent = `Database: Firebase (Project ID: ${projectId})`;
-                document.getElementById('indexeddb-db-name').textContent = `Database: ${db.name}`; // Display the IndexedDB name
+                document.getElementById('indexeddb-db-name').textContent = `Database: ${db.name}`;
 
                 compareData(firebaseData, indexedDBData);
             } catch (error) {
@@ -167,12 +201,12 @@
                 const request = objectStore.getAll();
 
                 request.onsuccess = (event) => {
-                    console.log('IndexedDB data retrieved:', event.target.result); // Log the retrieved data
+                    console.log('IndexedDB data retrieved:', event.target.result);
                     resolve(event.target.result);
                 };
 
                 request.onerror = (event) => {
-                    console.error('Error retrieving data from IndexedDB:', event.target.error); // Log the error
+                    console.error('Error retrieving data from IndexedDB:', event.target.error);
                     reject(event.target.error);
                 };
             });
@@ -217,14 +251,14 @@
             const contentContainer = document.getElementById('content-container');
             if (user) {
                 console.log('User is signed in:', user);
-                window.currentUser = user; // Store the current user globally
-                contentContainer.style.display = 'block'; // Show the content container
+                window.currentUser = user;
+                contentContainer.style.display = 'block';
             } else {
                 console.log('No user is signed in.');
-                window.currentUser = null; // Clear the current user
+                window.currentUser = null;
                 const urlParams = new URLSearchParams(window.location.search);
                 const projectId = urlParams.get('id');
-                window.location.href = `./login/index.html?id=${projectId}`; // Redirect to the login page with project ID
+                window.location.href = `./login/index.html?id=${projectId}`;
             }
         });
 
@@ -267,10 +301,10 @@
             });
             if (keyValuePairs.length > 0) {
                 try {
-                    const db = await openSelectedDatabase(); // Open the selected database
+                    const db = await openSelectedDatabase();
                     await addDataToIndexedDB(db, keyValuePairs);
                     console.log('Data added to IndexedDB:', keyValuePairs);
-                    console.log('Data stored in database:', db.name); // Log the database name
+                    console.log('Data stored in database:', db.name);
                 } catch (error) {
                     console.error('Error adding data to IndexedDB:', error);
                 }

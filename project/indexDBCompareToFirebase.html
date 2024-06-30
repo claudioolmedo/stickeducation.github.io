@@ -267,10 +267,10 @@
             });
             if (keyValuePairs.length > 0) {
                 try {
-                    const db = await openTestDatabase();
+                    const db = await openSelectedDatabase(); // Open the selected database
                     await addDataToIndexedDB(db, keyValuePairs);
                     console.log('Data added to IndexedDB:', keyValuePairs);
-                    console.log('Data stored in database: threejs-editor');
+                    console.log('Data stored in database:', db.name); // Log the database name
                 } catch (error) {
                     console.error('Error adding data to IndexedDB:', error);
                 }

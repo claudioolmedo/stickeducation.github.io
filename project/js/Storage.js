@@ -136,7 +136,11 @@ function Storage(editor) {
             const newDatabase = event.target.result;
             const transaction = newDatabase.transaction(['states'], 'readwrite');
             const objectStore = transaction.objectStore('states');
-            const putRequest = objectStore.put(data, 0);
+
+            // Transform the data from format A to format B
+            const transformedData = transformDataToIndexedDBFormat(data);
+
+            const putRequest = objectStore.put(transformedData, 0);
 
             putRequest.onsuccess = function () {
                 console.log('Data saved to new IndexedDB with project ID:', projectId);
@@ -150,6 +154,14 @@ function Storage(editor) {
         request.onerror = function (event) {
             console.error('Error opening new IndexedDB:', event);
         };
+    }
+
+    function transformDataToIndexedDBFormat(data) {
+        // Extract the relevant part of the Firebase data
+        const firebaseRelevantData = data.data;
+
+        // Transform the data to the format expected by IndexedDB
+        return [firebaseRelevantData];
     }
 
     function updateIndexedDB(data) {
@@ -405,3 +417,4 @@ function Storage(editor) {
 }
 
 export { Storage };
+

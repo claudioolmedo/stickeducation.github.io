@@ -62,6 +62,15 @@
                 <button type="submit">Add Data</button>
             </form>
         </div>
+        <div class="data-container">
+            <label for="indexeddb-select">Select IndexedDB:</label>
+            <select id="indexeddb-select">
+                <option value="threejs-editor" selected>threejs-editor</option>
+                <option value="firebase-heartbeat-database">firebase-heartbeat-database</option>
+                <option value="firebaseLocalStorageDb">firebaseLocalStorageDb</option>
+                <option value="test-database">test-database</option>
+            </select>
+        </div>
         <button id="compare-button">Compare Data</button>
         <div class="row">
             <div class="column">
@@ -104,11 +113,17 @@
             window.location.search = `?id=${projectId}`; // Reload the page with the new project ID
         }
 
+        // Function to open the selected IndexedDB
+        async function openSelectedDatabase() {
+            const selectedDbName = document.getElementById('indexeddb-select').value;
+            return openTestDatabase(selectedDbName);
+        }
+
         // Event listener for the compare button
         document.getElementById('compare-button').addEventListener('click', async () => {
             try {
-                const db = await openTestDatabase();
-                console.log('Database opened successfully');
+                const db = await openSelectedDatabase();
+                console.log('Database opened successfully:', db.name);
 
                 const firebaseData = await getFirebaseData(projectId);
                 console.log('Data from Firebase:', firebaseData);

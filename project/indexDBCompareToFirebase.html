@@ -146,7 +146,8 @@
             try {
                 const db = await openSelectedDatabase();
                 const indexedDBKeys = await getIndexedDBStructure(db);
-                document.getElementById('db-structure-content').textContent = JSON.stringify(indexedDBKeys, null, 2);
+                const formattedKeys = indexedDBKeys.map(key => `Key: ${key}`).join('\n');
+                document.getElementById('db-structure-content').textContent = formattedKeys;
                 document.getElementById('db-structure').style.display = 'block';
             } catch (error) {
                 console.error('Error visualizing database:', error);

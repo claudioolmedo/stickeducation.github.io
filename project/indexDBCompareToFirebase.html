@@ -5,15 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firebase vs IndexedDB Test</title>
     <link rel="icon" href="indexDBCompareToFirebase.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
         #content-container {
             display: none; /* Hide content initially */
+            padding: 20px; /* Add padding to the content */
         }
         #google-login {
             position: fixed;
-            top: 0;
-            right: 0;
-            width: 200px;
+            top: 10px;
+            right: 10px;
             z-index: 9999;
         }
         .data-container {
@@ -42,46 +47,50 @@
             color: red;
         }
         #logo {
-            position: absolute;
+            position: fixed;
             top: 10px;
             left: 10px;
             width: 100px; /* Adjust the width as needed */
+            z-index: 1000; /* Ensure the logo is above other elements */
+        }
+        h1 {
+            margin-top: 120px; /* Add margin to push the content below the logo */
         }
     </style>
 </head>
 <body>
     <img id="logo" src="indexDBCompareToFirebase.png" alt="Logo"> <!-- Added logo image -->
-    <button id="google-login">Login or Create account</button>
-    <div id="content-container">
-        <h1>Firebase vs IndexedDB Test</h1>
+    <button id="google-login" class="btn btn-primary">Login or Create account</button>
+    <div id="content-container" class="container">
+        <h1 class="mt-5">Firebase vs IndexedDB Test</h1>
         <p>Objective: This page is designed to compare and debug data between Firebase and IndexedDB. It allows you to add data to IndexedDB, retrieve data from both databases, and compare the results.</p>
         <div class="data-container">
             <h2>Add Data to IndexedDB</h2>
-            <form id="add-data-form">
-                <div id="key-value-pairs">
-                    <div class="key-value-pair">
-                        <label for="key">Key:</label>
-                        <input type="text" name="key" required>
-                        <label for="value">Value:</label>
-                        <input type="text" name="value" required>
+            <form id="add-data-form" class="form-inline">
+                <div id="key-value-pairs" class="form-group">
+                    <div class="key-value-pair mb-2">
+                        <label for="key" class="mr-2">Key:</label>
+                        <input type="text" name="key" class="form-control mr-2" required>
+                        <label for="value" class="mr-2">Value:</label>
+                        <input type="text" name="value" class="form-control mr-2" required>
                     </div>
                 </div>
-                <button type="button" id="add-pair-button">Add Another Pair</button>
-                <button type="submit">Add Data</button>
+                <button type="button" id="add-pair-button" class="btn btn-secondary mb-2">Add Another Pair</button>
+                <button type="submit" class="btn btn-success mb-2">Add Data</button>
             </form>
         </div>
         <div class="data-container">
             <label for="indexeddb-select">Select IndexedDB:</label>
-            <select id="indexeddb-select">
+            <select id="indexeddb-select" class="form-control">
                 <option value="threejs-editor" selected>threejs-editor</option>
                 <option value="firebase-heartbeat-database">firebase-heartbeat-database</option>
                 <option value="firebaseLocalStorageDb">firebaseLocalStorageDb</option>
                 <option value="test-database">test-database</option>
             </select>
         </div>
-        <button id="compare-button">Compare Data</button>
-        <button id="view-db-button">Visualize Database</button>
-        <div id="db-structure" style="display: none;">
+        <button id="compare-button" class="btn btn-primary mt-3">Compare Data</button>
+        <button id="view-db-button" class="btn btn-info mt-3">Visualize Database</button>
+        <div id="db-structure" class="data-container" style="display: none;">
             <h2>Database Structure</h2>
             <pre id="db-structure-content"></pre>
         </div>
@@ -325,12 +334,12 @@
         // Add event listener to the "Add Another Pair" button
         document.getElementById('add-pair-button').addEventListener('click', () => {
             const newKeyValuePair = document.createElement('div');
-            newKeyValuePair.className = 'key-value-pair';
+            newKeyValuePair.className = 'key-value-pair mb-2';
             newKeyValuePair.innerHTML = `
-                <label for="key">Key:</label>
-                <input type="text" name="key" required>
-                <label for="value">Value:</label>
-                <input type="text" name="value" required>
+                <label for="key" class="mr-2">Key:</label>
+                <input type="text" name="key" class="form-control mr-2" required>
+                <label for="value" class="mr-2">Value:</label>
+                <input type="text" name="value" class="form-control mr-2" required>
             `;
             document.getElementById('key-value-pairs').appendChild(newKeyValuePair);
         });

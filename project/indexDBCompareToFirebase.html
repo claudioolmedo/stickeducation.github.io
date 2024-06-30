@@ -46,6 +46,7 @@
     <button id="google-login">Login or Create account</button>
     <div id="content-container">
         <h1>Firebase vs IndexedDB Test</h1>
+        <p>Objective: This page is designed to compare and debug data between Firebase and IndexedDB. It allows you to add data to IndexedDB, retrieve data from both databases, and compare the results.</p>
         <div class="data-container">
             <h2>Add Data to IndexedDB</h2>
             <form id="add-data-form">
@@ -66,12 +67,14 @@
             <div class="column">
                 <div class="data-container">
                     <h2>Firebase Data</h2>
+                    <p id="firebase-db-name"></p> <!-- Added element to display Firebase DB name -->
                     <pre id="firebase-data"></pre>
                 </div>
             </div>
             <div class="column">
                 <div class="data-container">
                     <h2>IndexedDB Data</h2>
+                    <p id="indexeddb-db-name"></p> <!-- Added element to display IndexedDB name -->
                     <pre id="indexeddb-data"></pre>
                 </div>
             </div>
@@ -112,6 +115,10 @@
 
                 const indexedDBData = await getIndexedDBData(db);
                 console.log('Data from IndexedDB:', indexedDBData);
+
+                // Update the database names in the HTML
+                document.getElementById('firebase-db-name').textContent = `Database: Firebase (Project ID: ${projectId})`;
+                document.getElementById('indexeddb-db-name').textContent = 'Database: IndexedDB (states)';
 
                 compareData(firebaseData, indexedDBData);
             } catch (error) {

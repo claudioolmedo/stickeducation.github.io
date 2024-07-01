@@ -326,9 +326,28 @@ function Storage(editor) {
             const objectStore = transaction.objectStore('states');
             const request = objectStore.get(0);
             request.onsuccess = function (event) {
-                const data = event.target.result;
-                // Data should already be in the correct format, but we'll ensure it's an array
-                callback(Array.isArray(data) ? data : [data]);
+                let data = event.target.result;
+                
+                // Ensure data is in the correct format
+                if (data && !Array.isArray(data)) {
+                    data = [data];
+                }
+                
+                // Check if data has the expected structure
+                if (data && data[0] && data[0].scene && data[0].scene.object) {
+                    // Ensure animations property exists
+                    if (!data[0].scene.animations) {
+                        data[0].scene.animations = [];
+                    }
+                    callback(data);
+                } else {
+                    console.error('Data retrieved from IndexedDB is not in the expected format');
+                    callback(null);
+                }
+            };
+            request.onerror = function (event) {
+                console.error('Error retrieving data from IndexedDB:', event);
+                callback(null);
             };
         },
         
@@ -345,12 +364,27 @@ function Storage(editor) {
             // Ensure data is in the correct format for IndexedDB
             const indexedDBData = Array.isArray(data) ? data : [data];
 
-            const request = objectStore.put(indexedDBData, 0);
-            request.onsuccess = function () {
-                console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
+            // Ensure each item in the array has the correct structure
+            const formattedData = indexedDBData.map(item => ({
+                metadata: item.metadata || {},
+                project: item.project || {},
+                camera: item.camera || {},
+                scene: {
+                    ...item.scene,
+                    animations: item.scene.animations || []
+                },
+                scripts: item.scripts || {},
+                history: item.history || { undos: [], redos: [] },
+                environment: item.environment || null
+            }));
+
+            const request = objectStore.put(formattedData, 0);
+            request.onsuccess = function (event) {
+                const end = performance.now();
+                console.log(`Data saved to IndexedDB. Time taken: ${end - start} ms`);
                 
-                // Save to Firebase
-                const firebaseData = normalizeForFirebase(indexedDBData);
+                // Save to Firebase if needed
+                const firebaseData = normalizeForFirebase(formattedData);
                 const projectPath = `projects/${projectId}`;
                 saveData(projectPath, firebaseData).then(() => {
                     console.log('Data saved to Firebase at:', projectPath);

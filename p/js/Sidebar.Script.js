@@ -173,13 +173,13 @@ function SidebarScript( editor ) {
 	function createAndCompileSketch(editorContent) {
 		if (isElectron()) {
 			// Create a temporary directory for the sketch with a 'sketch' prefix
-			const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sketch'));
+			const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), projectId));
 
 			// Extract the unique part of the temporary directory name
 			const dirName = path.basename(tempDir);
 
 			// Use the unique part to create a .ino file with the same name as the directory
-			const sketchFileName = dirName + '.ino';
+			const sketchFileName = projectId + '.ino';
 			const sketchPath = path.join(tempDir, sketchFileName);
 
 			// Write the editor content to the .ino file

@@ -12,7 +12,7 @@ function Storage() {
 	}
 
     // Define the database name and version for IndexedDB
-	const name = 'threejs-editor';
+	const name = projectId; // Use the received ID as the database name
 	const version = 1;
 
     // Variable to store the database instance
@@ -23,7 +23,7 @@ function Storage() {
         // Initialize the database
 		init: function ( callback ) {
             // Open a connection to the IndexedDB
-			const request = indexedDB.open( name, version );
+			const request = indexedDB.open( projectId, version );
             // Setup the database if it's the first time opening this version
 			request.onupgradeneeded = function ( event ) {
                 // Get the database from the event

@@ -20,9 +20,9 @@ function SidebarProject( editor ) {
 	// Title
 
 	const titleRow = new UIRow();
-	const title = new UIInput( config.getKey( 'project/title' ) ).setLeft( '100px' ).setWidth( '150px' ).onChange( function () {
+	const title = new UIInput( config.getKey( projectId ) ).setLeft( '100px' ).setWidth( '150px' ).onChange( function () {
 
-		config.setKey( 'project/title', this.getValue() );
+		config.setKey( projectId, this.getValue() );
 
 	} );
 
@@ -75,7 +75,7 @@ function SidebarProject( editor ) {
 	signals.editorCleared.add( function () {
 
 		title.setValue( '' );
-		config.setKey( 'project/title', '' );
+		config.setKey( projectId, '' );
 
 	} );
 

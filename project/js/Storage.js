@@ -1,4 +1,4 @@
-import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
+import { firebaseAuth, firebaseDB, onAuthStateChanged } from './config/firebase.js';
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
 // Function to generate a unique ID
@@ -33,6 +33,7 @@ function normalizeForFirebase(data) {
     };
 }
 
+// No início do arquivo, declare saveData apenas uma vez
 function saveData(path, data) {
     if (!firebase.database) {
         console.error('Firebase is not initialized');

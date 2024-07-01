@@ -1,5 +1,5 @@
 import { firebaseAuth, firebaseDB, onAuthStateChanged } from './config/firebase.js';
-import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+import { ref, get, set } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
 // Function to generate a unique ID
 function generateUniqueId() {
@@ -33,13 +33,9 @@ function normalizeForFirebase(data) {
     };
 }
 
-// No início do arquivo, declare saveData apenas uma vez
+// Function to save data to Firebase
 function saveData(path, data) {
-    if (!firebase.database) {
-        console.error('Firebase is not initialized');
-        return Promise.reject(new Error('Firebase is not initialized'));
-    }
-    return firebase.database().ref(path).set(data);
+    return set(ref(firebaseDB, path), data);
 }
 
 function Storage(editor) {
@@ -446,18 +442,17 @@ function loadFromFirebase(callback) {
         return callback(null);
     }
     
-    firebase.database().ref(`projects/${projectId}`).once('value')
-        .then(snapshot => {
-            const firebaseData = snapshot.val();
-            if (firebaseData && firebaseData.data) {
-                console.log('Data loaded from Firebase:', firebaseData.data);
-                Storage.set([firebaseData.data]);
-                callback([firebaseData.data]);
-            } else {
-                console.log('No data found in Firebase');
-                callback(null);
-            }
-        })
+    get(ref(firebaseDB, `projects/${projectId}`)).then((snapshot) => {
+        const firebaseData = snapshot.val();
+        if (firebaseData && firebaseData.data) {
+            console.log('Data loaded from Firebase:', firebaseData.data);
+            Storage.set([firebaseData.data]);
+            callback([firebaseData.data]);
+        } else {
+            console.log('No data found in Firebase');
+            callback(null);
+        }
+    })
         .catch(error => {
             console.error('Error loading data from Firebase:', error);
             callback(null);

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login - Stick.Education</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="apple-touch-icon" sizes="57x57" href="../images/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../images/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../images/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../images/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../images/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../images/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16.png">
+    <link rel="manifest" href="../images/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../images/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        #google-login {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px; /* Adjust width as needed */
+            height: 30px; /* Adjust height as needed */
+            background-color: #F5DEB3; /* Background color similar to the popsicle stick */
+            border: none;
+            color: #8B4513; /* Text color similar to the border of the popsicle stick */
+            font-size: 16px; /* Adjust font size as needed */
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for better appearance */
+            border-radius: 25px; /* Add border radius to match the image */
+        }
+    </style>
+</head>
+<body>
+    <button id="google-login">LOGIN OR CREATE ACCOUNT</button>
+
+    <script type="module">
+        import { firebaseAuth, signInWithGoogle, onAuthStateChanged } from '../js/config/firebase.js';
+
+        const googleButton = document.getElementById('google-login');
+
+        googleButton.onclick = () => {
+            signInWithGoogle().then((result) => {
+                console.log('User logged in successfully:', result.user);
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectId = urlParams.get('id');
+                window.location.href = `../index.html?id=${projectId}`; // Redirect to the main page with project ID
+            }).catch((error) => {
+                console.error('Error logging in:', error);
+            });
+        };
+
+        // Monitor the authentication state
+        onAuthStateChanged(firebaseAuth, (user) => {
+            if (user) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectId = urlParams.get('id');
+                window.location.href = `../index.html?id=${projectId}`; // Redirect to the main page with project ID
+            }
+        });
+    </script>
+</body>
+</html>

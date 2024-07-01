@@ -403,7 +403,7 @@ function Storage(editor) {
             request.onsuccess = function (event) {
                 const end = performance.now();
                 console.log(`Data saved to IndexedDB. Time taken: ${end - start} ms`);
-                
+                console.log(`IndexedDB database name: ${name}`);
                 // Save to Firebase if needed
                 const firebaseData = normalizeForFirebase(formattedData);
                 const projectPath = `projects/${projectId}`;
@@ -458,3 +458,5 @@ function loadFromFirebase(callback) {
             callback(null);
         });
 }
+
+

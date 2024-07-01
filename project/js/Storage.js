@@ -114,28 +114,6 @@ function Storage(editor) {
 
             // Save data to a new IndexedDB with the project ID as the database name
             saveToNewIndexedDB(firebaseData, projectId);
-
-            // Save IndexedDB data to Firebase under the project `threejs-editor`
-            const projectPath = `projects/threejs-editor`;
-            const creationDate = new Date().toISOString();
-            saveData(projectPath, { 
-                data: indexedDBData, 
-                firebaseId: window.currentUser.uid, 
-                ownerId: window.currentUser.uid, 
-                createdAt: creationDate 
-            }).then(() => {
-                console.log('IndexedDB data saved to Firebase under project `threejs-editor`.');
-            }).catch(error => {
-                console.error('Failed to save IndexedDB data to Firebase:', error);
-            });
-
-            // Save the exact IndexedDB data to the current project in Firebase
-            const currentProjectPath = `projects/${projectId}`;
-            saveData(currentProjectPath, indexedDBData).then(() => {
-                console.log('Exact IndexedDB data saved to Firebase under current project ID:', currentProjectPath);
-            }).catch(error => {
-                console.error('Failed to save exact IndexedDB data to Firebase:', error);
-            });
         };
 
         request.onerror = function (event) {
@@ -439,8 +417,4 @@ function Storage(editor) {
 }
 
 export { Storage };
-
-
-
-
 

@@ -1,11 +1,43 @@
 import { firebaseAuth, firebaseDB, onAuthStateChanged, saveData } from './config/firebase.js';
 import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
 
-// Adicione esta função no início do arquivo ou onde for apropriado
+// Function to generate a unique ID
 function generateUniqueId() {
     const timestamp = new Date().getTime().toString(36);
     const randomStr = Math.random().toString(36).substring(2, 5);
     return `${timestamp}-${randomStr}`;
+}
+
+// Function to normalize data before saving to IndexedDB
+function normalizeForIndexedDB(data) {
+    // If the data comes from Firebase, it will have the structure { createdAt, data }
+    if (data.createdAt && data.data) {
+        return [{
+            metadata: {},
+            project: data.data.project,
+            camera: data.data.camera,
+            scene: data.data.scene
+        }];
+    }
+    // If the data is already in IndexedDB format, return it as is
+    return data;
+}
+
+// Function to normalize data before saving to Firebase
+function normalizeForFirebase(data) {
+    // Assuming data is always an array with one object as per the existing structure
+    if (Array.isArray(data) && data.length > 0) {
+        return {
+            createdAt: new Date().toISOString(),
+            data: {
+                project: data[0].project,
+                camera: data[0].camera,
+                scene: data[0].scene
+            }
+        };
+    }
+    // If the data is already in Firebase format, return it as is
+    return data;
 }
 
 function Storage(editor) {
@@ -86,6 +118,7 @@ function Storage(editor) {
         }
     });
 
+    // Function to compare and update data between IndexedDB and Firebase
     function compareWithIndexedDB(firebaseData) {
         if (!database) {
             console.error('Database is not initialized.');
@@ -99,17 +132,18 @@ function Storage(editor) {
             const indexedDBData = event.target.result;
             console.log('Data from IndexedDB:', indexedDBData);
 
-            // Extract the relevant part of the Firebase data
-            const firebaseRelevantData = firebaseData.data;
+            // Normalize data from Firebase and IndexedDB
+            const normalizedFirebaseData = normalizeForIndexedDB(firebaseData)[0];
+            const normalizedIndexedDBData = normalizeForIndexedDB(indexedDBData)[0];
 
-            if (JSON.stringify(firebaseRelevantData) === JSON.stringify(indexedDBData)) {
+            if (JSON.stringify(normalizedFirebaseData) === JSON.stringify(normalizedIndexedDBData)) {
                 console.log('Data from Firebase and IndexedDB are identical.');
             } else {
                 console.log('Data from Firebase and IndexedDB are different.');
-                console.log('Firebase Data:', firebaseRelevantData);
-                console.log('IndexedDB Data:', indexedDBData);
+                console.log('Firebase Data:', normalizedFirebaseData);
+                console.log('IndexedDB Data:', normalizedIndexedDBData);
                 // Update IndexedDB with Firebase data if they are different
-                updateIndexedDB({ ...firebaseRelevantData, createdAt: firebaseData.createdAt });
+                updateIndexedDB(normalizedFirebaseData);
             }
 
             // Save data to a new IndexedDB with the project ID as the database name
@@ -283,26 +317,20 @@ function Storage(editor) {
 			};
 		},
         // Retrieve data from the database
-		get: function ( callback ) {
+		get: function (callback) {
             if (!database) {
                 console.error('Database is not initialized.');
                 return;
             }
-            // Start a transaction to read data
-			const transaction = database.transaction( [ 'states' ], 'readonly' );
-            // Access the 'states' object store
-			const objectStore = transaction.objectStore( 'states' );
-            // Get the data at index 0
-			const request = objectStore.get( 0 );
-            // Handle successful data retrieval
-			request.onsuccess = function ( event ) {
-                // Log the successful data retrieval
-                console.log('Data retrieved from IndexedDB:', event.target.result); // Log the data retrieved from IndexedDB
-                // Call the callback function with the result
-				callback( event.target.result );
-				console.log('Data retrieved from IndexedDB:', event.target.result); // Log the data retrieved from IndexedDB
-			};
-		},
+            const transaction = database.transaction(['states'], 'readonly');
+            const objectStore = transaction.objectStore('states');
+            const request = objectStore.get(0);
+            request.onsuccess = function (event) {
+                const data = event.target.result;
+                // Data should already be in the correct format, but we'll ensure it's an array
+                callback(Array.isArray(data) ? data : [data]);
+            };
+        },
         
         // Store data in the database and Firebase
 		set: function (data) {
@@ -314,68 +342,20 @@ function Storage(editor) {
             const transaction = database.transaction(['states'], 'readwrite');
             const objectStore = transaction.objectStore('states');
 
-            // Function to remove undefined values
-            const removeUndefined = (obj) => {
-                Object.keys(obj).forEach(key => {
-                    if (obj[key] && typeof obj[key] === 'object') {
-                        removeUndefined(obj[key]);
-                    } else if (obj[key] === undefined) {
-                        delete obj[key];
-                    }
-                });
-                return obj;
-            };
+            // Ensure data is in the correct format for IndexedDB
+            const indexedDBData = Array.isArray(data) ? data : [data];
 
-            // Clean the data before saving
-            const cleanedData = removeUndefined(JSON.parse(JSON.stringify(data)));
-
-            const request = objectStore.put(cleanedData, 0);
+            const request = objectStore.put(indexedDBData, 0);
             request.onsuccess = function () {
                 console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB for project ID ' + projectId + '. ' + (performance.now() - start).toFixed(2) + 'ms');
-                console.log('Data saved to IndexedDB:', cleanedData); // Log the data saved to IndexedDB
-                // Check if the project already exists and has an owner before saving data to Firebase
+                
+                // Save to Firebase
+                const firebaseData = normalizeForFirebase(indexedDBData);
                 const projectPath = `projects/${projectId}`;
-                const projectDataRef = ref(firebaseDB, projectPath);
-                get(projectDataRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const firebaseData = snapshot.val();
-                        if (firebaseData.ownerId && firebaseData.ownerId !== window.currentUser.uid) {
-                            console.log('Project already exists and has an owner. Data cannot be modified directly.');
-                        } else {
-                            console.log('Project does not exist or does not have an owner. Allowing data modification.');
-                            const creationDate = new Date().toISOString();
-                            const uniqueId = generateUniqueId();
-                            const ownerId = firebaseData.ownerId ? firebaseData.ownerId : window.currentUser.uid;
-                            saveData(projectPath, { 
-                                data: cleanedData, 
-                                firebaseId: window.currentUser.uid, 
-                                ownerId: ownerId, 
-                                createdAt: creationDate,
-                                uniqueId: uniqueId
-                            }).then(() => {
-                                console.log('Data saved to Firebase at:', projectPath);
-                            }).catch(error => {
-                                console.error('Failed to save data to Firebase:', error);
-                            });
-                        }
-                    } else {
-                        console.log('Project does not exist. Allowing data modification.');
-                        const creationDate = new Date().toISOString();
-                        const uniqueId = generateUniqueId();
-                        saveData(projectPath, { 
-                            data: cleanedData, 
-                            firebaseId: window.currentUser.uid, 
-                            ownerId: window.currentUser.uid, 
-                            createdAt: creationDate,
-                            uniqueId: uniqueId
-                        }).then(() => {
-                            console.log('Data saved to Firebase at:', projectPath);
-                        }).catch(error => {
-                            console.error('Failed to save data to Firebase:', error);
-                        });
-                    }
-                }).catch((error) => {
-                    console.error('Error checking project existence and owner:', error);
+                saveData(projectPath, firebaseData).then(() => {
+                    console.log('Data saved to Firebase at:', projectPath);
+                }).catch(error => {
+                    console.error('Failed to save data to Firebase:', error);
                 });
             };
             request.onerror = function (event) {

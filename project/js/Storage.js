@@ -25,19 +25,20 @@ function normalizeForIndexedDB(data) {
 
 // Function to normalize data before saving to Firebase
 function normalizeForFirebase(data) {
-    // Assuming data is always an array with one object as per the existing structure
-    if (Array.isArray(data) && data.length > 0) {
-        return {
-            createdAt: new Date().toISOString(),
-            data: {
-                project: data[0].project,
-                camera: data[0].camera,
-                scene: data[0].scene
-            }
-        };
+    // Assuming data is an array with one object
+    const normalizedData = data[0];
+    return {
+        createdAt: new Date().toISOString(),
+        data: normalizedData
+    };
+}
+
+function saveData(path, data) {
+    if (!firebase.database) {
+        console.error('Firebase is not initialized');
+        return Promise.reject(new Error('Firebase is not initialized'));
     }
-    // If the data is already in Firebase format, return it as is
-    return data;
+    return firebase.database().ref(path).set(data);
 }
 
 function Storage(editor) {
@@ -289,6 +290,21 @@ function Storage(editor) {
     // Add event listener to the fork button
     document.getElementById('fork-button').addEventListener('click', forkProject);
 
+    // Function to sync data with Firebase
+    function syncWithFirebase() {
+        get(function(data) {
+            if (data) {
+                const firebaseData = normalizeForFirebase(data);
+                const projectPath = `projects/${projectId}`;
+                saveData(projectPath, firebaseData).then(() => {
+                    console.log('Data synced with Firebase');
+                }).catch(error => {
+                    console.error('Failed to sync data with Firebase:', error);
+                });
+            }
+        });
+    }
+
     // Return an object containing methods to interact with IndexedDB
     return {
         // Initialize the database
@@ -320,7 +336,7 @@ function Storage(editor) {
 		get: function (callback) {
             if (!database) {
                 console.error('Database is not initialized.');
-                return;
+                return callback(null);
             }
             const transaction = database.transaction(['states'], 'readonly');
             const objectStore = transaction.objectStore('states');
@@ -328,13 +344,18 @@ function Storage(editor) {
             request.onsuccess = function (event) {
                 let data = event.target.result;
                 
+                if (!data) {
+                    console.log('No data found in IndexedDB, trying Firebase');
+                    return loadFromFirebase(callback);
+                }
+                
                 // Ensure data is in the correct format
-                if (data && !Array.isArray(data)) {
+                if (!Array.isArray(data)) {
                     data = [data];
                 }
                 
                 // Check if data has the expected structure
-                if (data && data[0] && data[0].scene && data[0].scene.object) {
+                if (data[0] && data[0].scene) {
                     // Ensure animations property exists
                     if (!data[0].scene.animations) {
                         data[0].scene.animations = [];
@@ -370,8 +391,11 @@ function Storage(editor) {
                 project: item.project || {},
                 camera: item.camera || {},
                 scene: {
-                    ...item.scene,
-                    animations: item.scene.animations || []
+                    metadata: item.scene?.metadata || {},
+                    geometries: item.scene?.geometries || [],
+                    materials: item.scene?.materials || [],
+                    object: item.scene?.object || {},
+                    animations: item.scene?.animations || []
                 },
                 scripts: item.scripts || {},
                 history: item.history || { undos: [], redos: [] },
@@ -398,24 +422,43 @@ function Storage(editor) {
         },
         // Clear all data from the database
 		clear: function () {
-            // Check if the database instance is available
-			if ( database === undefined ) return;
-            // Start a transaction to clear data
-			const transaction = database.transaction( [ 'states' ], 'readwrite' );
-            // Access the 'states' object store
-			const objectStore = transaction.objectStore( 'states' );
-            // Clear all data in the object store
-			const request = objectStore.clear();
-            // Handle successful clearing of the store
-			request.onsuccess = function () {
-                // Log the successful clearing
-				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Cleared IndexedDB.' );
-			};
-			request.onerror = function (event) {
-                console.error('Error clearing IndexedDB:', event);
-            };
-		}
+            if (database) {
+                const transaction = database.transaction(['states'], 'readwrite');
+                const objectStore = transaction.objectStore('states');
+                const request = objectStore.clear();
+                request.onsuccess = function (event) {
+                    console.log('IndexedDB cleared successfully');
+                };
+                request.onerror = function (event) {
+                    console.error('Error clearing IndexedDB:', event);
+                };
+            }
+        }
 	};
 }
 
 export { Storage };
+
+function loadFromFirebase(callback) {
+    if (!projectId) {
+        console.error('Project ID is not defined');
+        return callback(null);
+    }
+    
+    firebase.database().ref(`projects/${projectId}`).once('value')
+        .then(snapshot => {
+            const firebaseData = snapshot.val();
+            if (firebaseData && firebaseData.data) {
+                console.log('Data loaded from Firebase:', firebaseData.data);
+                Storage.set([firebaseData.data]);
+                callback([firebaseData.data]);
+            } else {
+                console.log('No data found in Firebase');
+                callback(null);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading data from Firebase:', error);
+            callback(null);
+        });
+}

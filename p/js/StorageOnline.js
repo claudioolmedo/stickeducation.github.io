@@ -1,6 +1,13 @@
 // StorageOnline.js
 
+let database;
+
 const StorageOnline = {
+    // Function to set the database instance
+    setDatabase: function (db) {
+        database = db;
+    },
+
     // Function to save data to Firebase and IndexedDB
     set: function (data) {
         if (!database) {

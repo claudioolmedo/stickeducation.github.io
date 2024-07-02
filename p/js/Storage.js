@@ -59,10 +59,21 @@ function Storage() {
 				callback( event.target.result );
 			};
 		},
-        // Store data in the database and Firebase via StorageOnline
+        // Store data in the database
 		set: function ( data ) {
-            // Call the set function in StorageOnline to save data to Firebase and IndexedDB
-			StorageOnline.set( data );
+            // Record the start time for performance measurement
+			const start = performance.now();
+            // Start a transaction to write data
+			const transaction = database.transaction( [ 'states' ], 'readwrite' );
+            // Access the 'states' object store
+			const objectStore = transaction.objectStore( 'states' );
+            // Put the data at index 0
+			const request = objectStore.put( data, 0 );
+            // Handle successful data storage
+			request.onsuccess = function () {
+                // Log the successful storage and the time taken
+				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
+			};
 		},
         // Clear all data from the database
 		clear: function () {

@@ -75,8 +75,8 @@ function Storage() {
 			request.onsuccess = function () {
                 // Log the successful storage and the time taken
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
-                // Send data to StorageOnline
-				sendDataToStorageOnline( data );
+                // Send data to StorageOnline with projectId
+				sendDataToStorageOnline( data, projectId );
 			};
 		},
         // Clear all data from the database

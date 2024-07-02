@@ -1,5 +1,3 @@
-import { StorageOnline } from './StorageOnline.js';
-
 function Storage() {
 
     // Access the IndexedDB API from the window object
@@ -61,7 +59,7 @@ function Storage() {
 				callback( event.target.result );
 			};
 		},
-        // Store data in the database and update Firebase
+        // Store data in the database
 		set: function ( data ) {
             // Record the start time for performance measurement
 			const start = performance.now();
@@ -75,8 +73,6 @@ function Storage() {
 			request.onsuccess = function () {
                 // Log the successful storage and the time taken
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
-                // Update Firebase using StorageOnline
-				StorageOnline.set( data );
 			};
 		},
         // Clear all data from the database

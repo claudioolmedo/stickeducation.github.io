@@ -1,8 +1,10 @@
 // StorageOnline.js
 
+import { saveData, pushData } from './config/firebase.js';
+
 const StorageOnline = {
     // Function to save data to Firebase and IndexedDB
-    set: function (data) {
+    set: function (database, data) {
         if (!database) {
             console.error('Database is not initialized.');
             return;

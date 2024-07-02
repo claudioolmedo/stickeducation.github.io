@@ -1,7 +1,5 @@
 // StorageOnline.js
 
-import { pushData, normalizeForFirebase } from './utils'; // Adjust the path as necessary
-
 let database;
 
 const StorageOnline = {
@@ -48,3 +46,4 @@ const StorageOnline = {
 };
 
 export { StorageOnline };
+

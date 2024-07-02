@@ -5,7 +5,6 @@ let database;
 const StorageOnline = {
     // Function to set the database instance
     setDatabase: function (db) {
-        console.log('Setting database in StorageOnline:', db);
         database = db;
     },
 
@@ -15,7 +14,6 @@ const StorageOnline = {
             console.error('Database is not initialized.');
             return;
         }
-        console.log('Starting data save process in StorageOnline with data:', data);
         const start = performance.now();
         const transaction = database.transaction(['states'], 'readwrite');
         const objectStore = transaction.objectStore('states');

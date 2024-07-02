@@ -24,12 +24,10 @@ function Storage() {
     return {
         // Initialize the database
         init: function (callback) {
-            console.log('Initializing IndexedDB with projectId:', projectId);
             // Open a connection to the IndexedDB
             const request = indexedDB.open(projectId, version);
             // Setup the database if it's the first time opening this version
             request.onupgradeneeded = function (event) {
-                console.log('Upgrading IndexedDB...');
                 // Get the database from the event
                 const db = event.target.result;
                 // Create an object store named 'states' if it doesn't already exist
@@ -41,20 +39,18 @@ function Storage() {
             request.onsuccess = function (event) {
                 // Store the database instance
                 database = event.target.result;
-                console.log('IndexedDB initialized successfully:', database);
                 // Pass the database instance to StorageOnline
                 StorageOnline.setDatabase(database);
                 // Call the callback function if provided
-                if (callback) callback();
+                callback();
             };
             // Log errors during the database opening
             request.onerror = function (event) {
-                console.error('Error opening IndexedDB:', event);
+                console.error('IndexedDB', event);
             };
         },
         // Retrieve data from the database
         get: function (callback) {
-            console.log('Retrieving data from IndexedDB...');
             // Start a transaction to read data
             const transaction = database.transaction(['states'], 'readwrite');
             // Access the 'states' object store
@@ -63,7 +59,6 @@ function Storage() {
             const request = objectStore.get(0);
             // Handle successful data retrieval
             request.onsuccess = function (event) {
-                console.log('Data retrieved from IndexedDB:', event.target.result);
                 // Call the callback function with the result
                 callback(event.target.result);
             };
@@ -73,13 +68,11 @@ function Storage() {
         },
         // Store data in the database and Firebase via StorageOnline
         set: function (data) {
-            console.log('Storing data in IndexedDB and Firebase via StorageOnline:', data);
             // Call the set function in StorageOnline to save data to Firebase and IndexedDB
             StorageOnline.set(data);
         },
         // Clear all data from the database
         clear: function () {
-            console.log('Clearing all data from IndexedDB...');
             // Check if the database instance is available
             if (database === undefined) return;
             // Start a transaction to clear data
@@ -91,7 +84,7 @@ function Storage() {
             // Handle successful clearing of the store
             request.onsuccess = function () {
                 // Log the successful clearing
-                console.log('Cleared IndexedDB successfully.');
+                console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Cleared IndexedDB.');
             };
             request.onerror = function (event) {
                 console.error('Error clearing data from IndexedDB:', event);

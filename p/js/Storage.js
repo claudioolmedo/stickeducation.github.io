@@ -1,4 +1,5 @@
 import { sendDataToStorageOnline } from './StorageOnline.js';
+import { sendIDToStorageOnlineLoad } from './StorageOnlineLoad.js';
 
 function Storage() {
 
@@ -77,6 +78,7 @@ function Storage() {
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
                 // Send data to StorageOnline with projectId
 				sendDataToStorageOnline( data, projectId );
+				sendIDToStorageOnlineLoad( projectId );
 			};
 		},
         // Clear all data from the database

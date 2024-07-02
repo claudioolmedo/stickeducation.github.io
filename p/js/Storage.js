@@ -67,6 +67,9 @@ function Storage() {
                 // Call the callback function with the result
                 callback(event.target.result);
             };
+            request.onerror = function (event) {
+                console.error('Error retrieving data from IndexedDB:', event);
+            };
         },
         // Store data in the database and Firebase via StorageOnline
         set: function (data) {
@@ -90,8 +93,12 @@ function Storage() {
                 // Log the successful clearing
                 console.log('Cleared IndexedDB successfully.');
             };
+            request.onerror = function (event) {
+                console.error('Error clearing data from IndexedDB:', event);
+            };
         }
     };
 }
 
 export { Storage };
+

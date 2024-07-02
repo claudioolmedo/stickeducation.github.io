@@ -1,10 +1,6 @@
 import { sendDataToStorageOnline } from './StorageOnline.js';
 import { sendDataToStorageOnlineLoad } from './StorageOnlineLoad.js'; // Import the new function
 
-const projectId = 'your_project_id'; // Substitua 'your_project_id' pelo ID real do projeto
-
-export { projectId };
-
 function Storage() {
 
     // Access the IndexedDB API from the window object
@@ -106,3 +102,4 @@ function Storage() {
 }
 
 export { Storage };
+

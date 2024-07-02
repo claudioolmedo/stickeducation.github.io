@@ -39,8 +39,6 @@ function Storage() {
             request.onsuccess = function (event) {
                 // Store the database instance
                 database = event.target.result;
-                // Pass the database instance to StorageOnline
-                StorageOnline.setDatabase(database);
                 // Call the callback function if provided
                 callback();
             };

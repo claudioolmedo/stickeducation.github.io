@@ -1,4 +1,5 @@
 import { saveData } from './config/firebase.js';
+import { projectId } from './Storage.js'; // Import projectId from Storage.js
 
 export function sendDataToStorageOnline(data) {
     console.log('Data received by StorageOnline:', data);
@@ -11,3 +12,4 @@ export function sendDataToStorageOnline(data) {
             console.error('Error saving data to Firebase:', error);
         });
 }
+

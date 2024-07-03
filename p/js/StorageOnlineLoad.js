@@ -2,30 +2,43 @@ import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-da
 import { firebaseDB } from './config/firebase.js';
 
 export function sendIDToStorageOnlineLoad(projectId) {
-    console.log('Project ID received: in StorageOnline LOAD', projectId); // Log the received projectId
+    console.log('Project ID received: in StorageOnline LOAD', projectId);
 
-    // Define the path to the project data
     const path = `projects/${projectId}/state`;
-
-    // Create a reference to the database path
     const projectRef = ref(firebaseDB, path);
 
-    // Get the data from the database
     get(projectRef)
         .then((snapshot) => {
             if (snapshot.exists()) {
                 let projectData = snapshot.val();
-                console.log('Project data retrieved from Firebase:', JSON.stringify(projectData, null, 2)); // Log the project data
+                console.log('Project data retrieved from Firebase:', JSON.stringify(projectData, null, 2));
 
-                // Restore empty objects marked with _empty
-                projectData = JSON.parse(JSON.stringify(projectData, (key, value) => {
-                    if (value && value._empty) {
-                        return {};
+                // Function to restore empty objects
+                function restoreData(obj) {
+                    if (obj === null || typeof obj !== 'object') {
+                        return obj;
                     }
-                    return value;
-                }));
 
-                // Save the data to IndexedDB
+                    if (Array.isArray(obj)) {
+                        return obj.map(restoreData);
+                    }
+
+                    const newObj = {};
+                    for (const key in obj) {
+                        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                            if (obj[key] && obj[key]._empty === true) {
+                                newObj[key] = {};
+                            } else {
+                                newObj[key] = restoreData(obj[key]);
+                            }
+                        }
+                    }
+                    return newObj;
+                }
+
+                projectData = restoreData(projectData);
+
+                // Save the restored data to IndexedDB
                 const dbName = `${projectId}FromFirebase`;
                 const request = indexedDB.open(dbName, 1);
 

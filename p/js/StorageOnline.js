@@ -5,7 +5,7 @@ export function sendDataToStorageOnline(data, projectId) {
     const path = `projects/${projectId}/state`; // Define the path where you want to save the data
     saveData(path, data)
         .then(() => {
-            console.log('Data successfully saved to Firebase.');
+            console.log('Data successfully saved to Firebase from StorageOnline.');
         })
         .catch((error) => {
             console.error('Error saving data to Firebase:', error);

@@ -6,7 +6,11 @@ export function sendDataToStorageOnline(data, projectId) {
 
     // Function to deep clone and sanitize the data
     function sanitizeData(obj) {
-        if (obj === null || typeof obj !== 'object') {
+        if (obj === null || obj === undefined) {
+            return null;
+        }
+
+        if (typeof obj !== 'object') {
             return obj;
         }
 
@@ -18,7 +22,9 @@ export function sendDataToStorageOnline(data, projectId) {
         for (const key in obj) {
             if (Object.prototype.hasOwnProperty.call(obj, key)) {
                 const value = obj[key];
-                if (typeof value === 'object' && Object.keys(value).length === 0) {
+                if (value === null || value === undefined) {
+                    newObj[key] = null;
+                } else if (typeof value === 'object' && Object.keys(value).length === 0) {
                     newObj[key] = { _empty: true };
                 } else {
                     newObj[key] = sanitizeData(value);

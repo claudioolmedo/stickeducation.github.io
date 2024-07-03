@@ -15,7 +15,7 @@ export function sendIDToStorageOnlineLoad(projectId) {
         .then((snapshot) => {
             if (snapshot.exists()) {
                 const projectData = snapshot.val();
-                console.log('Project data:', projectData); // Log the project data
+                console.log('Project data retrieved from Firebase:', JSON.stringify(projectData, null, 2)); // Log the project data
 
                 // Save the data to IndexedDB
                 const dbName = `${projectId}FromFirebase`;

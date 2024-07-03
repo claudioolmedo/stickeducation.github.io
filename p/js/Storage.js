@@ -1,7 +1,5 @@
 import { sendDataToStorageOnline } from './StorageOnline.js';
 import { sendIDToStorageOnlineLoad } from './StorageOnlineLoad.js';
-import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
-import { firebaseDB } from './config/firebase.js';
 
 function Storage() {
 
@@ -42,8 +40,8 @@ function Storage() {
 			request.onsuccess = function ( event ) {
                 // Store the database instance
 				database = event.target.result;
-                // Load data from Firebase after initializing local database
-                this.loadFromFirebase(projectId, callback);
+                // Call the callback function if provided
+				callback();
 			};
             // Log errors during the database opening
 			request.onerror = function ( event ) {
@@ -65,7 +63,7 @@ function Storage() {
 			};
 		},
         // Store data in the database
-		set: function ( data, projectId ) {
+		set: function ( data ) {
             // Record the start time for performance measurement
 			const start = performance.now();
             // Start a transaction to write data
@@ -98,65 +96,7 @@ function Storage() {
                 // Log the successful clearing
 				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Cleared IndexedDB.' );
 			};
-		},
-        loadFromFirebase: function (projectId, callback) {
-            const path = `projects/${projectId}/state`;
-            const projectRef = ref(firebaseDB, path);
-
-            get(projectRef)
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        let projectData = snapshot.val();
-                        console.log('Project data retrieved from Firebase:', JSON.stringify(projectData, null, 2));
-
-                        projectData = this.restoreData(projectData);
-
-                        // Save Firebase data to local IndexedDB
-                        const transaction = database.transaction(['states'], 'readwrite');
-                        const objectStore = transaction.objectStore('states');
-                        const request = objectStore.put(projectData, 0);
-
-                        request.onsuccess = function () {
-                            console.log('Data from Firebase saved to local IndexedDB');
-                            if (callback) callback();
-                        };
-
-                        request.onerror = function (error) {
-                            console.error('Error saving Firebase data to local IndexedDB:', error);
-                            if (callback) callback();
-                        };
-                    } else {
-                        console.log('No data available in Firebase for this project ID.');
-                        if (callback) callback();
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error getting project data from Firebase:', error);
-                    if (callback) callback();
-                });
-        },
-
-        restoreData: function (obj) {
-            if (obj === null || typeof obj !== 'object') {
-                return obj;
-            }
-
-            if (Array.isArray(obj)) {
-                return obj.map(this.restoreData.bind(this));
-            }
-
-            const newObj = {};
-            for (const key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                    if (obj[key] && obj[key]._empty === true) {
-                        newObj[key] = {};
-                    } else {
-                        newObj[key] = this.restoreData(obj[key]);
-                    }
-                }
-            }
-            return newObj;
-        }
+		}
 	};
 }
 

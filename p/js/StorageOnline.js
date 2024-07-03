@@ -2,6 +2,10 @@ import { saveData } from './config/firebase.js';
 export function sendDataToStorageOnline(data, projectId) {
     console.log('Data received by StorageOnline:', data);
     console.log('Project ID received: in StorageOnline', projectId); // Log the received projectId
+
+    // Log the data before saving to Firebase
+    console.log('Data to be saved to Firebase:', JSON.stringify(data, null, 2));
+
     const path = `projects/${projectId}/state`; // Define the path where you want to save the data
     saveData(path, data)
         .then(() => {

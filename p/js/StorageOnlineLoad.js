@@ -14,7 +14,38 @@ export function sendIDToStorageOnlineLoad(projectId) {
     get(projectRef)
         .then((snapshot) => {
             if (snapshot.exists()) {
-                console.log('Project data:', snapshot.val()); // Log the project data
+                const projectData = snapshot.val();
+                console.log('Project data:', projectData); // Log the project data
+
+                // Save the data to IndexedDB
+                const dbName = `${projectId}FromFirebase`;
+                const request = indexedDB.open(dbName, 1);
+
+                request.onupgradeneeded = function(event) {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('states')) {
+                        db.createObjectStore('states');
+                    }
+                };
+
+                request.onsuccess = function(event) {
+                    const db = event.target.result;
+                    const transaction = db.transaction(['states'], 'readwrite');
+                    const objectStore = transaction.objectStore('states');
+                    objectStore.put(projectData, 0);
+
+                    transaction.oncomplete = function() {
+                        console.log(`Data saved to IndexedDB with name ${dbName}`);
+                    };
+
+                    transaction.onerror = function(event) {
+                        console.error('Error saving data to IndexedDB:', event.target.error);
+                    };
+                };
+
+                request.onerror = function(event) {
+                    console.error('Error opening IndexedDB:', event.target.error);
+                };
             } else {
                 console.log('No data available for this project ID.');
             }

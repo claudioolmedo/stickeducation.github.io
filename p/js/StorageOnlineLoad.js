@@ -1,4 +1,5 @@
-import { ref, get } from './config/firebase.js';
+import { ref, get } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+import { firebaseDB } from './config/firebase.js';
 
 export function sendIDToStorageOnlineLoad(projectId) {
     console.log('Project ID received: in StorageOnline LOAD', projectId); // Log the received projectId
